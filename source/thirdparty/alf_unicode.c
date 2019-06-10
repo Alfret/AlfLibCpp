@@ -608,7 +608,7 @@ alfUTF8Insert(const AlfChar8* string,
 // -------------------------------------------------------------------------- //
 
 AlfChar8*
-alfUTF8ReplaceCodepoint(AlfChar8* string, uint32_t from, uint32_t to)
+alfUTF8ReplaceCodepoint(const AlfChar8* string, uint32_t from, uint32_t to)
 {
   const uint32_t width0 = alfUTF8CodepointWidth(from);
   const uint32_t width1 = alfUTF8CodepointWidth(to);

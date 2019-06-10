@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -69,11 +69,11 @@ TEST_CASE("[Path] - Join")
 {
   Path p0("this/is");
   p0.Join(Path("a/path"));
-  CHECK(p0.GetPath() == "this\\is\\a\\path");
+  CHECK(p0 == Path{"this\\is\\a\\path"});
 
   Path p1("this/is");
   p1.Join(Path("/a/path"));
-  CHECK(p1.GetPath() == "this\\is\\a\\path");
+  CHECK(p1 == Path{"this\\is\\a\\path"});
 }
 
 // -------------------------------------------------------------------------- //

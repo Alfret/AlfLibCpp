@@ -99,7 +99,7 @@ File::Enumerate() const
     {
       struct dirent* entry;
       while ((entry = readdir(directory)) != nullptr) {
-        files.AppendEmplace(d_name);
+        files.AppendEmplace(entry->d_name);
       }
       closedir(directory);
     }

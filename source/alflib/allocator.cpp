@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,12 @@
 #include "alflib/allocator.hpp"
 
 // ========================================================================== //
+// Headers
+// ========================================================================== //
+
+#include <alflib/math/math.hpp>
+
+// ========================================================================== //
 // DefaultAllocator Implementation
 // ========================================================================== //
 
@@ -38,6 +44,7 @@ DefaultAllocator::Alloc(u64 size, u32 alignment)
 #if defined(_WIN32)
   return _aligned_malloc(size, alignment);
 #elif defined(__linux__) || defined(__APPLE__)
+  alignment = Max(DEFAULT_ALIGNMENT, alignment);
   void* memory;
   if (posix_memalign(&memory, alignment, size) != 0) {
     return nullptr;

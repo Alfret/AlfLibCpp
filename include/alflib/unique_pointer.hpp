@@ -238,10 +238,10 @@ UniquePointer<T, D>::UniquePointer(T* pointer, Allocator& allocator)
 
 template<typename T, typename D>
 UniquePointer<T, D>::UniquePointer(UniquePointer&& other)
+    : mAllocator(other.mAllocator)
 {
   mPointer = other.mPointer;
   mDeleter = other.mDeleter;
-  mAllocator = other.mAllocator;
   other.mPointer = nullptr;
 }
 
@@ -457,10 +457,10 @@ UniquePointer<T[], D>::UniquePointer(T* pointer, Allocator& allocator)
 
 template<typename T, typename D>
 UniquePointer<T[], D>::UniquePointer(UniquePointer&& other)
+    : mAllocator(other.mAllocator)
 {
   mPointer = other.mPointer;
   mDeleter = other.mDeleter;
-  mAllocator = other.mAllocator;
   other.mPointer = nullptr;
 }
 
