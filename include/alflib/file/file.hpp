@@ -54,6 +54,11 @@ private:
 #if defined(ALFLIB_TARGET_WINDOWS)
   /** Win32 file attributes **/
   WIN32_FILE_ATTRIBUTE_DATA mFileAttributes;
+#else
+  /** Posix stat **/
+  struct stat mStats;
+  /** Whether stats are valid **/
+  bool mValidStats = false;
 #endif
 
 public:

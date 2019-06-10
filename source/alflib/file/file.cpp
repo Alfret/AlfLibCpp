@@ -45,7 +45,7 @@ File::File(const String& path)
 File
 File::Open(const Path& path)
 {
-  return File{ "" };
+  return File { mPath.Joined(path) };
 }
 
 // -------------------------------------------------------------------------- //
@@ -53,7 +53,7 @@ File::Open(const Path& path)
 File
 File::Open(const String& path)
 {
-  return File{ "" };
+  return File{ mPath.Joined(path) };
 }
 
 // -------------------------------------------------------------------------- //
@@ -64,7 +64,7 @@ File::Exists() const
 #if defined(ALFLIB_TARGET_WINDOWS)
   return mFileAttributes.dwFileAttributes != INVALID_FILE_ATTRIBUTES;
 #else
-  return false;
+  return mValidStats;
 #endif
 }
 
@@ -73,9 +73,15 @@ File::Exists() const
 ArrayList<File>
 File::Enumerate() const
 {
+  // Assert preconditions
+  AlfAssert(GetType() == Type::kDirectory || GetType() == Type::kArchive,
+            "Only directories and archives can be enumerated");
+
+  // List of files
   ArrayList<File> files;
 
 #if defined(ALFLIB_TARGET_WINDOWS)
+  // Enumerate and add files to list
   const auto path = (mPath.GetPath() + "/*").GetUTF16();
   WIN32_FIND_DATAW findData;
   const HANDLE findHandle = FindFirstFileExW(
@@ -87,9 +93,20 @@ File::Enumerate() const
   }
   FindClose(findHandle);
 #else
-
+  if (GetType() == Type::kDirectory) {
+    DIR* directory = opendir(mPath.GetPath().GetUTF8());
+    if (directory)
+    {
+      struct dirent* entry;
+      while ((entry = readdir(directory)) != nullptr) {
+        files.AppendEmplace(d_name);
+      }
+      closedir(directory);
+    }
+  }
 #endif
 
+  // Return list of files
   return files;
 }
 
@@ -108,6 +125,12 @@ File::GetType() const
   }
   return Type::kFile;
 #else
+  if (S_ISREG(mStats.st_mode)) {
+    return Type::kFile;
+  }
+  if (S_ISDIR(mStats.st_mode)) {
+    return Type::kDirectory;
+  }
   return Type::kInvalid;
 #endif
 }
@@ -126,12 +149,7 @@ File::GetSize() const
   const u64 sizeLow = mFileAttributes.nFileSizeLow;
   return sizeLow | sizeHigh;
 #else
-  struct stat fileStats;
-  s32 result = stat(mPath.GetPath().GetUTF8(), &fileStats);
-  if (result != 0) {
-    return 0;
-  }
-  return static_cast<u64>(fileStats.st_size);
+  return static_cast<u64>(mStats.st_size);
 #endif
 }
 
@@ -140,8 +158,13 @@ File::GetSize() const
 void
 File::UpdateAttributes()
 {
+#if defined(ALFLIB_TARGET_WINDOWS)
   const UniquePointer<char16[]> path = mPath.GetPath().GetUTF16();
   GetFileAttributesExW(path.Get(), GetFileExInfoStandard, &mFileAttributes);
+#else
+  int result = stat(mPath.GetPath().GetUTF8(), &mStats);
+  mValidStats = result == 0;
+#endif
 }
 
 // -------------------------------------------------------------------------- //

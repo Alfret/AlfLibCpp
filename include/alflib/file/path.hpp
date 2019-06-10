@@ -73,8 +73,18 @@ public:
    */
   Path(const String& path = CURRENT);
 
+  /** Join another path at the end of this path.
+   * \brief Join with another path.
+   * \param other Path to join.
+   * \return Reference to this.
+   */
   Path& Join(const Path& other);
 
+  /** Returns the join of this path with another path.
+   * \brief Returns joined path.
+   * \param other Path to join with.
+   * \return Joined paths.
+   */
   Path Joined(const Path& other) const;
 
   /** Returns the string that represents the path.

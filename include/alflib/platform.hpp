@@ -51,7 +51,7 @@
 #define ALFLIB_TARGET_ANDROID
 #endif
 // ========================================================================== //
-// Platform Headers
+// Windows Headers
 // ========================================================================== //
 
 #if defined(ALFLIB_TARGET_WINDOWS)
@@ -61,3 +61,15 @@
 #include <windows.h>
 
 #endif // defined(ALFLIB_TARGET_WINDOWS)
+
+// ========================================================================== //
+// Linux Headers
+// ========================================================================== //
+
+#if defined(ALFLIB_TARGET_LINUX)
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#endif

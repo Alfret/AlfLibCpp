@@ -49,6 +49,18 @@ TEST_CASE("[Path] - Create")
   CHECK(p2.GetPath() == ".");
   Path p3("../");
   CHECK(p3.GetPath() == "..");
+
+  // Wrong separator
+  Path p4("this/is/a/path");
+#if defined(_WIN32)
+  CHECK(p4.GetPath() == "this\\is\\a\\path");
+#else
+  CHECK(p4.GetPath() == "this/is/a/path");
+#endif
+
+  // Mixed separators
+  Path p5("this/is/a\\path");
+  CHECK(p5 == Path("this\\is\\a\\path"));
 }
 
 // -------------------------------------------------------------------------- //
@@ -57,13 +69,16 @@ TEST_CASE("[Path] - Join")
 {
   Path p0("this/is");
   p0.Join(Path("a/path"));
-  CHECK(p0.GetPath() == "this/is/a/path");
+  CHECK(p0.GetPath() == "this\\is\\a\\path");
 
   Path p1("this/is");
   p1.Join(Path("/a/path"));
-  CHECK(p1.GetPath() == "this/is/a/path");
-
+  CHECK(p1.GetPath() == "this\\is\\a\\path");
 }
+
+// -------------------------------------------------------------------------- //
+
+
 
 }
 }

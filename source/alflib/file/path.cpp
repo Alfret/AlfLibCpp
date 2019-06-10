@@ -47,6 +47,8 @@ const String Path::SEPARATOR = "/";
 Path::Path(const String& path)
   : mPath(path)
 {
+  FixSeparators();
+
   // Remove trailing separator
   if (mPath.EndsWith('\\') || mPath.EndsWith('/')) {
     mPath = mPath.Substring(0, mPath.GetLength() - 1);
@@ -96,7 +98,11 @@ operator!=(const Path& path0, const Path& path1)
 void
 Path::FixSeparators()
 {
-  
+#if defined(ALFLIB_TARGET_WINDOWS)
+  mPath.Replace("/", "\\");
+#else
+  mPath.Replace("\\", "/");
+#endif
 }
 
 
