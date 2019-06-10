@@ -57,7 +57,7 @@ TEST_CASE("[UniquePointer] - Make")
 {
   using namespace alflib;
 
-  auto p = UniquePointer<Data>::Make(32, 240);
+  auto p = UniquePointer<Data>::Make(DefaultAllocator::Instance(), 32, 240);
   CHECK(p->i0 == 32);
   CHECK(p->i1 == 240);
 }

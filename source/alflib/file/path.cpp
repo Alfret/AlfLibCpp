@@ -20,58 +20,84 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "alflib/file/path.hpp"
 
 // ========================================================================== //
-// Headers
-// ========================================================================== //
-
-// Library headers
-#include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/file/file.hpp"
-#include "alflib/file/file_io.hpp"
-
-// ========================================================================== //
-// Tests
+// Path Implementation
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[File] - Open File")
-{
-  File file("CMakeLists.txt");
-}
+const String Path::CURRENT = ".";
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[File] - Enumerate")
+const String Path::PARENT = "..";
+
+// -------------------------------------------------------------------------- //
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+const String Path::SEPARATOR = "\\";
+#else
+const String Path::SEPARATOR = "/";
+#endif
+
+// -------------------------------------------------------------------------- //
+
+Path::Path(const String& path)
+  : mPath(path)
 {
-  File file("../../tests/res");
-  CHECK(file.GetType() == File::Type::kDirectory);
-  if (file.GetType() == File::Type::kDirectory) {
-    ArrayList<File> files = file.Enumerate();
-    CHECK(files.Contains(File{ "some_dir" }));
-    CHECK(files.Contains(File{ "some.txt" }));
+  // Remove trailing separator
+  if (mPath.EndsWith('\\') || mPath.EndsWith('/')) {
+    mPath = mPath.Substring(0, mPath.GetLength() - 1);
   }
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[FileHandle] - Create")
+Path&
+Path::Join(const Path& other)
 {
-  FileIO io("");
+  if (!other.mPath.StartsWith('\\') && !other.mPath.StartsWith('/')) {
+    mPath += SEPARATOR_CHAR;
+  }
+  mPath += other.mPath;
+  return *this;
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[FileHandle] - Open")
+Path
+Path::Joined(const Path& other) const
+{
+  Path path = *this;
+  path.Join(other);
+  return path;
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
+operator==(const Path& path0, const Path& path1)
+{
+  return path0.mPath == path1.mPath;
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
+operator!=(const Path& path0, const Path& path1)
+{
+  return path0.mPath != path1.mPath;
+}
+
+// -------------------------------------------------------------------------- //
+
+void
+Path::FixSeparators()
 {
   
 }
 
 
-}
 }

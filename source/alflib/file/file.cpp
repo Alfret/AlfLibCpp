@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,8 +28,7 @@
 
 namespace alflib {
 
-
-File::File(const Path& path) 
+File::File(const Path& path)
   : mPath(path)
 {
   UpdateAttributes();
@@ -59,18 +58,39 @@ File::Open(const String& path)
 
 // -------------------------------------------------------------------------- //
 
-FileIO
-File::OpenFile(Flag flags)
+bool
+File::Exists() const
 {
-  return FileIO{  };
+#if defined(ALFLIB_TARGET_WINDOWS)
+  return mFileAttributes.dwFileAttributes != INVALID_FILE_ATTRIBUTES;
+#else
+  return false;
+#endif
 }
 
 // -------------------------------------------------------------------------- //
 
 ArrayList<File>
-File::Enumerate()
+File::Enumerate() const
 {
-  return ArrayList<File>{};
+  ArrayList<File> files;
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+  const auto path = (mPath.GetPath() + "/*").GetUTF16();
+  WIN32_FIND_DATAW findData;
+  const HANDLE findHandle = FindFirstFileExW(
+    path.Get(), FindExInfoBasic, &findData, FindExSearchNameMatch, nullptr, 0);
+  if (findHandle != INVALID_HANDLE_VALUE) {
+    do {
+      files.AppendEmplace(findData.cFileName);
+    } while (FindNextFileW(findHandle, &findData));
+  }
+  FindClose(findHandle);
+#else
+
+#endif
+
+  return files;
 }
 
 // -------------------------------------------------------------------------- //
@@ -78,7 +98,41 @@ File::Enumerate()
 File::Type
 File::GetType() const
 {
+  if (!Exists()) {
+    return Type::kInvalid;
+  }
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+  if (mFileAttributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+    return Type::kDirectory;
+  }
   return Type::kFile;
+#else
+  return Type::kInvalid;
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+u64
+File::GetSize() const
+{
+  if (!Exists()) {
+    return 0;
+  }
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+  const u64 sizeHigh = (uint64_t)mFileAttributes.nFileSizeHigh << sizeof(DWORD);
+  const u64 sizeLow = mFileAttributes.nFileSizeLow;
+  return sizeLow | sizeHigh;
+#else
+  struct stat fileStats;
+  s32 result = stat(mPath.GetPath().GetUTF8(), &fileStats);
+  if (result != 0) {
+    return 0;
+  }
+  return static_cast<u64>(fileStats.st_size);
+#endif
 }
 
 // -------------------------------------------------------------------------- //
@@ -86,10 +140,24 @@ File::GetType() const
 void
 File::UpdateAttributes()
 {
-  char16* path = mPath.GetPath().GetUTF16();
-  GetFileAttributesExW(path, GetFileExInfoStandard, &mFileAttributes);
-  
+  const UniquePointer<char16[]> path = mPath.GetPath().GetUTF16();
+  GetFileAttributesExW(path.Get(), GetFileExInfoStandard, &mFileAttributes);
+}
 
+// -------------------------------------------------------------------------- //
+
+bool
+operator==(const File& file0, const File& file1)
+{
+  return file0.mPath == file1.mPath;
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
+operator!=(const File& file0, const File& file1)
+{
+  return file0.mPath != file1.mPath;
 }
 
 }

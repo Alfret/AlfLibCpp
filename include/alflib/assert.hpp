@@ -26,7 +26,9 @@
 // Headers
 // ========================================================================== //
 
-#include "common.hpp"
+// Project headers
+#include "alflib/common.hpp"
+#include "alflib/string.hpp"
 
 // ========================================================================== //
 // Macros
@@ -41,6 +43,7 @@
 // ========================================================================== //
 
 namespace alflib {
+
 
 /** Assert that the condition is true. If the condition is false a message will 
  * be displayed and the execution will stop.

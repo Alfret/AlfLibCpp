@@ -44,6 +44,11 @@ struct Element
 {
   static u32 liveCount;
   s32 i;
+  Element()
+    : i(0)
+  {
+    liveCount++;
+  }
   Element(s32 i)
     : i(i)
   {

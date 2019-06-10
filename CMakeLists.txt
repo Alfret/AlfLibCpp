@@ -27,6 +27,8 @@ set(SOURCE_FILES
 	source/alflib/assert.cpp
 	source/alflib/string.cpp
 	source/alflib/file/file.cpp
+	source/alflib/file/file_io.cpp
+	source/alflib/file/path.cpp
 	source/thirdparty/alf_unicode.c
 	)
 

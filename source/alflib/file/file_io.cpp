@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,50 +20,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "alflib/file/file_io.hpp"
 
 // ========================================================================== //
-// Headers
-// ========================================================================== //
-
-#include "alflib/file/path.hpp"
-#include <doctest/doctest.h>
-
-// ========================================================================== //
-// Tests
+// FileIO Implementation
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Path] - Create")
+FileIO::FileIO(File file) 
+  : mFile(file)
+{}
+
+// -------------------------------------------------------------------------- //
+
+FileIO::FileIO(const Path& path)
+  : mFile(File{ path })
+{}
+
+// -------------------------------------------------------------------------- //
+
+FileIO::FileIO(const String& path)
+  : mFile(File{ path })
+{}
+
+// -------------------------------------------------------------------------- //
+
+FileIO::~FileIO()
 {
-  // Normal cases
-  Path p0(".");
-  CHECK(p0.GetPath() == ".");
-  Path p1("..");
-  CHECK(p1.GetPath() == "..");
-
-  // Trailing separator
-  Path p2("./");
-  CHECK(p2.GetPath() == ".");
-  Path p3("../");
-  CHECK(p3.GetPath() == "..");
+  if (IsOpen()) {
+    Close();
+  }
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Path] - Join")
+FileResult
+FileIO::Open(Flag flags)
 {
-  Path p0("this/is");
-  p0.Join(Path("a/path"));
-  CHECK(p0.GetPath() == "this/is/a/path");
+  
 
-  Path p1("this/is");
-  p1.Join(Path("/a/path"));
-  CHECK(p1.GetPath() == "this/is/a/path");
-
+  return FileResult::kSuccess;
 }
 
+// -------------------------------------------------------------------------- //
+
+void
+FileIO::Close()
+{
+  
 }
+
+// -------------------------------------------------------------------------- //
+
+FileResult
+FileIO::Read(u8* buffer, u64 toRead, u64& read)
+{
+  return FileResult::kSuccess;
+}
+
+// -------------------------------------------------------------------------- //
+
+FileResult
+FileIO::Write(const u8* buffer, u64 toWrite, u64& written)
+{
+  return FileResult::kSuccess;
+}
+
 }

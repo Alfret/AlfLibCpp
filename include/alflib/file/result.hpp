@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,47 +23,22 @@
 #pragma once
 
 // ========================================================================== //
-// Headers
-// ========================================================================== //
-
-#include "alflib/file/path.hpp"
-#include <doctest/doctest.h>
-
-// ========================================================================== //
-// Tests
+// FileResult Enumeration
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Path] - Create")
+/** File results **/
+enum class FileResult
 {
-  // Normal cases
-  Path p0(".");
-  CHECK(p0.GetPath() == ".");
-  Path p1("..");
-  CHECK(p1.GetPath() == "..");
+  /** Success **/
+  kSuccess,
+  /** File was not found at the specified path **/
+  kNotFound,
+  /** File already exists at the specified path **/
+  kAlreadyExists,
+  /** Access was denied trying to access file at the specified path **/
+  kAccessDenied,
+};
 
-  // Trailing separator
-  Path p2("./");
-  CHECK(p2.GetPath() == ".");
-  Path p3("../");
-  CHECK(p3.GetPath() == "..");
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[Path] - Join")
-{
-  Path p0("this/is");
-  p0.Join(Path("a/path"));
-  CHECK(p0.GetPath() == "this/is/a/path");
-
-  Path p1("this/is");
-  p1.Join(Path("/a/path"));
-  CHECK(p1.GetPath() == "this/is/a/path");
-
-}
-
-}
 }

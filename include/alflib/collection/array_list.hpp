@@ -193,6 +193,13 @@ public:
    */
   void ShrinkToFit();
 
+  /** Returns whether or not the list contains the specified object.
+   * \brief Returns whether object is in list.
+   * \param object Object to check if in list.
+   * \return True if the list contains the object otherwise false.
+   */
+  bool Contains(const T& object);
+
   /** Returns the object at the specified index in the list.
    * \pre Index must not be out of bounds.
    * \brief Returns object at index.
@@ -253,7 +260,8 @@ ArrayList<T>::ArrayList(u64 capacity, Allocator& allocator)
   , mSize(0)
   , mAllocator(allocator)
 {
-  mBuffer = mAllocator.NewArray<T>(mCapacity);
+  mBuffer =
+    static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));
 }
 
 // -------------------------------------------------------------------------- //
@@ -265,7 +273,8 @@ ArrayList<T>::ArrayList(std::initializer_list<T> initializerList,
   , mSize(0)
   , mAllocator(DefaultAllocator::Instance())
 {
-  mBuffer = mAllocator.NewArray<T>(mCapacity);
+  mBuffer =
+    static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));
   for (T& element : initializerList) {
     new (mBuffer + (mSize++)) T{ element };
   }
@@ -279,7 +288,8 @@ ArrayList<T>::ArrayList(const ArrayList& other)
   , mSize(other.mSize)
   , mAllocator(other.mAllocator)
 {
-  mBuffer = mAllocator.NewArray<T>(mCapacity);
+  mBuffer =
+    static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));
   for (SizeType i = 0; i < mSize; ++i) {
     new (mBuffer + i) T{ other.mBuffer[i] };
   }
@@ -320,7 +330,8 @@ ArrayList<T>::operator=(const ArrayList& other)
     mCapacity = other.mCapacity;
     mSize = other.mSize;
     mAllocator = other.mAllocator;
-    mBuffer = mAllocator.NewArray<T>(mCapacity);
+    mBuffer =
+      static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < mSize; ++i) {
       new (mBuffer + i) T{ other.mBuffer[i] };
     }
@@ -498,7 +509,8 @@ ArrayList<T>::Resize(SizeType size)
     mSize = size;
   } else {
     // Allocate new buffer and move all objects
-    T* newBuffer = mAllocator.NewArray<T>(size);
+    T* newBuffer =
+      static_cast<T*>(mAllocator.Alloc(size * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < Min(mSize, size); ++i) {
       new (newBuffer + i) T{ std::move(mBuffer[i]) };
       mBuffer[i].~T();
@@ -520,7 +532,8 @@ ArrayList<T>::Reserve(SizeType capacity)
 {
   // Only do something if new capacity is greater than old
   if (capacity > mCapacity) {
-    T* newBuffer = mAllocator.NewArray<T>(capacity);
+    T* newBuffer =
+      static_cast<T*>(mAllocator.Alloc(capacity * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < mSize; ++i) {
       new (newBuffer + i) T{ std::move(mBuffer[i]) };
       mBuffer[i].~T();
@@ -539,7 +552,8 @@ ArrayList<T>::Shrink(SizeType capacity)
 {
   // Only shrink if new capacity is less than old
   if (capacity < mCapacity) {
-    T* newBuffer = mAllocator.NewArray<T>(capacity);
+    T* newBuffer =
+      static_cast<T*>(mAllocator.Alloc(capacity * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < Min(mSize, capacity); ++i) {
       new (newBuffer + i) T{ std::move(mBuffer[i]) };
     }
@@ -560,6 +574,20 @@ void
 ArrayList<T>::ShrinkToFit()
 {
   Shrink(mSize);
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+bool
+ArrayList<T>::Contains(const T& object)
+{
+  for (SizeType i = 0; i < mSize; ++i) {
+    if (At(i) == object) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // -------------------------------------------------------------------------- //

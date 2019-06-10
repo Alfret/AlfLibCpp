@@ -28,6 +28,7 @@
 
 // Project headers
 #include "alflib/string.hpp"
+#include "alflib/platform.hpp"
 
 // ========================================================================== //
 // Path Declaration
@@ -46,9 +47,20 @@ class Path
 {
 public:
   /** Path (relative) to current directory **/
-  static constexpr char8 CURRENT[] = ".";
+  static const String CURRENT;
   /** Path (relative) to parent directory **/
-  static constexpr char8 PARENT[] = "..";
+  static const String PARENT;
+
+  /** Path separator **/
+  static const String SEPARATOR;
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+  /** Path separator character (Windows) **/
+  static constexpr u32 SEPARATOR_CHAR = '\\';
+#else
+  /** Path separator character **/
+  static constexpr u32 SEPARATOR_CHAR = '/';
+#endif
 
 private:
   /** Path string **/
@@ -56,16 +68,41 @@ private:
 
 public:
   /** Construct a path from a string.
-   * \brief 
+   * \brief Construct path.
    * \param path 
    */
   Path(const String& path = CURRENT);
+
+  Path& Join(const Path& other);
+
+  Path Joined(const Path& other) const;
 
   /** Returns the string that represents the path.
    * \brief Returns path string.
    * \return Path string.
    */
   const String& GetPath() const { return mPath; }
+
+  /** Returns whether or not two paths are equal.
+   * \brief Returns whether paths are equal.
+   * \param path0 First path.
+   * \param path1 Second path.
+   * \return True if the paths are equal otherwise false.
+   */
+  friend bool operator==(const Path& path0, const Path& path1);
+
+  /** Returns whether or not two paths are not equal.
+   * \brief Returns whether paths are unequal.
+   * \param path0 First path.
+   * \param path1 Second path.
+   * \return True if the paths are not equal otherwise false.
+   */
+  friend bool operator!=(const Path& path0, const Path& path1);
+
+private:
+  /** This function sets up the separators in the path to be the correct for 
+   * the OS **/
+  void FixSeparators();
 
 };
 

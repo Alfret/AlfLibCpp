@@ -28,8 +28,6 @@
 
 // Project headers
 #include "alflib/common.hpp"
-#include "alflib/macros.hpp"
-#include "alflib/file/file_io.hpp"
 #include "alflib/file/path.hpp"
 #include "alflib/collection/array_list.hpp"
 #include "alflib/platform.hpp"
@@ -49,8 +47,6 @@ namespace alflib {
  */
 class File
 {
-  friend FileIO;
-
 private:
   /** File path **/
   Path mPath;
@@ -61,22 +57,11 @@ private:
 #endif
 
 public:
-  /** File results **/
-  enum class Result
-  {
-    /** Success **/
-    kSuccess,
-    /** File was not found at the specified path **/
-    kNotFound,
-    /** File already exists at the specified path **/
-    kAlreadyExists,
-    /** Access was denied trying to access file at the specified path **/
-    kAccessDenied,
-  };
-
   /** Enumeration of file system object types **/
   enum class Type
   {
+    /** Invalid type. This is the type of files that does not exist **/
+    kInvalid,
     /** File **/
     kFile,
     /** Directory **/
@@ -84,30 +69,6 @@ public:
     /** Archive **/
     kArchive
   };
-
-  /** Flags that can be specified when opening the file handle **/
-  enum class Flag : u32
-  {
-    /** Open file with read access **/
-    kRead,
-    /** Open file with write access **/
-    kWrite,
-    /** Open file with read and write access **/
-    kReadWrite = kRead | kWrite,
-    /** Open file with shared read access **/
-    kShareRead,
-    /** Open file with shared write access **/
-    kShareWrite,
-    /** Open file with shared read and write access **/
-    kShareReadWrite = kShareRead | kShareWrite,
-    /** Create the file if it does not already exists **/
-    kCreate,
-    /** Overwrite file if it already exists **/
-    kOverwrite,
-    /** Open file with cursor at the end for appending **/
-    kAppend
-  };
-  ALFLIBCPP_ENUM_CLASS_OPERATORS(friend, Flag, u32);
 
 public:  
   /** Construct a file handle that represents the object at the specified path 
@@ -143,18 +104,19 @@ public:
    */
   File Open(const String& path);
 
-  /** Open file to perform read/write operations on it.
-   * \brief Open file.
-   * \return File IO interface.
+  /** Returns whether there exists a file system object at the path of this 
+   * file.
+   * \brief Returns whether file exists.
+   * \return True if there exists and object at the path otherwise false.
    */
-  FileIO OpenFile(Flag flags);
+  bool Exists() const;
 
   /** Enumerate all the files in a directory or archive.
    * \pre Type of file must be a directory.
    * \brief Enumerate files in directory or archive.
    * \return List of files.
    */
-  ArrayList<File> Enumerate();
+  ArrayList<File> Enumerate() const;
 
   /** Returns the path to the file.
    * \brief Returns path.
@@ -167,6 +129,28 @@ public:
    * \return Type of the file.
    */
   Type GetType() const;
+
+  /** Returns the size of the file.
+   * \brief Returns file size.
+   * \return Size of the file.
+   */
+  u64 GetSize() const;
+
+  /** Returns whether or not two files are equal.
+   * \brief Returns whether files are equal.
+   * \param file0 First file.
+   * \param file1 Second file.
+   * \return True if the files are equal otherwise false.
+   */
+  friend bool operator==(const File& file0, const File& file1);
+
+  /** Returns whether or not two file are not equal.
+   * \brief Returns whether files are unequal.
+   * \param file0 First file.
+   * \param file1 Second file.
+   * \return True if the files are not equal otherwise false.
+   */
+  friend bool operator!=(const File& file0, const File& file1);
 
 private:
   /** Retrieve current file attributes **/

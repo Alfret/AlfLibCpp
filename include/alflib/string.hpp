@@ -36,6 +36,7 @@
 
 // Project headers
 #include "alflib/common.hpp"
+#include "alflib/unique_pointer.hpp"
 
 // ========================================================================== //
 // String Declaration
@@ -137,6 +138,14 @@ public:
    */
   bool StartsWith(u32 codepoint) const;
 
+  /** Returns whether or not the string ends with the specified codepoint.
+   * \brief Returns whether string ends with codepoint.
+   * \param codepoint Codepoint to check if string ends with.
+   * \return True if the string ends with the specified codepoint otherwise 
+   * false.
+   */
+  bool EndsWith(u32 codepoint) const;
+
   /** Replace all occurances of the 
    * \todo Currently the implementation is naïve and very inneficcient. A better
    * substring searching algorithm should be used.
@@ -153,6 +162,16 @@ public:
    * \return Number of removed codepoints.
    */
   u32 Remove(u32 codepoint);
+
+  /** Returns a substring of the string from the 'from' index and 'count' 
+   * codepoints ahead.
+   * \brief Returns substring.
+   * \param from Index to get substring from.
+   * \param count Number of codepoint in substring. -1 Means that the entire 
+   * string from the starting index should be returned.
+   * \return Substring.
+   */
+  String Substring(u64 from, u64 count = -1) const;
 
   /** Traverse the string and call the specified function with the codepoint 
    * and index at each location. The specified arguments are also forwarded to 
@@ -229,7 +248,7 @@ public:
    * \brief Convert and return UTF-16.
    * \return UTF-16 string.
    */
-  char16* GetUTF16() const;
+  UniquePointer<char16[]> GetUTF16() const;
 
   /** Returns the length of the string in number of codepoints.
    * \note The value returned from this function may not be the same as from the

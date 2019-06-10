@@ -99,7 +99,8 @@ public:
       T{ std::forward<ARGS>(arguments)... };
   }
 
-  /** Allocate new array of N number of object of the type T.
+  /** Allocate new array of N number of object of the type T. Each element is 
+   * default constructed.
    * \brief Allocate new array.
    * \tparam T Type of array elements.
    * \param n Number of object in array. 
@@ -108,7 +109,11 @@ public:
   template<typename T>
   T* NewArray(u64 n)
   {
-    return static_cast<T*>(Alloc(sizeof(T) * n, alignof(T)));
+    T* memory = static_cast<T*>(Alloc(sizeof(T) * n, alignof(T)));
+    for (u64 i = 0; i < n; i++) {
+      new (memory + i) T{};
+    }
+    return memory;
   }
 
   /** Delete an object of the type T that was created from this allocator. This
@@ -121,7 +126,7 @@ public:
   void Delete(T* object)
   {
     if (object) {
-      object.~T();
+      object->~T();
       Free(object);
     }
   }

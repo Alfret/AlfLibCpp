@@ -26,8 +26,8 @@
 // Headers
 // ========================================================================== //
 
-#include <vector>
 #include "alflib/assert.hpp"
+#include <vector>
 
 // ========================================================================== //
 // String Implementation
@@ -179,6 +179,26 @@ String::StartsWith(u32 codepoint) const
 
 // -------------------------------------------------------------------------- //
 
+bool
+String::EndsWith(u32 codepoint) const
+{
+  // Check that the codepoint is even possible to be at the end
+  const char8* str = GetUTF8();
+  const u32 width = CodepointWidth(codepoint);
+  if (width > GetSize()) {
+    return false;
+  }
+  
+  // Decode at expected location from end
+  u32 _codepoint, numBytes;
+  if (alfUTF8Decode(str, GetSize() - width, &_codepoint, &numBytes)) {
+    return _codepoint == codepoint;
+  }
+  return false;
+}
+
+// -------------------------------------------------------------------------- //
+
 u32
 String::Replace(const String& from, const String& to)
 {
@@ -209,6 +229,27 @@ String::Remove(u32 codepoint)
 
   // Use replace
   return Replace(encoded, "");
+}
+
+// -------------------------------------------------------------------------- //
+
+String
+String::Substring(u64 from, u64 count) const
+{
+  // TODO(Filip Björklund): Fix alf_unicode to allow no allocation to be done.
+  // TODO(Filip Björklund): Or use simpler functions to build substring.
+
+  // Retrieve substring
+  char8* substring;
+  if (count == -1) {
+    substring = alfUTF8SubstringFrom(GetUTF8(), from);
+  } else {
+    substring = alfUTF8Substring(GetUTF8(), from, count);  
+  }
+
+  String output(substring);
+  free(substring);
+  return output;
 }
 
 // -------------------------------------------------------------------------- //
@@ -246,19 +287,22 @@ u32 String::operator[](u32 index) const
 
 // -------------------------------------------------------------------------- //
 
-char16*
+UniquePointer<char16[]>
 String::GetUTF16() const
 {
   const char8* _string = GetUTF8();
   u32 numCodeUnits;
   AlfBool success = alfUTF8ToUTF16(_string, &numCodeUnits, nullptr);
   AlfAssert(success, "Failed to convert UTF-16 to UTF-8");
-  char16* buffer = new char16[numCodeUnits + 1ull];
+
+  char16* buffer =
+    DefaultAllocator::Instance().NewArray<char16>(numCodeUnits + 1ull);
+
   buffer[numCodeUnits] = 0;
   success = alfUTF8ToUTF16(
     _string, &numCodeUnits, reinterpret_cast<AlfChar16*>(buffer));
   AlfAssert(success, "Failed to convert UTF-16 to UTF-8");
-  return buffer;
+  return UniquePointer<char16[]>(buffer, DefaultAllocator::Instance());
 }
 
 // -------------------------------------------------------------------------- //
@@ -348,6 +392,5 @@ String::CodepointWidth(u32 codepoint)
 {
   return alfUTF8CodepointWidth(codepoint);
 }
-
 
 }
