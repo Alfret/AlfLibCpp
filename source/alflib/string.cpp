@@ -287,6 +287,22 @@ u32 String::operator[](u32 index) const
 
 // -------------------------------------------------------------------------- //
 
+void
+String::Resize(u64 size)
+{
+  mString.resize(size);
+}
+
+// -------------------------------------------------------------------------- //
+
+void
+String::RecalculateLength()
+{
+  mLength = static_cast<u32>(alfUTF8StringLength(mString.c_str()));
+}
+
+// -------------------------------------------------------------------------- //
+
 UniquePointer<char16[]>
 String::GetUTF16() const
 {

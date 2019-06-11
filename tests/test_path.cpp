@@ -95,5 +95,42 @@ TEST_CASE("[Path] - Components")
   CHECK(c1.Contains("file"));
 }
 
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - Name")
+{
+  
+
+
+}
+
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - Extension")
+{
+  // Normal cases
+  const Path p0("file.txt");
+  CHECK(p0.GetExtensionString() == ".txt");
+  const Path p1("path/to/some.txt");
+  CHECK(p1.GetExtensionString() == ".txt");
+  const Path p2("path/to/file");
+  CHECK(p2.GetExtensionString() == "");
+
+  // Normal cases type
+  const Path p3("file.txt");
+  CHECK(p3.GetExtension() == Path::Extension::kTxt);
+  const Path p4("path/to/some.txt");
+  CHECK(p4.GetExtension() == Path::Extension::kTxt);
+  const Path p5("path/to/file");
+  CHECK(p5.GetExtension() == Path::Extension::kNone);
+
+
+
+}
+
+
+
+
 }
 }

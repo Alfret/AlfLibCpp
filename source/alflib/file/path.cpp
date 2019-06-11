@@ -143,6 +143,55 @@ Path::GetComponents()
 
 // -------------------------------------------------------------------------- //
 
+String
+Path::GetName() const
+{
+  const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
+  const s64 dotIndex = mPath.LastIndexOf('.');
+  if (sepIndex == -1) {
+    return "";
+  }
+  if (dotIndex == -1) {
+    return mPath.Substring(sepIndex);
+  }
+  return mPath.Substring(sepIndex, dotIndex - sepIndex);
+}
+
+// -------------------------------------------------------------------------- //
+
+Path::Extension
+Path::GetExtension() const
+{
+  const String extensionString = GetExtensionString();
+  if (extensionString.GetLength() == 0) {
+    return Extension::kNone;
+  }
+  if (extensionString == ".txt") {
+    return Extension::kTxt;
+  }
+  if (extensionString == ".png") {
+    return Extension::kPng;
+  }
+  if (extensionString == ".zip") {
+    return Extension::kZip;
+  }
+  return Extension::kUnknown;
+}
+
+// -------------------------------------------------------------------------- //
+
+String
+Path::GetExtensionString() const
+{
+  const s64 index = mPath.LastIndexOf('.');
+  if (index == -1) {
+    return "";
+  }
+  return mPath.Substring(index);
+}
+
+// -------------------------------------------------------------------------- //
+
 bool
 operator==(const Path& path0, const Path& path1)
 {

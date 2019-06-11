@@ -31,6 +31,7 @@
 #include "alflib/file/path.hpp"
 #include "alflib/collection/array_list.hpp"
 #include "alflib/platform/platform.hpp"
+#include "alflib/file/result.hpp"
 
 // ========================================================================== //
 // File Declaration
@@ -66,7 +67,7 @@ private:
   /** Whether stats are valid **/
   bool mValidStats = false;
 #endif
-
+ 
 public:
   /** Enumeration of file system object types **/
   enum class Type
@@ -114,6 +115,45 @@ public:
    * \return File.
    */
   File Open(const String& path) const;
+
+  /** Create the file system object. The type of the object to create is 
+   * specified and files created can optionally overwrite any existing files at 
+   * the path.
+   * \brief Create file.
+   * \param type Type of file system object to create.
+   * \param overwrite Whether to overwrite any existing files at the path.
+   * \return Result.
+   */
+  FileResult Create(Type type, bool overwrite = false);
+
+  /** Delete the file system object.
+   * \brief Delete file.
+   * \param recursive Whether to recursively delete subdirectories.
+   * \return Result.
+   */
+  FileResult Delete(bool recursive = false);
+
+  /** Rename the file to the specified name. The name should only be the name of 
+   * the file and extension, not the entire path.
+   * \brief Rename file.
+   * \param name New name.
+   * \return Result.
+   */
+  FileResult Rename(const String& name);
+
+  /** Copy the file to a new path.
+   * \brief Copy file.
+   * \param to Path to copy to.
+   * \return Result.
+   */
+  FileResult Copy(const Path& to);
+
+  /** Move the file to a new path.
+   * \brief Move file.
+   * \param to Path to move to.
+   * \return Result.
+   */
+  FileResult Move(const Path& to);
 
   /** Returns whether there exists a file system object at the path of this 
    * file.

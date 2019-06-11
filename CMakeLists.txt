@@ -31,6 +31,7 @@ set(SOURCE_FILES
 	source/alflib/file/path.cpp
 	source/alflib/platform/os.cpp
 	source/thirdparty/alf_unicode.c
+	source/thirdparty/miniz.c
 	)
 
 # Windows files

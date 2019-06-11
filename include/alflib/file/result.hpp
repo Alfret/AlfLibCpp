@@ -33,12 +33,24 @@ enum class FileResult
 {
   /** Success **/
   kSuccess,
+  /** Unknown error **/
+  kUnknownError,
+  /** Invalid arguments **/
+  kInvalidArgument,
+
+  /** File is not open **/
+  kNotOpen,
+  /** File is already open **/
+  kAlreadyOpen,
+
   /** File was not found at the specified path **/
   kNotFound,
   /** File already exists at the specified path **/
   kAlreadyExists,
   /** Access was denied trying to access file at the specified path **/
   kAccessDenied,
+  /** Reached end-of-file (EOF) **/
+  kEOF
 };
 
 }

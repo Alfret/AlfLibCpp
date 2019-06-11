@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,9 +27,9 @@
 // ========================================================================== //
 
 // Project headers
-#include "alflib/string.hpp"
-#include "alflib/platform/platform.hpp"
 #include "alflib/collection/array_list.hpp"
+#include "alflib/platform/platform.hpp"
+#include "alflib/string.hpp"
 
 // ========================================================================== //
 // Path Declaration
@@ -60,6 +60,21 @@ public:
     kDownloads
   };
 
+  /** List of known file extensions **/
+  enum class Extension
+  {
+    /** No extension **/
+    kNone,
+    /** Unknown extension **/
+    kUnknown,
+    /** Text file **/
+    kTxt,
+    /** PNG image file **/
+    kPng,
+    /** Zip archive **/
+    kZip,
+  };
+
 public:
   /** Path (relative) to current directory **/
   static const String CURRENT;
@@ -84,11 +99,11 @@ private:
 public:
   /** Construct a path from a string.
    * \brief Construct path.
-   * \param path 
+   * \param path
    */
   Path(const String& path = CURRENT);
 
-  /** Join another path at the end of this path. This correctly insert a 
+  /** Join another path at the end of this path. This correctly insert a
    * separator between the path components.
    * \brief Join with another path.
    * \param other Path to join.
@@ -96,7 +111,7 @@ public:
    */
   Path& Join(const Path& other);
 
-  /** Join another path at the end of this path. This correctly insert a 
+  /** Join another path at the end of this path. This correctly insert a
    * separator between the path components.
    * \brief Join with another path.
    * \param other Path to join.
@@ -104,7 +119,7 @@ public:
    */
   Path& operator+=(const Path& other);
 
-  /** Returns the join of this path with another path. This correctly insert a 
+  /** Returns the join of this path with another path. This correctly insert a
    * separator between the path components.
    * \brief Returns joined path.
    * \param other Path to join with.
@@ -118,7 +133,7 @@ public:
    */
   const String& GetPath() const { return mPath; }
 
-  /** Returns the path as an absolute path. This function also resolves any '.' 
+  /** Returns the path as an absolute path. This function also resolves any '.'
    * (current directory) and '..' (parent directory) components that may be part
    * of the path. For this reason this function may be costly and should not be
    * called when the absolute path is not actually needed.
@@ -132,6 +147,25 @@ public:
    * \return Path components.
    */
   ArrayList<String> GetComponents();
+
+  /** Returns the name of the object at the path. This is the last component
+   * and is returned without any extension.
+   * \brief Returns name.
+   * \return Name.
+   */
+  String GetName() const;
+
+  /** Returns the extension of the path.
+   * \brief Returns extension.
+   * \return Extension.
+   */
+  Extension GetExtension() const;
+
+  /** Returns the extension of the path as a string.
+   * \brief Returns extension string.
+   * \return Extension string.
+   */
+  String GetExtensionString() const;
 
   /** Returns whether or not two paths are equal.
    * \brief Returns whether paths are equal.
@@ -166,7 +200,7 @@ public:
   friend Path operator+(const Path& path0, const String& path1);
 
 private:
-  /** This function sets up the separators in the path to be the correct for 
+  /** This function sets up the separators in the path to be the correct for
    * the OS **/
   void FixSeparators();
 
@@ -175,7 +209,6 @@ public:
    * \brief Returns known directory path.
    */
   static Path GetKnownDirectory(KnownDirectory directory);
-
 };
 
 }

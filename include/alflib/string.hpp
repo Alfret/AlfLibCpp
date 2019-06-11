@@ -231,6 +231,20 @@ public:
    */
   u32 operator[](u32 index) const;
 
+  /** Resize the underlying buffer of the string to hold the specified number of 
+   * bytes.
+   * \note Size is specified in bytes, not in codepoints.
+   * \brief Resize string.
+   * \param size New size.
+   */
+  void Resize(u64 size);
+
+  /** Recalculate the length of the string. This must be used if the user 
+   * directly accesses the underlying buffer and writes to it.
+   * \brief Recalculate length.
+   */
+  void RecalculateLength();
+
   /** Returns a std::string that represents the same underlying data as this 
    * string.
    * \brief Returns std::string.
@@ -249,6 +263,20 @@ public:
    * \return UTF-16 string.
    */
   UniquePointer<char16[]> GetUTF16() const;
+
+  /** Returns the underlying data buffer of the string.
+   * \warning If modifying the bytes after calling this function then make sure
+   * to call String::RecalculateLength() in order to calculate the length.
+   * \brief Returns data.
+   * \return Data.
+   */
+  char8* GetData() { return &mString[0]; }
+
+  /** Returns the underlying data buffer of the string.
+   * \brief Returns data.
+   * \return Data.
+   */
+  const char8* GetData() const { return &mString[0]; }
 
   /** Returns the length of the string in number of codepoints.
    * \note The value returned from this function may not be the same as from the

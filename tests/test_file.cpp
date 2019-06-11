@@ -40,38 +40,58 @@
 namespace alflib {
 namespace tests {
 
-TEST_CASE("[File] - Open File")
-{
-  File file("CMakeLists.txt");
-}
-
-// -------------------------------------------------------------------------- //
-
 TEST_CASE("[File] - Enumerate")
 {
-  File file("../../tests/res");
-  CHECK(file.GetType() == File::Type::kDirectory);
-  if (file.GetType() == File::Type::kDirectory) {
-    ArrayList<File> files = file.Enumerate();
+  // Directory
+  File f0("../../tests/res");
+  CHECK(f0.Exists());
+  CHECK(f0.GetType() == File::Type::kDirectory);
+  if (f0.GetType() == File::Type::kDirectory) {
+    ArrayList<File> files = f0.Enumerate();
     CHECK(files.Contains(File{ "some_dir" }));
     CHECK(files.Contains(File{ "some.txt" }));
+    CHECK(files.Contains(File{ "an_archive.zip" }));
+  }
+
+  // Archive
+  File f1("../../tests/res/an_archive.zip");
+  CHECK(f1.Exists());
+  CHECK(f1.GetType() == File::Type::kArchive);
+  if (f1.GetType() == File::Type::kArchive) {
+    ArrayList<File> files = f1.Enumerate();
+    CHECK(files.Contains(File{ "file_inside.txt" }));
+    CHECK(files.Contains(File{ "some_other.txt" }));
   }
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[FileHandle] - Create")
+TEST_CASE("[File] - Create")
 {
-  FileIO io("");
+  // File f0("../../a_file.txt");
+  // FileResult r0 = f0.Create(File::Type::kFile);
+
+  // File f1("../../a_dir");
+  // FileResult r1 = f1.Create(File::Type::kDirectory);
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[FileHandle] - Open")
-{
-  
-}
+TEST_CASE("[FileIO] - Open") {}
 
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[FileIO] - Read")
+{
+  FileIO f0("../../tests/res/smile.txt");
+  FileResult result = f0.Open(FileIO::Flag::kRead);
+  CHECK(result == FileResult::kSuccess);
+
+  String c0;
+  result = f0.Read(c0);
+  CHECK(result == FileResult::kSuccess);
+  CHECK(c0.GetLength() == 8);
+}
 
 }
 }

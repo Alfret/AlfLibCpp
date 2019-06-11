@@ -49,7 +49,9 @@ class FileIO
 private:
   /** File that IO handle is operating on **/
   File mFile;
-
+  /** Whether the file is open **/
+  bool mIsOpen = false;
+ 
 #if defined(ALFLIB_TARGET_WINDOWS)
   /** Handle **/
   HANDLE mFileHandle = INVALID_HANDLE_VALUE;
@@ -58,31 +60,29 @@ private:
   File* mHandle = nullptr;
 #endif
 
-  /** Whether the file is open **/
-  bool mIsOpen = false;
 
 public:
   /** Flags that can be specified when opening the file handle **/
   enum class Flag : u32
   {
     /** Open file with read access **/
-    kRead,
+    kRead = Bit(0),
     /** Open file with write access **/
-    kWrite,
+    kWrite = Bit(1),
     /** Open file with read and write access **/
     kReadWrite = kRead | kWrite,
     /** Open file with shared read access **/
-    kShareRead,
+    kShareRead = Bit(2),
     /** Open file with shared write access **/
-    kShareWrite,
+    kShareWrite = Bit(3),
     /** Open file with shared read and write access **/
     kShareReadWrite = kShareRead | kShareWrite,
     /** Create the file if it does not already exists **/
-    kCreate,
+    kCreate = Bit(4),
     /** Overwrite file if it already exists **/
-    kOverwrite,
+    kOverwrite = Bit(5),
     /** Open file with cursor at the end for appending **/
-    kAppend
+    kAppend = Bit(6)
   };
   ALFLIBCPP_ENUM_CLASS_OPERATORS(friend, Flag, u32);
 
@@ -126,8 +126,9 @@ public:
   /** Close a file IO handle. No more operations may be performed on the handle
    * after this function has been called.
    * \brief Close handle.
+   * \return Result.
    */
-  void Close();
+  FileResult Close();
 
   /** Read data from the file into a buffer. The buffer and number of bytes must
    * be specified by the user. The number of read bytes are also returned as an 
@@ -140,6 +141,13 @@ public:
    */
   FileResult Read(u8* buffer, u64 toRead, u64& read);
 
+  /** Read the entire contents of the file into a string.
+   * \brief Read file into string.
+   * \param string String to read file into.
+   * \return Result.
+   */
+  FileResult Read(String& string);
+
   /** Write data from a buffer into the file. The buffer and number of bytes to
    * write must be specified by the user. The number of bytes that was 
    * successfully written is returned to the user in an output parameter.
@@ -149,13 +157,50 @@ public:
    * \param[out] written Number of bytes written.
    * \return Result.
    */
-  FileResult Write(const u8* buffer, u64 toWrite, u64& written);
+  FileResult Write(const u8* buffer, u64 toWrite, u64& written) const;
+
+  /** Write the contents of a string to the file.
+   * \brief Write string.
+   * \param string String to write.
+   * \param written Number of byts written.
+   * \return Result.
+   */
+  FileResult Write(const String& string, u64& written) const;
+
+  /** Flush and buffered writes that has not yet been written to file.
+   * \brief Flush file.
+   * \return Result.
+   */
+  FileResult Flush() const;
+
+  /** Seek to the specified offset in the file.
+   * \brief Seek in file.
+   * \param position Position to seek to.
+   */
+  void Seek(u64 position) const;
+
+  /** Seek to the end of the file.
+   * \brief Seek to end.
+   */
+  void SeekEnd() const;
 
   /** Returns whether or not the handle is currently open.
    * \brief Returns whether handle is open.
    * \return True if the handle is open otherwise false.
    */
   bool IsOpen() const { return mIsOpen; }
+
+  /** Returns the file that this IO object represents.
+   * \brief Returns file.
+   * \return File.
+   */
+  const File& GetFile() const { return mFile; }
+
+  /** Returns the current position of the cursor in the file.
+   * \brief Returns cursor position.
+   * \return Cursor position.
+   */
+  u64 GetCursorPosition() const;
 
 };
 
