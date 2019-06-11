@@ -124,6 +124,8 @@ CreateDirectoryRecursivelyWin32(char16* path)
 
 #if defined(ALFLIB_TARGET_LINUX)
 
+namespace alflib {
+
 /** Convert to FileResult **/
 static FileResult
 FileErrorFromErrno(int error)
@@ -143,6 +145,8 @@ FileErrorFromErrno(int error)
     default:
       return FileResult::kUnknownError;
   }
+}
+
 }
 
 #endif
@@ -264,7 +268,7 @@ File::Delete(bool recursive)
     return FileResult::kSuccess;
   }
   if (GetType() == Type::kDirectory) {
-    
+
   }
 #else
 

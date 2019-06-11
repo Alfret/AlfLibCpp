@@ -117,7 +117,7 @@ Path::GetAbsolutePath() const
   return Path{ "" };
 #else
   char buffer[PATH_MAX];
-  realpath(mPath.GetUTF16().Get(), buffer);
+  realpath(mPath.GetUTF8(), buffer);
   return String(buffer);
 #endif
 }

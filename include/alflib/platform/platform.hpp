@@ -76,5 +76,6 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <fcntl.h>
 
 #endif

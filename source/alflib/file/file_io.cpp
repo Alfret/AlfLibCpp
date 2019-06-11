@@ -58,6 +58,8 @@ FileIOErrorFromErrorWin32(DWORD error)
 
 #if defined(ALFLIB_TARGET_LINUX)
 
+namespace alflib {
+
 /** Convert to FileResult **/
 static FileResult
 FileIOErrorFromErrno(int error)
@@ -77,6 +79,8 @@ FileIOErrorFromErrno(int error)
     default:
       return FileResult::kUnknownError;
   }
+}
+
 }
 
 #endif
@@ -171,6 +175,7 @@ FileIO::Open(Flag flags)
   }
 
   // Determine correct mode
+  const char* mode;
   if (bool(flags & Flag::kAppend)) {
     mode = "a+";
   } else if (bool(flags & Flag::kOverwrite)) {
@@ -180,6 +185,7 @@ FileIO::Open(Flag flags)
   }
 
   // Open handle
+  const auto path = mFile.GetPath().GetPath().GetUTF8();
   mFileHandle = fopen(path, mode);
   if (!mFileHandle) {
     FileResult result = FileIOErrorFromErrno(errno);
@@ -350,7 +356,8 @@ FileIO::GetCursorPosition() const
   seekOffset.QuadPart = 0ull;
   return SetFilePointerEx(mFileHandle, seekOffset, nullptr, FILE_CURRENT);
 #else
-  return static_cast<u64>(ftellg(mFileHandle));
+  //TODO 64 bit
+  return static_cast<u64>(ftell(mFileHandle));
 #endif
 }
 

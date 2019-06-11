@@ -51,13 +51,13 @@ private:
   File mFile;
   /** Whether the file is open **/
   bool mIsOpen = false;
- 
+
 #if defined(ALFLIB_TARGET_WINDOWS)
   /** Handle **/
   HANDLE mFileHandle = INVALID_HANDLE_VALUE;
 #else
   /** Handle **/
-  File* mHandle = nullptr;
+  FILE* mFileHandle = nullptr;
 #endif
 
 
@@ -87,8 +87,8 @@ public:
   ALFLIBCPP_ENUM_CLASS_OPERATORS(friend, Flag, u32);
 
 public:
-  /** Create a file IO handle for performing operations on a file in the 
-   * filesystem. This function does not open the file, instead it only sets up 
+  /** Create a file IO handle for performing operations on a file in the
+   * filesystem. This function does not open the file, instead it only sets up
    * the handle. Call FileIO::Open(FileIO::Flag) to open the file.
    * \brief Create file IO handle.
    * \param[in] file File to create handle for.
@@ -131,7 +131,7 @@ public:
   FileResult Close();
 
   /** Read data from the file into a buffer. The buffer and number of bytes must
-   * be specified by the user. The number of read bytes are also returned as an 
+   * be specified by the user. The number of read bytes are also returned as an
    * output parameter.
    * \brief Read from file.
    * \param[in] buffer Buffer to read into.
@@ -149,7 +149,7 @@ public:
   FileResult Read(String& string);
 
   /** Write data from a buffer into the file. The buffer and number of bytes to
-   * write must be specified by the user. The number of bytes that was 
+   * write must be specified by the user. The number of bytes that was
    * successfully written is returned to the user in an output parameter.
    * \brief Write to file.
    * \param[in] buffer Buffer to write data from.
