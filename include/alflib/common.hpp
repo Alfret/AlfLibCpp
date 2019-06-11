@@ -71,10 +71,6 @@ using f32 = float;
 /** 64-bit floating-point type **/
 using f64 = double;
 
-// TODO(Filip Björklund): Implement custom string
-/** String type **/
-using String = std::string;
-
 // ========================================================================== //
 // Functions
 // ========================================================================== //
