@@ -29,8 +29,14 @@ set(SOURCE_FILES
 	source/alflib/file/file.cpp
 	source/alflib/file/file_io.cpp
 	source/alflib/file/path.cpp
+	source/alflib/platform/os.cpp
 	source/thirdparty/alf_unicode.c
 	)
+
+# Windows files
+#set(SOURCE_FILES ${SOURCE_FILES}
+#  source/alflib/platform/windows.cpp  
+#  )
 
 ## ========================================================================== ##
 ## Output

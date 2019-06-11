@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bjï¿½rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,74 +26,67 @@
 // Headers
 // ========================================================================== //
 
-#include "alflib/file/path.hpp"
-#include <doctest/doctest.h>
+// Project headers
+#include "alflib/platform/platform.hpp"
 
 // ========================================================================== //
-// Tests
+// Windows
+// ========================================================================== //
+
+#if defined(ALFLIB_TARGET_WINDOWS)
+
+namespace alflib {
+
+/** \class SharedLibraries
+ * \author Filip Björklund
+ * \date 10 juni 2019 - 23:31
+ * \brief Windows shared libraries.
+ * \details
+ * Represents a collection of windows shared libraries that are loaded
+ * dynamically the first time they are accessed instead of linking to them at
+ * compile-time.
+ */
+class SharedLibraries
+{
+public:
+  /** Functions from KernelBase.dll **/
+  struct KernelBase
+  {
+    /** PathCchCanonicalizeEx type **/
+    using PFN_PathCchCanonicalizeEx = HRESULT (*)(PWSTR, size_t, PCWSTR, ULONG);
+    /** PathCchCanonicalizeEx function **/
+    PFN_PathCchCanonicalizeEx pPathCchCanonicalizeEx;
+  } mKernelBase;
+
+public:
+
+  /** Returns the collection of dynamically loaded functions from the KernelBase
+   * library.
+   * \brief Returns KernelBase functions.
+   * \return Functions in KernelBase.
+   */
+  static const KernelBase& GetKernelBase() { return Instance().mKernelBase; }
+
+private:
+  /** Construct shared library object by loading all the modules **/
+  SharedLibraries();
+
+  /** Returns singleton instance to shared library object **/
+  static SharedLibraries& Instance();
+
+};
+
+// -------------------------------------------------------------------------- //
+
+
+
+}
+
+#endif
+
+// ========================================================================== //
+// Linux
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
-
-TEST_CASE("[Path] - Create")
-{
-  // Normal cases
-  Path p0(".");
-  CHECK(p0.GetPath() == ".");
-  Path p1("..");
-  CHECK(p1.GetPath() == "..");
-
-  // Trailing separator
-  Path p2("./");
-  CHECK(p2.GetPath() == ".");
-  Path p3("../");
-  CHECK(p3.GetPath() == "..");
-
-  // Wrong separator
-  Path p4("this/is/a/path");
-#if defined(_WIN32)
-  CHECK(p4.GetPath() == "this\\is\\a\\path");
-#else
-  CHECK(p4.GetPath() == "this/is/a/path");
-#endif
-
-  // Mixed separators
-  Path p5("this/is/a\\path");
-  CHECK(p5 == Path("this\\is\\a\\path"));
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[Path] - Join")
-{
-  Path p0("this/is");
-  p0.Join(Path("a/path"));
-  CHECK(p0 == Path{ "this\\is\\a\\path" });
-
-  Path p1("this/is");
-  p1.Join(Path("/a/path"));
-  CHECK(p1 == Path{ "this\\is\\a\\path" });
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[Path] - Components")
-{
-  Path p0("Path/to\\some/file.txt");
-  ArrayList<String> c0 = p0.GetComponents();
-  CHECK(c0.Contains("Path"));
-  CHECK(c0.Contains("to"));
-  CHECK(c0.Contains("some"));
-  CHECK(c0.Contains("file.txt"));
-
-  Path p1("Path/to\\some/file/");
-  ArrayList<String> c1 = p1.GetComponents();
-  CHECK(c1.Contains("Path"));
-  CHECK(c1.Contains("to"));
-  CHECK(c1.Contains("some"));
-  CHECK(c1.Contains("file"));
-}
-
-}
 }

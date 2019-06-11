@@ -28,7 +28,8 @@
 
 // Project headers
 #include "alflib/string.hpp"
-#include "alflib/platform.hpp"
+#include "alflib/platform/platform.hpp"
+#include "alflib/collection/array_list.hpp"
 
 // ========================================================================== //
 // Path Declaration
@@ -45,6 +46,20 @@ namespace alflib {
  */
 class Path
 {
+public:
+  /** Enumeration of known directories **/
+  enum class KnownDirectory
+  {
+    /** User home directory **/
+    kHome,
+    /** Desktop directory **/
+    kDesktop,
+    /** Documents directory **/
+    kDocuments,
+    /** Downloads directory **/
+    kDownloads
+  };
+
 public:
   /** Path (relative) to current directory **/
   static const String CURRENT;
@@ -73,14 +88,24 @@ public:
    */
   Path(const String& path = CURRENT);
 
-  /** Join another path at the end of this path.
+  /** Join another path at the end of this path. This correctly insert a 
+   * separator between the path components.
    * \brief Join with another path.
    * \param other Path to join.
    * \return Reference to this.
    */
   Path& Join(const Path& other);
 
-  /** Returns the join of this path with another path.
+  /** Join another path at the end of this path. This correctly insert a 
+   * separator between the path components.
+   * \brief Join with another path.
+   * \param other Path to join.
+   * \return Reference to this.
+   */
+  Path& operator+=(const Path& other);
+
+  /** Returns the join of this path with another path. This correctly insert a 
+   * separator between the path components.
    * \brief Returns joined path.
    * \param other Path to join with.
    * \return Joined paths.
@@ -92,6 +117,21 @@ public:
    * \return Path string.
    */
   const String& GetPath() const { return mPath; }
+
+  /** Returns the path as an absolute path. This function also resolves any '.' 
+   * (current directory) and '..' (parent directory) components that may be part
+   * of the path. For this reason this function may be costly and should not be
+   * called when the absolute path is not actually needed.
+   * \brief Returns absolute resolved path.
+   * \return Absolute and resolved path.
+   */
+  Path GetAbsolutePath() const;
+
+  /** Returns each of the path components that make up the path.
+   * \brief Returns path components.
+   * \return Path components.
+   */
+  ArrayList<String> GetComponents();
 
   /** Returns whether or not two paths are equal.
    * \brief Returns whether paths are equal.
@@ -109,10 +149,32 @@ public:
    */
   friend bool operator!=(const Path& path0, const Path& path1);
 
+  /** Returns two paths joined together.
+   * \brief Returns joined paths.
+   * \param path0 First path.
+   * \param path1 Second path.
+   * \return Joined paths.
+   */
+  friend Path operator+(const Path& path0, const Path& path1);
+
+  /** Returns two paths joined together, the second created from a string.
+   * \brief Returns joined paths.
+   * \param path0 First path.
+   * \param path1 Second path.
+   * \return Joined paths.
+   */
+  friend Path operator+(const Path& path0, const String& path1);
+
 private:
   /** This function sets up the separators in the path to be the correct for 
    * the OS **/
   void FixSeparators();
+
+public:
+  /** Returns the path to a known directory of the specified type.
+   * \brief Returns known directory path.
+   */
+  static Path GetKnownDirectory(KnownDirectory directory);
 
 };
 

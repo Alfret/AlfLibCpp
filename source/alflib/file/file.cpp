@@ -43,7 +43,7 @@ File::File(const String& path)
 // -------------------------------------------------------------------------- //
 
 File
-File::Open(const Path& path)
+File::Open(const Path& path) const
 {
   return File { mPath.Joined(path) };
 }
@@ -51,7 +51,7 @@ File::Open(const Path& path)
 // -------------------------------------------------------------------------- //
 
 File
-File::Open(const String& path)
+File::Open(const String& path) const
 {
   return File{ mPath.Joined(path) };
 }

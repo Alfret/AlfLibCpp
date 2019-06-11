@@ -23,6 +23,14 @@
 #include "alflib/file/path.hpp"
 
 // ========================================================================== //
+// Headers
+// ========================================================================== //
+
+// Standard headers
+#include <cstdlib>
+#include "alflib/platform/os.hpp"
+
+// ========================================================================== //
 // Path Implementation
 // ========================================================================== //
 
@@ -69,12 +77,68 @@ Path::Join(const Path& other)
 
 // -------------------------------------------------------------------------- //
 
+Path&
+Path::operator+=(const Path& other)
+{
+  return Join(other);
+}
+
+// -------------------------------------------------------------------------- //
+
 Path
 Path::Joined(const Path& other) const
 {
   Path path = *this;
   path.Join(other);
   return path;
+}
+
+// -------------------------------------------------------------------------- //
+
+Path
+Path::GetAbsolutePath() const
+{
+#if defined(ALFLIB_TARGET_WINDOWS)
+  // Retrieve absolute path
+  char16 buffer[MAX_PATH];
+  const DWORD length =
+    GetFullPathNameW(mPath.GetUTF16().Get(), MAX_PATH, buffer, nullptr);
+  if (length != 0) {
+    // Canonicalize path
+    char16 _buffer[MAX_PATH];
+    // TODO(Filip Björklund): Handle case where function is not available
+    const HRESULT result =
+      SharedLibraries::GetKernelBase().pPathCchCanonicalizeEx(
+        _buffer, MAX_PATH, buffer, PATHCCH_NONE);
+    if (SUCCEEDED(result)) {
+      return String(_buffer);
+    }
+  }
+  return Path{ "" };
+#else
+  char buffer[PATH_MAX];
+  realpath(mPath.GetUTF16().Get(), buffer);
+  return String(buffer);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+ArrayList<String>
+Path::GetComponents()
+{
+  ArrayList<String> components;
+
+  // Find components
+  u32 prevIndex = 0;
+  mPath.ForEach([&](u32 codepoint, u32 index) {
+    if (codepoint == '/' || codepoint == '\\') {
+      components.Append(mPath.Substring(prevIndex, index - prevIndex));
+      prevIndex = index + 1;
+    }
+  });
+  components.Append(mPath.Substring(prevIndex));
+  return components;
 }
 
 // -------------------------------------------------------------------------- //
@@ -95,6 +159,22 @@ operator!=(const Path& path0, const Path& path1)
 
 // -------------------------------------------------------------------------- //
 
+Path
+operator+(const Path& path0, const Path& path1)
+{
+  return path0.Joined(path1);
+}
+
+// -------------------------------------------------------------------------- //
+
+Path
+operator+(const Path& path0, const String& path1)
+{
+  return path0.Joined(Path{ path1 });
+}
+
+// -------------------------------------------------------------------------- //
+
 void
 Path::FixSeparators()
 {
@@ -103,6 +183,64 @@ Path::FixSeparators()
 #else
   mPath.Replace("\\", "/");
 #endif
+}
+
+// -------------------------------------------------------------------------- //
+
+Path
+Path::GetKnownDirectory(KnownDirectory directory)
+{
+#if defined(ALFLIB_TARGET_WINDOWS)
+  if (directory == KnownDirectory::kHome) {
+    char16* buffer;
+    HRESULT hresult =
+      SHGetKnownFolderPath(FOLDERID_Profile, KF_FLAG_DEFAULT, nullptr, &buffer);
+    String output(buffer);
+    CoTaskMemFree(buffer);
+    return output;
+  }
+  if (directory == KnownDirectory::kDesktop) {
+    char16* buffer;
+    HRESULT hresult =
+      SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_DEFAULT, nullptr, &buffer);
+    String output(buffer);
+    CoTaskMemFree(buffer);
+    return output;
+  }
+  if (directory == KnownDirectory::kDocuments) {
+    char16* buffer;
+    HRESULT hresult = SHGetKnownFolderPath(
+      FOLDERID_Documents, KF_FLAG_DEFAULT, nullptr, &buffer);
+    String output(buffer);
+    CoTaskMemFree(buffer);
+    return output;
+  }
+  if (directory == KnownDirectory::kDownloads) {
+    char16* buffer;
+    HRESULT hresult = SHGetKnownFolderPath(
+      FOLDERID_Downloads, KF_FLAG_DEFAULT, nullptr, &buffer);
+    String output(buffer);
+    CoTaskMemFree(buffer);
+    return output;
+  }
+#else
+  if (directory == KnownDirectory::kHome) {
+    struct passwd* pw = getpwuid(getuid());
+    return String{ pw->pw_dir };
+  }
+  if (directory == KnownDirectory::kDesktop) {
+    char* path = std::getenv("XDG_DESKTOP_DIR");
+  }
+  if (directory == KnownDirectory::kDocuments) {
+    char* path = std::getenv("XDG_DOCUMENTS_DIR");
+
+  }
+  if (directory == KnownDirectory::kDownloads) {
+    char* path = std::getenv("XDG_DOWNLOAD_DIR");
+
+  }
+#endif
+  return Path{ "" };
 }
 
 

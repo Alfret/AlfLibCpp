@@ -30,7 +30,7 @@
 #include "alflib/common.hpp"
 #include "alflib/file/path.hpp"
 #include "alflib/collection/array_list.hpp"
-#include "alflib/platform.hpp"
+#include "alflib/platform/platform.hpp"
 
 // ========================================================================== //
 // File Declaration
@@ -43,7 +43,13 @@ namespace alflib {
  * \date 07 juni 2019 - 20:31
  * \brief File handle.
  * \details
- *
+ * Handle to a file system object. This can represent files, directories, 
+ * archives and non-existing objects.
+ * 
+ * When a file represents a read file it can be operated on by creating a FileIO
+ * object.
+ * 
+ * When the file represents a directory or an archive it can be enumerated.
  */
 class File
 {
@@ -101,13 +107,13 @@ public:
    * \brief Open relative file.
    * \return File.
    */
-  File Open(const Path& path);
+  File Open(const Path& path) const;
  
   /** Open a file relative to the current file.
    * \brief Open relative file.
    * \return File.
    */
-  File Open(const String& path);
+  File Open(const String& path) const;
 
   /** Returns whether there exists a file system object at the path of this 
    * file.

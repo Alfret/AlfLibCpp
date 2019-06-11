@@ -20,57 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "alflib/platform/os.hpp"
 
 // ========================================================================== //
-// Platform Detection
-// ========================================================================== //
-
-
-#if defined(_WIN32)
-/** Microsoft Windows target platform **/
-#define ALFLIB_TARGET_WINDOWS
-#elif defined(__linux__) && !defined(__ANDROID__)
-/** Linux target platform **/
-#define ALFLIB_TARGET_LINUX
-#elif defined(__APPLE__)
-#include <TargetConditionals.h>
-#if TARGET_IPHONE_SIMULATOR
-/** Apple iOS simulator target platform **/
-#define ALFLIB_TARGET_IOS_SIMULATOR
-#elif TARGET_OS_IPHONE
-/** Apple iOS target platform **/
-#define ALFLIB_TARGET_IOS
-#elif TARGET_OS_MAC
-/** Apple MacOS target platform **/
-#define ALFLIB_TARGET_MACOS
-#else
-#error "Unknown Apple OS"
-#endif
-#elif defined(__ANDROID__)
-#define ALFLIB_TARGET_ANDROID
-#endif
-// ========================================================================== //
-// Windows Headers
+// Windows Functions
 // ========================================================================== //
 
 #if defined(ALFLIB_TARGET_WINDOWS)
 
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+namespace alflib {
 
-#endif // defined(ALFLIB_TARGET_WINDOWS)
+SharedLibraries::SharedLibraries()
+  : mKernelBase({})
+{
+  // Load KernelBase.dll
+  const HMODULE module = LoadLibraryW(L"KernelBase.dll");
+  if (module) {
+    mKernelBase.pPathCchCanonicalizeEx =
+      (KernelBase::PFN_PathCchCanonicalizeEx)GetProcAddress(
+        module, "PathCchCanonicalizeEx");
+    FreeLibrary(module);
+  }
+}
 
-// ========================================================================== //
-// Linux Headers
-// ========================================================================== //
+// -------------------------------------------------------------------------- //
 
-#if defined(ALFLIB_TARGET_LINUX)
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
+SharedLibraries&
+SharedLibraries::Instance()
+{
+  static SharedLibraries instance;
+  return instance;
+}
+}
 
 #endif
