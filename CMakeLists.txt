@@ -1,17 +1,19 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(alflibcpp)
 
 ## ========================================================================== ##
 ## Options and Flags
 ## ========================================================================== ##
 
-# Specify options
+# CMake options
 option(ALFLIBCPP_BUILD_SAMPLES "Build sample program" OFF)
-option(ALFLIBCPP_BUILD_TESTS "Build tests" ON) 
+option(ALFLIBCPP_BUILD_TESTS "Build tests" OFF) 
 
-# Specify flags
+# Language standard
 set(CMAKE_CXX_STANDARD 14)
-if (WIN32)
+
+# Compiler flags flags
+if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
@@ -22,35 +24,32 @@ endif ()
 ## ========================================================================== ##
 
 # Specify source files
-set(SOURCE_FILES 
+set(SOURCE_FILES
 	source/alflib/allocator.cpp
 	source/alflib/assert.cpp
 	source/alflib/string.cpp
+	source/alflib/file/archive.cpp
 	source/alflib/file/file.cpp
 	source/alflib/file/file_io.cpp
 	source/alflib/file/path.cpp
 	source/alflib/platform/os.cpp
 	source/thirdparty/alf_unicode.c
-	source/thirdparty/miniz.c
+	source/thirdparty/miniz/miniz.c
+	source/thirdparty/microtar/microtar.c
 	)
-
-# Windows files
-#set(SOURCE_FILES ${SOURCE_FILES}
-#  source/alflib/platform/windows.cpp  
-#  )
 
 ## ========================================================================== ##
 ## Output
 ## ========================================================================== ##
 
-# fmt formatting library
+# Add fmt formatting library
 add_subdirectory(external/fmt)
 
-# Specify library to create
+# Library to create
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 # Libraries to link with
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} fmt)
 
 ## ========================================================================== ##
 ## Headers
@@ -60,6 +59,8 @@ target_link_libraries(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC
   include
   include/thirdparty
+  include/thirdparty/miniz
+  include/thirdparty/microtar
   external/fmt/include
   )
 
@@ -69,19 +70,19 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 # Debug macro
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ALFLIBCPP_DEBUG)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ALFLIB_DEBUG)
 endif ()
 
 ## ========================================================================== ##
 ## Other
 ## ========================================================================== ##
 
-# Add samples subdirectory if samples are to be built
+# Add samples subdirectory
 if (ALFLIBCPP_BUILD_SAMPLES)
   add_subdirectory(samples)
 endif()
 
-# Add tests subdirectory if tests are to be built
+# Add tests subdirectory
 if (ALFLIBCPP_BUILD_TESTS)
   add_subdirectory(tests)
 endif ()

@@ -12,6 +12,7 @@ add_subdirectory(external/doctest)
 add_executable(test 
   main.cpp 
   test_allocator.cpp 
+  test_archive.cpp
   test_array_list.cpp 
   test_file.cpp
   test_path.cpp
@@ -23,11 +24,3 @@ target_include_directories(test PUBLIC
   ../include
   external/doctest
   )
- 
-# Set the working directory for the VS debugger
-if (WIN32)
-set_target_properties(
-    ${PROJECT_NAME} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-#set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-endif()

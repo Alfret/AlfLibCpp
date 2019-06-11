@@ -89,8 +89,12 @@ IsPowerOfTwo(u64 value)
 inline u64
 AlignPowerOfTwo(u64 base, u32 alignment)
 {
-  AlfAssert(IsPowerOfTwo(alignment), "Alignment must be a power of two");
-  return (base + (alignment - 1)) & -alignment;
+#pragma warning(push)
+#pragma warning(disable : 4146)
+  AlfAssert(alignment > 0 && IsPowerOfTwo(alignment),
+            "Alignment must be a power of two");
+  return (base + alignment - 1) & -alignment;
+#pragma warning(pop)
 }
 
 

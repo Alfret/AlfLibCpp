@@ -67,12 +67,17 @@ public:
     kNone,
     /** Unknown extension **/
     kUnknown,
+
     /** Text file **/
     kTxt,
+
     /** PNG image file **/
     kPng,
+
+    /** Tar archive **/
+    kTar,
     /** Zip archive **/
-    kZip,
+    kZip
   };
 
 public:

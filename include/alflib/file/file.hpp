@@ -175,7 +175,9 @@ public:
    */
   const Path& GetPath() const { return mPath; }
 
-  /** Returns the type of the file.
+  /** Returns the type of the file. It's important that archive files have the 
+   * correct file extensions to make sure that the types are correctly 
+   * determined on all platforms.
    * \brief Returns file type.
    * \return Type of the file.
    */

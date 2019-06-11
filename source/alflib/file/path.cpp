@@ -172,6 +172,9 @@ Path::GetExtension() const
   if (extensionString == ".png") {
     return Extension::kPng;
   }
+  if (extensionString == ".tar") {
+    return Extension::kTar;
+  }
   if (extensionString == ".zip") {
     return Extension::kZip;
   }

@@ -27,17 +27,17 @@
 // ========================================================================== //
 
 /** Macro for forward-declaring a simple class **/
-#define ALFLIBCPP_FORWARD_DECLARE_CLASS(cls) class cls;
+#define ALFLIB_FORWARD_DECLARE_CLASS(cls) class cls;
 
 // -------------------------------------------------------------------------- //
 
 /** Macro for forward-declaring a simple class **/
-#define ALFLIBCPP_FORWARD_DECLARE_ENUM_CLASS(cls, type) enum class cls : type;
+#define ALFLIB_FORWARD_DECLARE_ENUM_CLASS(cls, type) enum class cls : type;
 
 // -------------------------------------------------------------------------- //
 
 /** Macro for generating operators for an enum class **/
-#define ALFLIBCPP_ENUM_CLASS_OPERATORS(prefix, type, underlying_type)          \
+#define ALFLIB_ENUM_CLASS_OPERATORS(prefix, type, underlying_type)          \
   prefix type operator|(type lhs, type rhs)                                    \
   {                                                                            \
     return static_cast<type>(static_cast<underlying_type>(lhs) |               \
@@ -52,13 +52,13 @@
 // -------------------------------------------------------------------------- //
 
 /** Macro for declaring a class non-copyable **/
-#define ALFLIBCPP_CLASS_NON_COPYABLE(type)                                     \
+#define ALFLIB_CLASS_NON_COPYABLE(type)                                     \
   type(const type&) = delete;                                                  \
   type& operator=(const type&) = delete;
 
 // -------------------------------------------------------------------------- //
 
 /** Macro for declaring a class default-movable **/
-#define ALFLIBCPP_CLASS_DEFAULT_MOVABLE(type)                                  \
+#define ALFLIB_CLASS_DEFAULT_MOVABLE(type)                                  \
   type(type&&) = default;                                                      \
   type& operator=(type&&) = default;

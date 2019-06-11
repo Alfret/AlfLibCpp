@@ -262,12 +262,13 @@ FileResult
 FileIO::Read(String& string)
 {
   const u64 size = mFile.GetSize();
-  string.Resize(size);
+  char8* buffer = DefaultAllocator::Instance().NewArray<char8>(size + 1);
+  buffer[size] = 0;
   u64 read;
-  const FileResult result =
-    Read(reinterpret_cast<u8*>(string.GetData()), size, read);
-  string.RecalculateLength();
-  return result;
+  const FileResult result = Read(reinterpret_cast<u8*>(buffer), size, read);
+  string = String(buffer);
+  DefaultAllocator::Instance().Free(buffer);
+  return FileResult::kSuccess;
 }
 
 // -------------------------------------------------------------------------- //
@@ -299,7 +300,7 @@ FileResult
 FileIO::Write(const String& string, u64& written) const
 {
   return Write(
-    reinterpret_cast<const u8*>(string.GetData()), string.GetSize(), written);
+    reinterpret_cast<const u8*>(string.GetUTF8()), string.GetSize(), written);
 }
 
 // -------------------------------------------------------------------------- //

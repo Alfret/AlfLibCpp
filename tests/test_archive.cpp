@@ -20,13 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
+// Library headers
 #include <doctest/doctest.h>
+
+// Project headers
+#include "alflib/file/file.hpp"
+#include "alflib/file/archive.hpp"
 
 // ========================================================================== //
 // Tests
@@ -35,62 +38,31 @@
 namespace alflib {
 namespace tests {
 
-TEST_CASE("[String] - Create")
+TEST_CASE("[Archive] - Open")
 {
-  
+  // Tar Archive
+  Archive a1(Path{ "../../tests/res/taping.tar" });
+  FileResult result = a1.Open();
+  CHECK(result == FileResult::kSuccess);
+  if (result == FileResult::kSuccess) {
+    ArrayList<File> files = a1.Enumerate();
+    CHECK(files.Contains(File{ "inside_tar.txt" }));
+    CHECK(files.Contains(File{ "also_in_tar.txt" }));
+    CHECK(files.Contains(File{ "tar_img.png" }));
+  }
+
+
+  // Zip Archive
+  Archive a2(Path{ "../../tests/res/an_archive.zip" });
+  result = a2.Open();
+  CHECK(result == FileResult::kSuccess);
+  if (result == FileResult::kSuccess) {
+    ArrayList<File> files = a2.Enumerate();
+    CHECK(files.Contains(File{ "file_inside.txt" }));
+    CHECK(files.Contains(File{ "some_other.txt" }));
+  }  
+
 }
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - Find")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - IndexOf/LastIndexOf")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - StartsWith/EndsWith")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - Replace")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - Remove")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - Substring")
-{
-  
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[String] - ForEach")
-{
-  
-}
-
-
-
 
 }
 }

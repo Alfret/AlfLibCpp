@@ -27,7 +27,10 @@
 // ========================================================================== //
 
 // Library headers
-#include "thirdparty/miniz.h"
+#include "thirdparty/miniz/miniz.h"
+
+// Project headers
+#include "alflib/file/archive.hpp"
 
 // ========================================================================== //
 // Windows
@@ -358,18 +361,10 @@ File::Enumerate() const
 
   // Handle archives
   if (GetType() == Type::kArchive) {
-    mz_zip_archive archive{};
-    mz_bool success =
-      mz_zip_reader_init_file(&archive, mPath.GetPath().GetUTF8(), 0);
-    if (success) {
-      const mz_uint count = mz_zip_reader_get_num_files(&archive);
-      for (mz_uint i = 0; i < count; i++) {
-        mz_zip_archive_file_stat stats;
-        success = mz_zip_reader_file_stat(&archive, i, &stats);
-        if (success) {
-          files.AppendEmplace(stats.m_filename);
-        }
-      }
+    Archive archive(*this);
+    FileResult result = archive.Open();
+    if (result == FileResult::kSuccess) {
+      files = archive.Enumerate();
     }
   }
 
@@ -382,8 +377,15 @@ File::Enumerate() const
 File::Type
 File::GetType() const
 {
+  // Only existing files has a type
   if (!Exists()) {
     return Type::kInvalid;
+  }
+
+  // If the extension is of a known archive type then return archive
+  if (mPath.GetExtension() == Path::Extension::kTar ||
+      mPath.GetExtension() == Path::Extension::kZip) {
+    return Type::kArchive;
   }
 
 #if defined(ALFLIB_TARGET_WINDOWS)
@@ -391,8 +393,7 @@ File::GetType() const
     return Type::kDirectory;
   }
   if (mFileAttributes.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) {
-    // TODO(Filip Björklund): In documentation this looks incorrect. However it
-    // does work
+    // TODO(Filip Björklund): In documentation this looks incorrect. However it does work
     return Type::kArchive;
   }
   return Type::kFile;

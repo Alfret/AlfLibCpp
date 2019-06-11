@@ -84,7 +84,7 @@ public:
     /** Open file with cursor at the end for appending **/
     kAppend = Bit(6)
   };
-  ALFLIBCPP_ENUM_CLASS_OPERATORS(friend, Flag, u32);
+  ALFLIB_ENUM_CLASS_OPERATORS(friend, Flag, u32);
 
 public:
   /** Create a file IO handle for performing operations on a file in the
