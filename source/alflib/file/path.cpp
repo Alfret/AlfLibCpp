@@ -147,13 +147,7 @@ String
 Path::GetName() const
 {
   const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
-  const s64 dotIndex = mPath.LastIndexOf('.');
-  if (dotIndex == -1) {
-    return mPath.Substring(sepIndex + 1);
-  }
-  // TODO
-  AlfAssert((dotIndex - sepIndex) >= 0, "bad");
-  return mPath.Substring(sepIndex + 1, dotIndex - sepIndex);
+  return mPath.Substring(sepIndex + 1);
 }
 
 // -------------------------------------------------------------------------- //
