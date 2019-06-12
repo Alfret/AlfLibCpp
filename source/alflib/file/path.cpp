@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -106,7 +106,7 @@ Path::GetAbsolutePath() const
   if (length != 0) {
     // Canonicalize path
     char16 _buffer[MAX_PATH];
-    // TODO(Filip Björklund): Handle case where function is not available
+    // TODO(Filip Bjï¿½rklund): Handle case where function is not available
     const HRESULT result =
       SharedLibraries::GetKernelBase().pPathCchCanonicalizeEx(
         _buffer, MAX_PATH, buffer, PATHCCH_NONE);
@@ -148,13 +148,12 @@ Path::GetName() const
 {
   const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
   const s64 dotIndex = mPath.LastIndexOf('.');
-  if (sepIndex == -1) {
-    return "";
-  }
   if (dotIndex == -1) {
-    return mPath.Substring(sepIndex);
+    return mPath.Substring(sepIndex + 1);
   }
-  return mPath.Substring(sepIndex, dotIndex - sepIndex);
+  // TODO
+  AlfAssert((dotIndex - sepIndex) >= 0, "bad");
+  return mPath.Substring(sepIndex + 1, dotIndex - sepIndex);
 }
 
 // -------------------------------------------------------------------------- //
