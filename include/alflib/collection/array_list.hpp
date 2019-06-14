@@ -51,6 +51,10 @@ class ArrayList
 public:
   /** Type of the size and index data **/
   using SizeType = u64;
+  /** Pointer type **/
+  using PointerType = T*;
+  /** Reference type **/
+  using ReferenceType = T&;
 
   /** Default array-list capacity **/
   static constexpr SizeType DEFAULT_CAPACITY = 10;
@@ -58,6 +62,35 @@ public:
   static constexpr SizeType OBJECT_SIZE = sizeof(T);
   /** Factor of resize **/
   static constexpr SizeType RESIZE_FACTOR = 2;
+
+public:
+  /** Array-list iterator **/
+  class Iterator
+  {
+  private:
+    /** Pointer to data**/
+    PointerType mPointer;
+
+  public:
+    /** Construct iterator **/
+    Iterator(PointerType pointer);
+
+    /** Next element **/
+    void operator++();
+
+    /** Previous element **/
+    void operator--();
+
+    /** Check inequality **/
+    bool operator!=(const Iterator& other);
+
+    /** Retrieve reference **/
+    ReferenceType operator*();
+
+    /** Retrieve pointer **/
+    PointerType operator->();
+
+  };
 
 private:
   /** Data buffer**/
@@ -135,8 +168,8 @@ public:
    */
   void Prepend(T&& object);
 
-  /** Prepend an object to the beginning of the list. The object is created 
-   * in-place in the list from the specified arguments forwarded to its 
+  /** Prepend an object to the beginning of the list. The object is created
+   * in-place in the list from the specified arguments forwarded to its
    * constructor.
    * \brief Prepend object.
    * \tparam ARGS Types of arguments to object constructor.
@@ -165,14 +198,14 @@ public:
 
   /** Resize the list to the specified size. This is useful if the user is using
    * the index operator to access objects instead of inserting them.
-   * \note If the size is less than the current size then any objects outside 
+   * \note If the size is less than the current size then any objects outside
    * the new range (0 - size) will be destructed.
    * \brief Resize list.
    * \param size Size to resize to.
    */
   void Resize(SizeType size);
 
-  /** Reserve capacity in the list for the specified number of objects. If the 
+  /** Reserve capacity in the list for the specified number of objects. If the
    * capacity of the list is already greater than the new capacity then nothing
    * will happen.
    * \brief Reserve capacity.
@@ -180,14 +213,14 @@ public:
    */
   void Reserve(SizeType capacity);
 
-  /** Shrink the capacity of the list to that specified. If the capacity is 
+  /** Shrink the capacity of the list to that specified. If the capacity is
    * already less than the one to shrink to nothing will happen.
    * \brief Shrink capacity.
    * \param capacity Capacity to shrink to.
    */
   void Shrink(SizeType capacity);
 
-  /** Shrink the capacity of the list to exactly fit all the objects currently 
+  /** Shrink the capacity of the list to exactly fit all the objects currently
    * in the list.
    * \brief Shrink to fit.
    */
@@ -232,6 +265,24 @@ public:
    */
   const T& operator[](SizeType index) const;
 
+  /** Returns the iterator to the beginning of the list.
+   * \brief Returns beginning iterator.
+   * \return Begin iterator.
+   */
+  Iterator Begin() { return Iterator(mBuffer); }
+
+  /** \copydoc ArrayList::Begin **/
+  Iterator begin() { return Begin(); }
+
+  /** Returns the iterator to the end of the list.
+   * \brief Returns ending iterator.
+   * \return End iterator.
+   */
+  Iterator End() { return Iterator(mBuffer + mSize); }
+
+  /** \copydoc ArrayList::End **/
+  Iterator end() { return End(); }
+
   /** Returns the capacity of the list.
    * \brief Returns capacity.
    * \return Capacity.
@@ -245,11 +296,62 @@ public:
   SizeType GetSize() const { return mSize; }
 
 private:
-  /** Check that the capacity is enough to add an object. If it's not then 
+  /** Check that the capacity is enough to add an object. If it's not then
    * resize **/
   void CheckCapacityToAdd();
-
 };
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+ArrayList<T>::Iterator::Iterator(PointerType pointer) 
+  : mPointer(pointer)
+{}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+void
+ArrayList<T>::Iterator::operator++()
+{
+  ++mPointer;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+void
+ArrayList<T>::Iterator::operator--()
+{
+  --mPointer;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+bool
+ArrayList<T>::Iterator::operator!=(const Iterator& other)
+{
+  return mPointer != other.mPointer;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+typename ArrayList<T>::ReferenceType
+ArrayList<T>::Iterator::operator*()
+{
+  return *mPointer;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+typename ArrayList<T>::PointerType
+ArrayList<T>::Iterator::operator->()
+{
+  return mPointer;
+}
 
 // -------------------------------------------------------------------------- //
 
@@ -275,7 +377,7 @@ ArrayList<T>::ArrayList(std::initializer_list<T> initializerList,
 {
   mBuffer =
     static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));
-  for (T& element : initializerList) {
+  for (const T& element : initializerList) {
     new (mBuffer + (mSize++)) T{ element };
   }
 }

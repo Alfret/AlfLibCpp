@@ -172,9 +172,31 @@ String::LastIndexOf(u32 codepoint) const
 // -------------------------------------------------------------------------- //
 
 bool
+String::StartsWith(const String& string) const
+{
+  if (GetSize() < string.GetSize()) {
+    return false;
+  }
+  return 0 == memcmp(GetUTF8(), string.GetUTF8(), string.GetSize());
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
 String::StartsWith(u32 codepoint) const
 {
   return mLength > 0 && At(0) == codepoint;
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
+String::EndsWith(const String& string) const
+{
+  if (GetSize() < string.GetSize()) {
+    return false;
+  }
+  return 0 == memcmp(GetUTF8() + GetSize() - string.GetSize(), string.GetUTF8(), string.GetSize());
 }
 
 // -------------------------------------------------------------------------- //
@@ -234,19 +256,10 @@ String::Remove(u32 codepoint)
 // -------------------------------------------------------------------------- //
 
 String
-String::Substring(u64 from, u64 count) const
+String::Substring(u64 from, s64 count) const
 {
-  // TODO(Filip Björklund): Fix alf_unicode to allow no allocation to be done.
-  // TODO(Filip Björklund): Or use simpler functions to build substring.
-
   // Retrieve substring
-  char8* substring;
-  if (count == -1) {
-    substring = alfUTF8SubstringFrom(GetUTF8(), from);
-  } else {
-    substring = alfUTF8Substring(GetUTF8(), from, count);  
-  }
-
+  char8* substring = alfUTF8Substring(GetUTF8(), from, count);  
   String output(substring);
   free(substring);
   return output;

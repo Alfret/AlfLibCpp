@@ -318,7 +318,7 @@ File::Exists() const
 // -------------------------------------------------------------------------- //
 
 ArrayList<File>
-File::Enumerate() const
+File::Enumerate(bool includeSpecial) const
 {
   // Assert preconditions
   AlfAssert(GetType() == Type::kDirectory || GetType() == Type::kArchive,
@@ -328,6 +328,11 @@ File::Enumerate() const
   ArrayList<File> files;
 
 #if defined(ALFLIB_TARGET_WINDOWS)
+  // Add special directories if they should be included
+  if (includeSpecial) {
+    files.AppendEmplace(".");
+    files.AppendEmplace("..");
+  }
 
   // Enumerate and add files to list from directory
   if (GetType() == Type::kDirectory) {
@@ -341,18 +346,31 @@ File::Enumerate() const
                                                0);
     if (findHandle != INVALID_HANDLE_VALUE) {
       do {
-        files.AppendEmplace(findData.cFileName);
+        String filePath(findData.cFileName);
+        if (filePath != "." || filePath != "..") {
+          files.AppendEmplace(filePath);
+        }
       } while (FindNextFileW(findHandle, &findData));
     }
     FindClose(findHandle);
   }
 #else
+  // Add special directories if they should be included
+  if (includeSpecial) {
+    files.AppendEmplace(".");
+    files.AppendEmplace("..");
+  }
+
+  // Enumerate directory entries
   if (GetType() == Type::kDirectory) {
     DIR* directory = opendir(mPath.GetPath().GetUTF8());
     if (directory) {
       struct dirent* entry;
       while ((entry = readdir(directory)) != nullptr) {
-        files.AppendEmplace(entry->d_name);
+        String filePath(entry->d_name);
+        if (filePath != "." || filePath != "..") {
+          files.AppendEmplace(filePath);
+        }
       }
       closedir(directory);
     }

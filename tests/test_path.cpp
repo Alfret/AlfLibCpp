@@ -97,40 +97,65 @@ TEST_CASE("[Path] - Components")
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Path] - Name")
+TEST_CASE("[Path] - GetName")
 {
-  
-
-
+  CHECK(Path{ "file.txt" }.GetName() == "file.txt");
+  CHECK(Path{ "file" }.GetName() == "file");
+  CHECK(Path{ "path/to/file.txt" }.GetName() == "file.txt");
+  CHECK(Path{ "path/to/.hidden/file.txt" }.GetName() == "file.txt");
+  CHECK(Path{ "path/to/.hidden/file" }.GetName() == "file");
+  CHECK(Path{ "path/to/my.dir/file.txt" }.GetName() == "file.txt");
+  CHECK(Path{ "path/to/my.dir/file" }.GetName() == "file");
 }
-
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Path] - Extension")
+TEST_CASE("[Path] - GetBaseName")
+{
+  CHECK(Path{ "file.txt" }.GetBaseName() == "file");
+  CHECK(Path{ "file" }.GetBaseName() == "file");
+  CHECK(Path{ "path/to/file.txt" }.GetBaseName() == "file");
+  CHECK(Path{ "path/to/.hidden/file.txt" }.GetBaseName() == "file");
+  CHECK(Path{ "path/to/.hidden/file" }.GetBaseName() == "file");
+  CHECK(Path{ "path/to/my.dir/file.txt" }.GetBaseName() == "file");
+  CHECK(Path{ "path/to/my.dir/file" }.GetBaseName() == "file");
+}
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - GetExtensionString")
 {
   // Normal cases
-  const Path p0("file.txt");
-  CHECK(p0.GetExtensionString() == ".txt");
-  const Path p1("path/to/some.txt");
-  CHECK(p1.GetExtensionString() == ".txt");
-  const Path p2("path/to/file");
-  CHECK(p2.GetExtensionString() == "");
+  CHECK(Path{ "file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "image.png" }.GetExtensionString() == ".png");
+  CHECK(Path{ "file." }.GetExtensionString() == "");
+  CHECK(Path{ "path/to/file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "path/to/archive.tar" }.GetExtensionString() == ".tar");
+  CHECK(Path{ "path/to/.hidden/file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "path/to/.hidden/file" }.GetExtensionString() == "");
 
   // Normal cases type
+  CHECK(Path{ "file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "image.png" }.GetExtensionString() == ".png");
+  CHECK(Path{ "file." }.GetExtensionString() == "");
+  CHECK(Path{ "path/to/file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "path/to/archive.tar" }.GetExtensionString() == ".tar");
+  CHECK(Path{ "path/to/.hidden/file.txt" }.GetExtensionString() == ".txt");
+  CHECK(Path{ "path/to/.hidden/file" }.GetExtensionString() == "");
+}
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - GetExtension")
+{
+
   const Path p3("file.txt");
   CHECK(p3.GetExtension() == Path::Extension::kTxt);
   const Path p4("path/to/some.txt");
   CHECK(p4.GetExtension() == Path::Extension::kTxt);
   const Path p5("path/to/file");
   CHECK(p5.GetExtension() == Path::Extension::kNone);
-
-
-
 }
-
-
-
 
 }
 }

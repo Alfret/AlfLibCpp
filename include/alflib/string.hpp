@@ -130,6 +130,13 @@ public:
    */
   s64 LastIndexOf(u32 codepoint) const;
 
+  /** Returns whether or not the string begins with the specified other string.
+   * \brief Returns whether string begins with other string.
+   * \param string String to check if this string begins with.
+   * \return True if this string begins with the other string.
+   */
+  bool StartsWith(const String& string) const;
+
   /** Returns whether or not the string begins with the specified codepoint.
    * \brief Returns whether string begins with codepoint.
    * \param codepoint Codepoint to check if string begins with.
@@ -137,6 +144,13 @@ public:
    * false.
    */
   bool StartsWith(u32 codepoint) const;
+  
+  /** Returns whether or not the string ends with the specified other string.
+   * \brief Returns whether string ends with other string.
+   * \param string String to check if this string ends with.
+   * \return True if this string ends with the other string.
+   */
+  bool EndsWith(const String& string) const;
 
   /** Returns whether or not the string ends with the specified codepoint.
    * \brief Returns whether string ends with codepoint.
@@ -171,7 +185,7 @@ public:
    * string from the starting index should be returned.
    * \return Substring.
    */
-  String Substring(u64 from, u64 count = -1) const;
+  String Substring(u64 from, s64 count = -1) const;
 
   /** Traverse the string and call the specified function with the codepoint 
    * and index at each location. The specified arguments are also forwarded to 

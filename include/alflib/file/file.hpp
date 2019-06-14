@@ -162,12 +162,15 @@ public:
    */
   bool Exists() const;
 
-  /** Enumerate all the files in a directory or archive.
+  /** Enumerate all the files in a directory or archive. Optionally the user may
+   * choose to not include any special directory names.
    * \pre Type of file must be a directory.
    * \brief Enumerate files in directory or archive.
+   * \param includeSpecial Whether special directories should be included. On
+   * most platforms these are '..', '.' and '~'.
    * \return List of files.
    */
-  ArrayList<File> Enumerate() const;
+  ArrayList<File> Enumerate(bool includeSpecial = true) const;
 
   /** Returns the path to the file.
    * \brief Returns path.

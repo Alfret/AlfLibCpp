@@ -55,7 +55,12 @@ const String Path::SEPARATOR = "/";
 Path::Path(const String& path)
   : mPath(path)
 {
-  FixSeparators();
+  // Replace separators with native ones
+#if defined(ALFLIB_TARGET_WINDOWS)
+  mPath.Replace("/", "\\");
+#else
+  mPath.Replace("\\", "/");
+#endif
 
   // Remove trailing separator
   if (mPath.EndsWith('\\') || mPath.EndsWith('/')) {
@@ -146,8 +151,25 @@ Path::GetComponents()
 String
 Path::GetName() const
 {
+  // If index is not valid (-1), then it becomes 0 in the same way that the 
+  // separator are skipped (+1).
   const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
   return mPath.Substring(sepIndex + 1);
+}
+
+// -------------------------------------------------------------------------- //
+
+String
+Path::GetBaseName() const
+{
+  // Retrieve indices of last separator and 'dot'
+  const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
+  const s64 dotIndex = mPath.LastIndexOf('.');
+
+  if (dotIndex <= sepIndex) {
+    return mPath.Substring(sepIndex + 1);
+  }
+  return mPath.Substring(sepIndex + 1, dotIndex - sepIndex - 1);
 }
 
 // -------------------------------------------------------------------------- //
@@ -159,18 +181,168 @@ Path::GetExtension() const
   if (extensionString.GetLength() == 0) {
     return Extension::kNone;
   }
+
+  // Data (text, binary, config, ...)
+  if (extensionString == ".tmp") {
+    return Extension::kTmp;
+  }
   if (extensionString == ".txt") {
     return Extension::kTxt;
   }
+  if (extensionString == ".csv") {
+    return Extension::kCsv;
+  }
+  if (extensionString == ".dat") {
+    return Extension::kDat;
+  }
+  if (extensionString == ".json") {
+    return Extension::kJson;
+  }
+  if (extensionString == ".xml") {
+    return Extension::kXml;
+  }
+  if (extensionString == ".yaml") {
+    return Extension::kYaml;
+  }
+  if (extensionString == ".toml") {
+    return Extension::kToml;
+  }
+  if (extensionString == ".md") {
+    return Extension::kMd;
+  }
+  if (extensionString == ".cfg") {
+    return Extension::kCfg;
+  }
+  if (extensionString == ".ini") {
+    return Extension::kIni;
+  }
+  if (extensionString == ".log") {
+    return Extension::kLog;
+  }
+
+  // Image
   if (extensionString == ".png") {
     return Extension::kPng;
   }
+  if (extensionString == ".tga") {
+    return Extension::kTga;
+  }
+  if (extensionString == ".jpeg" || extensionString == ".jpg") {
+    return Extension::kJpeg;
+  }
+  if (extensionString == ".psd") {
+    return Extension::kPsd;
+  }
+  if (extensionString == ".bmp") {
+    return Extension::kBmp;
+  }
+  if (extensionString == ".gif") {
+    return Extension::kGif;
+  }
+  if (extensionString == ".ico") {
+    return Extension::kIco;
+  }
+  if (extensionString == ".svg") {
+    return Extension::kSvg;
+  }
+  if (extensionString == ".tiff" || extensionString == ".tif") {
+    return Extension::kTiff;
+  }
+
+  // Audio
+  if (extensionString == ".ogg") {
+    return Extension::kOgg;
+  }
+  if (extensionString == ".wav") {
+    return Extension::kWav;
+  }
+  if (extensionString == ".mp3") {
+    return Extension::kMp3;
+  }
+
+  // Video
+  if (extensionString == ".avi") {
+    return Extension::kAvi;
+  }
+  if (extensionString == ".mp4") {
+    return Extension::kMp4;
+  }
+
+  // Archive
   if (extensionString == ".tar") {
     return Extension::kTar;
   }
   if (extensionString == ".zip") {
     return Extension::kZip;
   }
+  if (extensionString == ".gz") {
+    return Extension::kGz;
+  }
+  if (extensionString == ".7z") {
+    return Extension::k7z;
+  }
+
+  // Font
+  if (extensionString == ".ttf") {
+    return Extension::kTtf;
+  }
+  if (extensionString == ".otf") {
+    return Extension::kOtf;
+  }
+
+  // Code (source, headers)
+  if (extensionString == ".c") {
+    return Extension::kC;
+  }
+  if (extensionString == ".h") {
+    return Extension::kH;
+  }
+  if (extensionString == ".cpp") {
+    return Extension::kCpp;
+  }
+  if (extensionString == ".hpp") {
+    return Extension::kHpp;
+  }
+  if (extensionString == ".py") {
+    return Extension::kPy;
+  }
+  if (extensionString == ".js") {
+    return Extension::kJs;
+  }
+  if (extensionString == ".java") {
+    return Extension::kJava;
+  }
+  if (extensionString == ".rs") {
+    return Extension::kRs;
+  }
+
+  // Executables, libraries, ...
+  if (extensionString == ".exe") {
+    return Extension::kExe;
+  }
+  if (extensionString == ".app") {
+    return Extension::kApp;
+  }
+  if (extensionString == ".apk") {
+    return Extension::kApk;
+  }
+  if (extensionString == ".dll") {
+    return Extension::kDll;
+  }
+  if (extensionString == ".so") {
+    return Extension::kSo;
+  }
+  if (extensionString == ".dynlib") {
+    return Extension::kDynlib;
+  }
+  if (extensionString == ".lib") {
+    return Extension::kLib;
+  }
+  if (extensionString == ".a") {
+    return Extension::kA;
+  }
+
+  // Could not determine
   return Extension::kUnknown;
 }
 
@@ -179,11 +351,13 @@ Path::GetExtension() const
 String
 Path::GetExtensionString() const
 {
-  const s64 index = mPath.LastIndexOf('.');
-  if (index == -1) {
+  const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
+  const s64 dotIndex = mPath.LastIndexOf('.');
+  if (dotIndex <= sepIndex) {
     return "";
   }
-  return mPath.Substring(index);
+  const String extension = mPath.Substring(dotIndex);
+  return extension.GetLength() > 1 ? extension : "";
 }
 
 // -------------------------------------------------------------------------- //
@@ -216,18 +390,6 @@ Path
 operator+(const Path& path0, const String& path1)
 {
   return path0.Joined(Path{ path1 });
-}
-
-// -------------------------------------------------------------------------- //
-
-void
-Path::FixSeparators()
-{
-#if defined(ALFLIB_TARGET_WINDOWS)
-  mPath.Replace("/", "\\");
-#else
-  mPath.Replace("\\", "/");
-#endif
 }
 
 // -------------------------------------------------------------------------- //

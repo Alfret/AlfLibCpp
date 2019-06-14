@@ -60,7 +60,15 @@ public:
     kDownloads
   };
 
-  /** List of known file extensions **/
+  /** 
+   * List of known file extensions. The function Path::GetExtensionString() can 
+   * be used to determine the string of the extension if it's not part of the 
+   * enumeration.
+   * 
+   * Any values added to this enumeration must also be added to the check in the
+   * function Path::GetExtension(). So that they are correctly determined from 
+   * their strings.
+   */
   enum class Extension
   {
     /** No extension **/
@@ -68,16 +76,110 @@ public:
     /** Unknown extension **/
     kUnknown,
 
-    /** Text file **/
+    /** Temporary file **/
+    kTmp,
+
+    /** Txt (text) data file **/
     kTxt,
+    /** CSV (comma separated values) data file **/
+    kCsv,
+    /** Dat (data) data file **/
+    kDat,
+    /** JSON (javascript object notation) data file **/
+    kJson,
+    /** XML (extensible markup language) data file **/
+    kXml,
+    /** Yaml (YAML Ain't Markup Language) data file **/
+    kYaml,
+    /** Toml (Tom's obvious, minimal language) data file **/
+    kToml,
+    /** md (Markdown) data file **/
+    kMd,
+    /** cfg (configuration) data file **/
+    kCfg,
+    /** ini (initialization) data file **/
+    kIni,
+    /** log (Log file) data file **/
+    kLog,
 
-    /** PNG image file **/
+    /** PNG (portable network graphics) image file **/
     kPng,
+    /** TGA (targa) image file **/
+    kTga,
+    /** JPG (joint photographic expert group) image file **/
+    kJpeg,
+    /** PSD (photoshop document) image file **/
+    kPsd,
+    /** bmp (Bitmap) image file **/
+    kBmp,
+    /** gif (graphics interchange format) image file **/
+    kGif,
+    /** ico (icon) image file **/
+    kIco,
+    /** svg (scalable vector graphics) image file **/
+    kSvg,
+    /** tiff (tagged image file format) image file **/
+    kTiff,
 
-    /** Tar archive **/
+    /** Ogg (ogg vorbis) audio file **/
+    kOgg,
+    /** WAV (waveform) audio file **/
+    kWav,
+    /** MP3 audio file **/
+    kMp3,
+
+    /** AVI (audio video interleaved) video file **/
+    kAvi,
+    /** MP4 video file **/
+    kMp4,
+
+    /** Tar (tarball) archive **/
     kTar,
-    /** Zip archive **/
-    kZip
+    /** Zip (zip) archive **/
+    kZip,
+    /** Gz (gzip) archive **/
+    kGz,
+    /** 7z (7-zip) archive **/
+    k7z,
+
+    /** TTF (truetype font) font file **/
+    kTtf,
+    /** OTF (open type font) font file **/
+    kOtf,
+
+    /** C source file **/
+    kC,
+    /** C header file **/
+    kH,
+    /** C++ source file **/
+    kCpp,
+    /** C++ header file **/
+    kHpp,
+    /** Python source file **/
+    kPy,
+    /** JavaScript source file **/
+    kJs,
+    /** Java source file **/
+    kJava,
+    /** Rust source file **/
+    kRs,
+
+    /** exe (Windows executable) executable file **/
+    kExe,
+    /** app (MacOS application) executable file **/
+    kApp,
+    /** apk (Android package) executable file **/
+    kApk,
+    /** dll (dynamic link library) shared library **/
+    kDll,
+    /** so (shared object) shared library **/
+    kSo,
+    /** dynlib (dynamic library) shared library **/
+    kDynlib,
+    /** lib (library) static library **/
+    kLib,
+    /** a (library) static library **/
+    kA
   };
 
 public:
@@ -153,16 +255,38 @@ public:
    */
   ArrayList<String> GetComponents();
 
-  /** Returns the name of the object at the path. This is the last component
-   * and is returned without any extension.
+  /** Returns the name of the object at the path. This includes the base name 
+   * and the extension. This works similar to Path::GetBaseName(), however it 
+   * does include the extension.
    * \brief Returns name.
    * \return Name.
+   * 
+   * \example
+   * auto name = Path{ "path/to/file.txt" }.GetName(); // 'file.txt'
+   * auto name = Path{ "path/to/file" }.GetName(); // 'file'
    */
   String GetName() const;
+
+  /** Returns the base name of the object at the path. This works similar to 
+   * Path::GetName(), however without including the extension.
+   * \brief Returns base name.
+   * \return Base name.
+   * 
+   * \example
+   * auto name = Path{ "path/to/file.txt" }.GetName(); // 'file'
+   * auto name = Path{ "path/to/file" }.GetName(); // 'file'
+   */
+  String GetBaseName() const;
 
   /** Returns the extension of the path.
    * \brief Returns extension.
    * \return Extension.
+   * 
+   * \example
+   * auto name = Path{ "path/to/file.txt" }.GetName(); // Extension::kTxt
+   * auto name = Path{ "path/to/file.tar" }.GetName(); // Extension::kTar
+   * auto name = Path{ "path/to/file.custom" }.GetName(); // Extension::kUnknown
+   * auto name = Path{ "path/to/file" }.GetName(); // Extension::kNone
    */
   Extension GetExtension() const;
 
@@ -203,11 +327,6 @@ public:
    * \return Joined paths.
    */
   friend Path operator+(const Path& path0, const String& path1);
-
-private:
-  /** This function sets up the separators in the path to be the correct for
-   * the OS **/
-  void FixSeparators();
 
 public:
   /** Returns the path to a known directory of the specified type.

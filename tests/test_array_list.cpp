@@ -137,5 +137,22 @@ TEST_CASE("[ArrayList] - Remove")
   CHECK(liveCount == Element::liveCount);
 }
 
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[ArrayList] - Iterator")
+{
+  ArrayList<Element> list;
+  list.AppendEmplace(Element{ 1 });
+  list.AppendEmplace(Element{ 3 });
+  list.AppendEmplace(Element{ 5 });
+  list.AppendEmplace(Element{ 7 });
+  for (auto& e : list) {
+    int y = 0;
+  }
+
+
+}
+
+
 }
 }
