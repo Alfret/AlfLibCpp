@@ -48,9 +48,22 @@ TEST_CASE("[File] - Enumerate")
   CHECK(f0.GetType() == File::Type::kDirectory);
   if (f0.GetType() == File::Type::kDirectory) {
     ArrayList<File> files = f0.Enumerate();
+    CHECK(files.GetSize() == 8);
     CHECK(files.Contains(File{ "some_dir" }));
-    CHECK(files.Contains(File{ "some.txt" }));
+    CHECK(files.Contains(File{ "untaped" }));
     CHECK(files.Contains(File{ "an_archive.zip" }));
+    CHECK(files.Contains(File{ "smile.txt" }));
+    CHECK(files.Contains(File{ "some.txt" }));
+    CHECK(files.Contains(File{ "taping.tar" }));
+    
+    files = f0.Enumerate(false);
+    CHECK(files.GetSize() == 6);
+    CHECK(files.Contains(File{ "some_dir" }));
+    CHECK(files.Contains(File{ "untaped" }));
+    CHECK(files.Contains(File{ "an_archive.zip" }));
+    CHECK(files.Contains(File{ "smile.txt" }));
+    CHECK(files.Contains(File{ "some.txt" }));
+    CHECK(files.Contains(File{ "taping.tar" }));
   }
 
   // Archive
@@ -59,6 +72,12 @@ TEST_CASE("[File] - Enumerate")
   CHECK(f1.GetType() == File::Type::kArchive);
   if (f1.GetType() == File::Type::kArchive) {
     ArrayList<File> files = f1.Enumerate();
+    CHECK(files.GetSize() == 2);
+    CHECK(files.Contains(File{ "file_inside.txt" }));
+    CHECK(files.Contains(File{ "some_other.txt" }));
+
+    files = f1.Enumerate(false);
+    CHECK(files.GetSize() == 2);
     CHECK(files.Contains(File{ "file_inside.txt" }));
     CHECK(files.Contains(File{ "some_other.txt" }));
   }

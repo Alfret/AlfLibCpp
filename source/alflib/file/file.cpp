@@ -329,7 +329,7 @@ File::Enumerate(bool includeSpecial) const
 
 #if defined(ALFLIB_TARGET_WINDOWS)
   // Add special directories if they should be included
-  if (includeSpecial) {
+  if (includeSpecial && GetType() == Type::kDirectory) {
     files.AppendEmplace(".");
     files.AppendEmplace("..");
   }
@@ -347,7 +347,7 @@ File::Enumerate(bool includeSpecial) const
     if (findHandle != INVALID_HANDLE_VALUE) {
       do {
         String filePath(findData.cFileName);
-        if (filePath != "." || filePath != "..") {
+        if (filePath != "." && filePath != "..") {
           files.AppendEmplace(filePath);
         }
       } while (FindNextFileW(findHandle, &findData));
@@ -356,7 +356,7 @@ File::Enumerate(bool includeSpecial) const
   }
 #else
   // Add special directories if they should be included
-  if (includeSpecial) {
+  if (includeSpecial && GetType() == Type::kDirectory) {
     files.AppendEmplace(".");
     files.AppendEmplace("..");
   }
@@ -368,7 +368,7 @@ File::Enumerate(bool includeSpecial) const
       struct dirent* entry;
       while ((entry = readdir(directory)) != nullptr) {
         String filePath(entry->d_name);
-        if (filePath != "." || filePath != "..") {
+        if (filePath != "." && filePath != "..") {
           files.AppendEmplace(filePath);
         }
       }

@@ -148,7 +148,6 @@ TEST_CASE("[Path] - GetExtensionString")
 
 TEST_CASE("[Path] - GetExtension")
 {
-
   const Path p3("file.txt");
   CHECK(p3.GetExtension() == Path::Extension::kTxt);
   const Path p4("path/to/some.txt");
