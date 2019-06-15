@@ -238,7 +238,7 @@ public:
    * \brief Returns path string.
    * \return Path string.
    */
-  const String& GetPath() const { return mPath; }
+  const String& GetPathString() const { return mPath; }
 
   /** Returns the path as an absolute path. This function also resolves any '.'
    * (current directory) and '..' (parent directory) components that may be part
@@ -249,11 +249,23 @@ public:
    */
   Path GetAbsolutePath() const;
 
+  Path GetCanonical() const;
+
+  /** Returns the path to the directory containing the object at this path.
+   * \brief Returns containing directory.
+   * \return Containing directory.
+   *
+   * \example
+   * Path{ "path/to/file.txt" }.GetDirectory(); // 'path/to'
+   * Path{ "file.txt" }.GetDirectory(); // ''
+   */
+  Path GetDirectory() const;
+
   /** Returns each of the path components that make up the path.
    * \brief Returns path components.
    * \return Path components.
    */
-  ArrayList<String> GetComponents();
+  ArrayList<String> GetComponents() const;
 
   /** Returns the name of the object at the path. This includes the base name 
    * and the extension. This works similar to Path::GetBaseName(), however it 

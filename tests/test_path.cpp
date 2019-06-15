@@ -40,22 +40,22 @@ TEST_CASE("[Path] - Create")
 {
   // Normal cases
   Path p0(".");
-  CHECK(p0.GetPath() == ".");
+  CHECK(p0.GetPathString() == ".");
   Path p1("..");
-  CHECK(p1.GetPath() == "..");
+  CHECK(p1.GetPathString() == "..");
 
   // Trailing separator
   Path p2("./");
-  CHECK(p2.GetPath() == ".");
+  CHECK(p2.GetPathString() == ".");
   Path p3("../");
-  CHECK(p3.GetPath() == "..");
+  CHECK(p3.GetPathString() == "..");
 
   // Wrong separator
   Path p4("this/is/a/path");
 #if defined(_WIN32)
-  CHECK(p4.GetPath() == "this\\is\\a\\path");
+  CHECK(p4.GetPathString() == "this\\is\\a\\path");
 #else
-  CHECK(p4.GetPath() == "this/is/a/path");
+  CHECK(p4.GetPathString() == "this/is/a/path");
 #endif
 
   // Mixed separators
@@ -74,6 +74,18 @@ TEST_CASE("[Path] - Join")
   Path p1("this/is");
   p1.Join(Path("/a/path"));
   CHECK(p1 == Path{ "this\\is\\a\\path" });
+}
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - GetDirectory()")
+{
+  CHECK(Path{ "file.txt" }.GetDirectory() == Path{ "" });
+  CHECK(Path{ "./file.txt" }.GetDirectory() == Path{ "" });
+  CHECK(Path{ "path/file.txt" }.GetDirectory() == Path{ "path" });
+  CHECK(Path{ "path/to/file.txt" }.GetDirectory() == Path{ "path/to" });
+  CHECK(Path{ "/path/file.txt" }.GetDirectory() == Path{ "/path/" });
+  CHECK(Path{ "C:/path/to/file.txt" }.GetDirectory() == Path{ "path/to" });
 }
 
 // -------------------------------------------------------------------------- //

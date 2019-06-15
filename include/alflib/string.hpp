@@ -199,7 +199,7 @@ public:
    * \param arguments Arguments forwarded to the callback function.
    */
   template<typename F, typename... ARGS>
-  void ForEach(F&& function, ARGS&&... arguments);
+  void ForEach(F&& function, ARGS&&... arguments) const;
 
   /** Format the string according to the rules of the fmt library. The format is
    * the current string and the arguments are used to format that.
@@ -314,7 +314,7 @@ public:
 
 template<typename F, typename... ARGS>
 void
-String::ForEach(F&& function, ARGS&&... arguments)
+String::ForEach(F&& function, ARGS&&... arguments) const
 {
   // Iterate through all codepoints in the source
   u32 codepoint, numBytes;

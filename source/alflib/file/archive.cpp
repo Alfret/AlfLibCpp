@@ -76,7 +76,7 @@ Archive::Open()
   // Handle specific archives
   if (mType == Type::kTar) {
     Path absolute = mFile.GetPath().GetAbsolutePath();
-    int result = mtar_open(&mData.tar, absolute.GetPath().GetUTF8(), "r");
+    int result = mtar_open(&mData.tar, absolute.GetPathString().GetUTF8(), "r");
     if (result != MTAR_ESUCCESS) {
       return FileResult::kUnknownError;
     }
@@ -84,7 +84,7 @@ Archive::Open()
   if (mType == Type::kZip) {
     // TODO(Filip Björklund): Do this correctly!
     const mz_bool success = mz_zip_reader_init_file(
-      &mData.zip.reader, mFile.GetPath().GetPath().GetUTF8(), 0);
+      &mData.zip.reader, mFile.GetPath().GetPathString().GetUTF8(), 0);
     if (!success) {
       return FileResult::kUnknownError;
     }

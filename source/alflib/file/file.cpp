@@ -200,7 +200,7 @@ File::Create(Type type, bool overwrite)
 #if defined(ALFLIB_TARGET_WINDOWS)
 
   if (type == Type::kFile) {
-    const auto _path = mPath.GetPath().GetUTF16();
+    const auto _path = mPath.GetPathString().GetUTF16();
     const HANDLE file = CreateFileW(_path.Get(),
                                     0,
                                     0,
@@ -216,7 +216,7 @@ File::Create(Type type, bool overwrite)
   }
   if (type == Type::kDirectory) {
     const DWORD result =
-      CreateDirectoryRecursivelyWin32(mPath.GetPath().GetUTF16().Get());
+      CreateDirectoryRecursivelyWin32(mPath.GetPathString().GetUTF16().Get());
     return FileErrorFromErrorWin32(result);
   }
 
@@ -242,7 +242,7 @@ File::Create(Type type, bool overwrite)
     // TODO(Filip Björklund): Create in memory and then create file instead?
     mz_zip_archive archive{};
     const mz_bool success =
-      mz_zip_writer_init_file(&archive, mPath.GetPath().GetUTF8(), 0);
+      mz_zip_writer_init_file(&archive, mPath.GetPathString().GetUTF8(), 0);
     if (!success) {
       return FileResult::kAccessDenied;
     }
@@ -263,7 +263,7 @@ File::Delete(bool recursive)
 
 #if defined(ALFLIB_TARGET_WINDOWS)
   if (GetType() == Type::kFile || GetType() == Type::kArchive) {
-    const auto path = mPath.GetPath().GetUTF16();
+    const auto path = mPath.GetPathString().GetUTF16();
     const BOOL success = DeleteFileW(path.Get());
     if (!success) {
       return FileErrorFromErrorWin32(GetLastError());
@@ -336,7 +336,7 @@ File::Enumerate(bool includeSpecial) const
 
   // Enumerate and add files to list from directory
   if (GetType() == Type::kDirectory) {
-    const auto path = (mPath.GetPath() + "/*").GetUTF16();
+    const auto path = (mPath.GetPathString() + "/*").GetUTF16();
     WIN32_FIND_DATAW findData;
     const HANDLE findHandle = FindFirstFileExW(path.Get(),
                                                FindExInfoBasic,
@@ -450,7 +450,7 @@ void
 File::UpdateAttributes()
 {
 #if defined(ALFLIB_TARGET_WINDOWS)
-  const UniquePointer<char16[]> path = mPath.GetPath().GetUTF16();
+  const UniquePointer<char16[]> path = mPath.GetPathString().GetUTF16();
   GetFileAttributesExW(path.Get(), GetFileExInfoStandard, &mFileAttributes);
 #else
   int result = stat(mPath.GetPath().GetUTF8(), &mStats);

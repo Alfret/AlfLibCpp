@@ -27,8 +27,8 @@
 // ========================================================================== //
 
 // Standard headers
-#include <cstdlib>
 #include "alflib/platform/os.hpp"
+#include <cstdlib>
 
 // ========================================================================== //
 // Path Implementation
@@ -129,8 +129,65 @@ Path::GetAbsolutePath() const
 
 // -------------------------------------------------------------------------- //
 
+Path
+Path::GetCanonical() const
+{
+  // 1. Empty path is empty
+  if (mPath.GetLength() == 1) {
+    return Path{ "" };
+  }
+
+  // Retrieve components
+  ArrayList<String> components = GetComponents();
+
+  // Build path
+  String pathString = "";
+  const u32 componentCount = components.GetSize();
+  for (u32 i = 0; i < componentCount; ++i) {
+    // 2. Ignore duplicate separators
+    if (i > 0 && components[i - 1] == SEPARATOR_CHAR &&
+        components[i] == SEPARATOR_CHAR) {
+      continue;
+    }
+
+    // 3. Remove any (non '..') component before a '..'
+    if (components[i] != ".." && componentCount > i + 1 &&
+        components[i + 1] == "..") {
+      i++;
+      continue;
+    }
+
+    // 4. Ignore dots
+    if (components[i] == ".") {
+      continue;
+    }
+
+    // 5. 
+
+    // 6.
+    if ()
+
+  }
+
+  return Path{ "" };
+}
+
+// -------------------------------------------------------------------------- //
+
+Path
+Path::GetDirectory() const
+{
+  const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
+  if (sepIndex < 0) {
+    return Path{ "" };
+  }
+  return Path{ mPath.Substring(0, sepIndex) };
+}
+
+// -------------------------------------------------------------------------- //
+
 ArrayList<String>
-Path::GetComponents()
+Path::GetComponents() const
 {
   ArrayList<String> components;
 
@@ -151,7 +208,7 @@ Path::GetComponents()
 String
 Path::GetName() const
 {
-  // If index is not valid (-1), then it becomes 0 in the same way that the 
+  // If index is not valid (-1), then it becomes 0 in the same way that the
   // separator are skipped (+1).
   const s64 sepIndex = Max(mPath.LastIndexOf('/'), mPath.LastIndexOf('\\'));
   return mPath.Substring(sepIndex + 1);
@@ -440,15 +497,12 @@ Path::GetKnownDirectory(KnownDirectory directory)
   }
   if (directory == KnownDirectory::kDocuments) {
     char* path = std::getenv("XDG_DOCUMENTS_DIR");
-
   }
   if (directory == KnownDirectory::kDownloads) {
     char* path = std::getenv("XDG_DOWNLOAD_DIR");
-
   }
 #endif
   return Path{ "" };
 }
-
 
 }

@@ -155,7 +155,7 @@ FileIO::Open(Flag flags)
   const DWORD attributes = FILE_ATTRIBUTE_NORMAL;
 
   // Open handle
-  const auto path = mFile.GetPath().GetPath().GetUTF16();
+  const auto path = mFile.GetPath().GetPathString().GetUTF16();
   mFileHandle = CreateFileW(
     path.Get(), access, sharing, NULL, disposition, attributes, NULL);
   if (mFileHandle == INVALID_HANDLE_VALUE) {
