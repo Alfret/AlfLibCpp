@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,14 +27,14 @@
 // ========================================================================== //
 
 // Library headers
-#include <miniz/miniz.h>
 #include <microtar/microtar.h>
+#include <miniz/miniz.h>
 
 // Project headers
-#include "alflib/macros.hpp"
 #include "alflib/collection/array_list.hpp"
 #include "alflib/file/file.hpp"
 #include "alflib/file/result.hpp"
+#include "alflib/macros.hpp"
 
 // ========================================================================== //
 // Archive Declaration
@@ -43,7 +43,7 @@
 namespace alflib {
 
 /** \class Archive
- * \author Filip Björklund
+ * \author Filip Bjï¿½rklund
  * \date 11 juni 2019 - 15:11
  * \brief Archive.
  * \details
@@ -86,7 +86,7 @@ private:
       /** Reader **/
       mz_zip_archive reader;
       /** Writer **/
-      mz_zip_archive writer;  
+      mz_zip_archive writer;
     } zip;
   } mData;
 

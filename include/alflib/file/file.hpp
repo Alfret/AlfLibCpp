@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,11 @@
 // ========================================================================== //
 
 // Project headers
+#include "alflib/collection/array_list.hpp"
 #include "alflib/common.hpp"
 #include "alflib/file/path.hpp"
-#include "alflib/collection/array_list.hpp"
-#include "alflib/platform/platform.hpp"
 #include "alflib/file/result.hpp"
+#include "alflib/platform/platform.hpp"
 
 // ========================================================================== //
 // File Declaration
@@ -40,16 +40,16 @@
 namespace alflib {
 
 /** \class File
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 07 juni 2019 - 20:31
  * \brief File handle.
  * \details
- * Handle to a file system object. This can represent files, directories, 
+ * Handle to a file system object. This can represent files, directories,
  * archives and non-existing objects.
- * 
+ *
  * When a file represents a read file it can be operated on by creating a FileIO
  * object.
- * 
+ *
  * When the file represents a directory or an archive it can be enumerated.
  */
 class File
@@ -67,7 +67,7 @@ private:
   /** Whether stats are valid **/
   bool mValidStats = false;
 #endif
- 
+
 public:
   /** Enumeration of file system object types **/
   enum class Type
@@ -82,10 +82,10 @@ public:
     kArchive
   };
 
-public:  
-  /** Construct a file handle that represents the object at the specified path 
+public:
+  /** Construct a file handle that represents the object at the specified path
    * in the filesystem.
-   * \note This operation does not actually open the file for reading. Instead 
+   * \note This operation does not actually open the file for reading. Instead
    * File::OpenFile() function should be used to perform operations on files.
    * \brief Create file.
    * \param path Path to file.
@@ -109,15 +109,23 @@ public:
    * \return File.
    */
   File Open(const Path& path) const;
- 
+
   /** Open a file relative to the current file.
    * \brief Open relative file.
    * \return File.
    */
   File Open(const String& path) const;
 
-  /** Create the file system object. The type of the object to create is 
-   * specified and files created can optionally overwrite any existing files at 
+  /** Returns a file that represents a sibling to this file. The sibling will
+   * be opened relative to the directory of this file.
+   * \brief Returns sibling.
+   * \param path Path to sibling relative to this file.
+   * \return Sibling file.
+   */
+  File Sibling(const String& path);
+
+  /** Create the file system object. The type of the object to create is
+   * specified and files created can optionally overwrite any existing files at
    * the path.
    * \brief Create file.
    * \param type Type of file system object to create.
@@ -133,7 +141,7 @@ public:
    */
   FileResult Delete(bool recursive = false);
 
-  /** Rename the file to the specified name. The name should only be the name of 
+  /** Rename the file to the specified name. The name should only be the name of
    * the file and extension, not the entire path.
    * \brief Rename file.
    * \param name New name.
@@ -155,7 +163,7 @@ public:
    */
   FileResult Move(const Path& to);
 
-  /** Returns whether there exists a file system object at the path of this 
+  /** Returns whether there exists a file system object at the path of this
    * file.
    * \brief Returns whether file exists.
    * \return True if there exists and object at the path otherwise false.
@@ -178,8 +186,8 @@ public:
    */
   const Path& GetPath() const { return mPath; }
 
-  /** Returns the type of the file. It's important that archive files have the 
-   * correct file extensions to make sure that the types are correctly 
+  /** Returns the type of the file. It's important that archive files have the
+   * correct file extensions to make sure that the types are correctly
    * determined on all platforms.
    * \brief Returns file type.
    * \return Type of the file.
@@ -211,7 +219,6 @@ public:
 private:
   /** Retrieve current file attributes **/
   void UpdateAttributes();
-
 };
 
 }

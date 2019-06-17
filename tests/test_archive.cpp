@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,8 @@
 #include <doctest/doctest.h>
 
 // Project headers
-#include "alflib/file/file.hpp"
 #include "alflib/file/archive.hpp"
+#include "alflib/file/file.hpp"
 
 // ========================================================================== //
 // Tests
@@ -41,7 +41,7 @@ namespace tests {
 TEST_CASE("[Archive] - Open")
 {
   // Tar Archive
-  Archive a1(Path{ "../../tests/res/taping.tar" });
+  Archive a1(Path{ "tests/res/taping.tar" });
   FileResult result = a1.Open();
   CHECK(result == FileResult::kSuccess);
   if (result == FileResult::kSuccess) {
@@ -51,17 +51,15 @@ TEST_CASE("[Archive] - Open")
     CHECK(files.Contains(File{ "tar_img.png" }));
   }
 
-
   // Zip Archive
-  Archive a2(Path{ "../../tests/res/an_archive.zip" });
+  Archive a2(Path{ "tests/res/an_archive.zip" });
   result = a2.Open();
   CHECK(result == FileResult::kSuccess);
   if (result == FileResult::kSuccess) {
     ArrayList<File> files = a2.Enumerate();
     CHECK(files.Contains(File{ "file_inside.txt" }));
     CHECK(files.Contains(File{ "some_other.txt" }));
-  }  
-
+  }
 }
 
 }

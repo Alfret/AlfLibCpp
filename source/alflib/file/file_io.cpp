@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -185,7 +185,7 @@ FileIO::Open(Flag flags)
   }
 
   // Open handle
-  const auto path = mFile.GetPath().GetPath().GetUTF8();
+  const auto path = mFile.GetPath().GetPathString().GetUTF8();
   mFileHandle = fopen(path, mode);
   if (!mFileHandle) {
     FileResult result = FileIOErrorFromErrno(errno);
@@ -263,9 +263,16 @@ FileIO::Read(String& string)
 {
   const u64 size = mFile.GetSize();
   char8* buffer = DefaultAllocator::Instance().NewArray<char8>(size + 1);
+  if (!buffer) {
+    return FileResult::kOutOfMemory;
+  }
   buffer[size] = 0;
   u64 read;
   const FileResult result = Read(reinterpret_cast<u8*>(buffer), size, read);
+  if (result != FileResult::kSuccess) {
+    DefaultAllocator::Instance().Delete(buffer);
+    return result;
+  }
   string = String(buffer);
   DefaultAllocator::Instance().Free(buffer);
   return FileResult::kSuccess;
@@ -357,7 +364,7 @@ FileIO::GetCursorPosition() const
   seekOffset.QuadPart = 0ull;
   return SetFilePointerEx(mFileHandle, seekOffset, nullptr, FILE_CURRENT);
 #else
-  //TODO 64 bit
+  // TODO 64 bit
   return static_cast<u64>(ftell(mFileHandle));
 #endif
 }

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@
 
 // Project headers
 #include "alflib/platform/platform.hpp"
+#include "alflib/string.hpp"
 
 // ========================================================================== //
 // Windows
@@ -38,7 +39,7 @@
 namespace alflib {
 
 /** \class SharedLibraries
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 10 juni 2019 - 23:31
  * \brief Windows shared libraries.
  * \details
@@ -59,7 +60,6 @@ public:
   } mKernelBase;
 
 public:
-
   /** Returns the collection of dynamically loaded functions from the KernelBase
    * library.
    * \brief Returns KernelBase functions.
@@ -73,12 +73,9 @@ private:
 
   /** Returns singleton instance to shared library object **/
   static SharedLibraries& Instance();
-
 };
 
 // -------------------------------------------------------------------------- //
-
-
 
 }
 
@@ -89,4 +86,54 @@ private:
 // ========================================================================== //
 
 namespace alflib {
+
+/** \class Linux
+ * \author Filip BjÃ¶rklund
+ * \date 01 januari 2019 - 00:00
+ * \brief Linux interaction.
+ * \details
+ * Represents a class with linux utilities and setup.
+ */
+class Linux
+{
+private:
+  /** XDG directories parsed from '~/.config/user-dirs.dirs' **/
+  struct XDG
+  {
+    /** Desktop directory **/
+    String desktop;
+    /** Documents directory **/
+    String documents;
+    /** Downloads directory **/
+    String download;
+    /** Music directory **/
+    String music;
+    /** Pictures directory **/
+    String pictures;
+    /** Public share directory  **/
+    String publicshare;
+    /** Templates directory **/
+    String templates;
+    /** Video directory **/
+    String videos;
+  } mXDG;
+
+public:
+  /** Returns a structure of parsed XDG directories.
+   * \note Users should not call this function, instead use the
+   * Path::GetKnownDirectory() function.
+   * \brief Returns XDG directories.
+   * @return XDG directories.
+   */
+  static const XDG& GetXDGDirectories() { return Instance().mXDG; }
+
+private:
+  /** Construct by parsing the XDG directories **/
+  Linux();
+
+private:
+  /** Returns instance **/
+  static Linux& Instance();
+};
+
 }

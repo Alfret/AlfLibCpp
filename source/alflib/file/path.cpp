@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bj�rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,10 @@
 // ========================================================================== //
 
 // Standard headers
-#include "alflib/platform/os.hpp"
 #include <cstdlib>
+
+// Project headers
+#include <alflib/platform/os.hpp>
 
 // ========================================================================== //
 // Path Implementation
@@ -73,7 +75,9 @@ Path::Path(const String& path)
 Path&
 Path::Join(const Path& other)
 {
-  if (!other.mPath.StartsWith('\\') && !other.mPath.StartsWith('/')) {
+  // Check if a separator should be added
+  if (!other.mPath.StartsWith('\\') && !other.mPath.StartsWith('/') &&
+      mPath.GetLength() > 0) {
     mPath += SEPARATOR_CHAR;
   }
   mPath += other.mPath;
@@ -132,8 +136,8 @@ Path::GetAbsolutePath() const
 Path
 Path::GetCanonical() const
 {
-  // 1. Empty path is empty
-  if (mPath.GetLength() == 1) {
+  // Empty path or single '.' is empty
+  if (mPath.GetLength() == 0 || mPath == ".") {
     return Path{ "" };
   }
 
@@ -141,16 +145,10 @@ Path::GetCanonical() const
   ArrayList<String> components = GetComponents();
 
   // Build path
-  String pathString = "";
+  Path path;
   const u32 componentCount = components.GetSize();
   for (u32 i = 0; i < componentCount; ++i) {
-    // 2. Ignore duplicate separators
-    if (i > 0 && components[i - 1] == SEPARATOR_CHAR &&
-        components[i] == SEPARATOR_CHAR) {
-      continue;
-    }
-
-    // 3. Remove any (non '..') component before a '..'
+    // Remove any (non '..') component before a '..'
     if (components[i] != ".." && componentCount > i + 1 &&
         components[i + 1] == "..") {
       i++;
@@ -162,14 +160,11 @@ Path::GetCanonical() const
       continue;
     }
 
-    // 5. 
-
-    // 6.
-    if ()
-
+    // Concatenate
+    path.Join(components[i]);
   }
 
-  return Path{ "" };
+  return std::move(path);
 }
 
 // -------------------------------------------------------------------------- //
@@ -195,7 +190,10 @@ Path::GetComponents() const
   u32 prevIndex = 0;
   mPath.ForEach([&](u32 codepoint, u32 index) {
     if (codepoint == '/' || codepoint == '\\') {
-      components.Append(mPath.Substring(prevIndex, index - prevIndex));
+      String substring = mPath.Substring(prevIndex, index - prevIndex);
+      if (substring.GetSize() > 0) {
+        components.Append(substring);
+      }
       prevIndex = index + 1;
     }
   });
@@ -422,7 +420,8 @@ Path::GetExtensionString() const
 bool
 operator==(const Path& path0, const Path& path1)
 {
-  return path0.mPath == path1.mPath;
+  return path0.GetCanonical().GetPathString() ==
+         path1.GetCanonical().GetPathString();
 }
 
 // -------------------------------------------------------------------------- //
@@ -430,7 +429,8 @@ operator==(const Path& path0, const Path& path1)
 bool
 operator!=(const Path& path0, const Path& path1)
 {
-  return path0.mPath != path1.mPath;
+  return path0.GetCanonical().GetCanonical() ==
+         path1.GetCanonical().GetPathString();
 }
 
 // -------------------------------------------------------------------------- //
@@ -493,13 +493,25 @@ Path::GetKnownDirectory(KnownDirectory directory)
     return String{ pw->pw_dir };
   }
   if (directory == KnownDirectory::kDesktop) {
-    char* path = std::getenv("XDG_DESKTOP_DIR");
+    String dir = Linux::GetXDGDirectories().desktop;
+    if (dir.GetLength() == 0) {
+      return Path{ "" };
+    }
+    return Path{ dir };
   }
   if (directory == KnownDirectory::kDocuments) {
-    char* path = std::getenv("XDG_DOCUMENTS_DIR");
+    String dir = Linux::GetXDGDirectories().documents;
+    if (dir.GetLength() == 0) {
+      return Path{ "" };
+    }
+    return Path{ dir };
   }
   if (directory == KnownDirectory::kDownloads) {
-    char* path = std::getenv("XDG_DOWNLOAD_DIR");
+    String dir = Linux::GetXDGDirectories().download;
+    if (dir.GetLength() == 0) {
+      return Path{ "" };
+    }
+    return Path{ dir };
   }
 #endif
   return Path{ "" };

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@
 namespace alflib {
 
 String::String(const char8* string)
-  : mString(string ? string : "")
+  : mBuffer(string ? string : "")
   , mLength(static_cast<u32>(alfUTF8StringLength(string)))
 {}
 
@@ -53,7 +53,7 @@ String::String(const char16* string)
   success = alfUTF16ToUTF8(
     reinterpret_cast<const AlfChar16*>(string), &numBytes, buffer);
   AlfAssert(success, "Failed to convert UTF-16 to UTF-8");
-  mString = buffer;
+  mBuffer = buffer;
   mLength = static_cast<u32>(alfUTF8StringLength(buffer));
   delete[] buffer;
 }
@@ -61,7 +61,7 @@ String::String(const char16* string)
 // -------------------------------------------------------------------------- //
 
 String::String(const std::string& string)
-  : mString(string)
+  : mBuffer(string)
   , mLength(static_cast<u32>(alfUTF8StringLength(string.c_str())))
 {}
 
@@ -74,21 +74,21 @@ String::String(u32 codepoint)
   const AlfBool success = alfUTF8Encode(encoded, 0, codepoint, &numBytes);
   AlfAssert(success, "Failed to construct string from codepoint");
   encoded[numBytes] = 0;
-  mString = std::string(encoded);
+  mBuffer = std::string(encoded);
   mLength = 1;
 }
 
 // -------------------------------------------------------------------------- //
 
 String::String(const String& string)
-  : mString(string.mString)
+  : mBuffer(string.mBuffer)
   , mLength(string.mLength)
 {}
 
 // -------------------------------------------------------------------------- //
 
 String::String(String&& string) noexcept
-  : mString(std::move(string.mString))
+  : mBuffer(std::move(string.mBuffer))
   , mLength(string.mLength)
 {}
 
@@ -105,7 +105,7 @@ String&
 String::operator=(const String& other)
 {
   if (this != &other) {
-    mString = other.mString;
+    mBuffer = other.mBuffer;
     mLength = other.mLength;
   }
   return *this;
@@ -117,7 +117,7 @@ String&
 String::operator=(String&& other) noexcept
 {
   if (this != &other) {
-    mString = std::move(other.mString);
+    mBuffer = std::move(other.mBuffer);
     mLength = other.mLength;
   }
   return *this;
@@ -146,7 +146,7 @@ String::AtByteOffset(u32 offset, u32& width) const
 s64
 String::Find(const String& substring) const
 {
-  const std::string::size_type pos = mString.find(substring.mString);
+  const std::string::size_type pos = mBuffer.find(substring.mBuffer);
   if (pos == std::string::npos) {
     return -1;
   }
@@ -196,7 +196,9 @@ String::EndsWith(const String& string) const
   if (GetSize() < string.GetSize()) {
     return false;
   }
-  return 0 == memcmp(GetUTF8() + GetSize() - string.GetSize(), string.GetUTF8(), string.GetSize());
+  return 0 == memcmp(GetUTF8() + GetSize() - string.GetSize(),
+                     string.GetUTF8(),
+                     string.GetSize());
 }
 
 // -------------------------------------------------------------------------- //
@@ -210,7 +212,7 @@ String::EndsWith(u32 codepoint) const
   if (width > GetSize()) {
     return false;
   }
-  
+
   // Decode at expected location from end
   u32 _codepoint, numBytes;
   if (alfUTF8Decode(str, GetSize() - width, &_codepoint, &numBytes)) {
@@ -227,8 +229,8 @@ String::Replace(const String& from, const String& to)
   s64 index;
   u32 count = 0;
   while ((index = Find(from)) >= 0) {
-    String str0 = mString.substr(0, index);
-    String str1 = mString.substr(index + from.GetSize());
+    String str0 = mBuffer.substr(0, index);
+    String str1 = mBuffer.substr(index + from.GetSize());
     operator=(str0 + to + str1);
     count++;
   }
@@ -259,7 +261,7 @@ String
 String::Substring(u64 from, s64 count) const
 {
   // Retrieve substring
-  char8* substring = alfUTF8Substring(GetUTF8(), from, count);  
+  char8* substring = alfUTF8Substring(GetUTF8(), from, count);
   String output(substring);
   free(substring);
   return output;
@@ -270,7 +272,7 @@ String::Substring(u64 from, s64 count) const
 void
 String::operator+=(const String& string)
 {
-  mString += string.mString;
+  mBuffer += string.mBuffer;
   mLength += string.mLength;
 }
 
@@ -279,7 +281,7 @@ String::operator+=(const String& string)
 void
 String::operator+=(const char8* string)
 {
-  mString += string;
+  mBuffer += string;
   mLength += static_cast<u32>(alfUTF8StringLength(string));
 }
 
@@ -331,7 +333,7 @@ operator<<(std::ostream& stream, const String& string)
 String
 operator+(const String& str0, const String& str1)
 {
-  return str0.mString + str1.mString;
+  return str0.mBuffer + str1.mBuffer;
 }
 
 // -------------------------------------------------------------------------- //
@@ -355,7 +357,7 @@ operator+(const char8* str0, const String& str1)
 bool
 operator==(const String& str0, const String& str1)
 {
-  return str0.mString == str1.mString;
+  return str0.mBuffer == str1.mBuffer;
 }
 
 // -------------------------------------------------------------------------- //
@@ -379,7 +381,7 @@ operator==(const char8* str0, const String& str1)
 bool
 operator!=(const String& str0, const String& str1)
 {
-  return str0.mString != str1.mString;
+  return str0.mBuffer != str1.mBuffer;
 }
 
 // -------------------------------------------------------------------------- //

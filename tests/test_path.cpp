@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
 #include "alflib/file/path.hpp"
 #include <doctest/doctest.h>
+
+#include <vector>
 
 // ========================================================================== //
 // Tests
@@ -85,15 +85,21 @@ TEST_CASE("[Path] - GetDirectory()")
   CHECK(Path{ "path/file.txt" }.GetDirectory() == Path{ "path" });
   CHECK(Path{ "path/to/file.txt" }.GetDirectory() == Path{ "path/to" });
   CHECK(Path{ "/path/file.txt" }.GetDirectory() == Path{ "/path/" });
-  CHECK(Path{ "C:/path/to/file.txt" }.GetDirectory() == Path{ "path/to" });
+  CHECK(Path{ "C:/path/to/file.txt" }.GetDirectory() == Path{ "C:/path/to" });
 }
 
 // -------------------------------------------------------------------------- //
 
 TEST_CASE("[Path] - Components")
 {
+
+  std::vector<String> v0 = { "first", "second", "third" };
+  ArrayList<String> v1 = { "first", "second", "third" };
+
+  // Normal
   Path p0("Path/to\\some/file.txt");
   ArrayList<String> c0 = p0.GetComponents();
+  CHECK(c0.GetSize() == 4);
   CHECK(c0.Contains("Path"));
   CHECK(c0.Contains("to"));
   CHECK(c0.Contains("some"));
@@ -101,10 +107,20 @@ TEST_CASE("[Path] - Components")
 
   Path p1("Path/to\\some/file/");
   ArrayList<String> c1 = p1.GetComponents();
+  CHECK(c1.GetSize() == 4);
   CHECK(c1.Contains("Path"));
   CHECK(c1.Contains("to"));
   CHECK(c1.Contains("some"));
   CHECK(c1.Contains("file"));
+
+  // Borderline
+  Path p2("Path//to/some////file.txt");
+  ArrayList<String> c2 = p2.GetComponents();
+  CHECK(c2.GetSize() == 4);
+  CHECK(c2.Contains("Path"));
+  CHECK(c2.Contains("to"));
+  CHECK(c2.Contains("some"));
+  CHECK(c2.Contains("file.txt"));
 }
 
 // -------------------------------------------------------------------------- //
@@ -166,6 +182,15 @@ TEST_CASE("[Path] - GetExtension")
   CHECK(p4.GetExtension() == Path::Extension::kTxt);
   const Path p5("path/to/file");
   CHECK(p5.GetExtension() == Path::Extension::kNone);
+}
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[Path] - operator=()")
+{
+  CHECK(Path{ "./tests/res/smile.txt" } == Path{ "tests/res/smile.txt" });
+  CHECK(Path{ "./tests/res/../res/smile.txt" } ==
+        Path{ "tests/res/smile.txt" });
 }
 
 }

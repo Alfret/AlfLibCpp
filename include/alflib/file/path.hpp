@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@
 namespace alflib {
 
 /** \class Path
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 09 juni 2019 - 20:15
  * \brief Path.
  * \details
@@ -60,13 +60,13 @@ public:
     kDownloads
   };
 
-  /** 
-   * List of known file extensions. The function Path::GetExtensionString() can 
-   * be used to determine the string of the extension if it's not part of the 
+  /**
+   * List of known file extensions. The function Path::GetExtensionString() can
+   * be used to determine the string of the extension if it's not part of the
    * enumeration.
-   * 
+   *
    * Any values added to this enumeration must also be added to the check in the
-   * function Path::GetExtension(). So that they are correctly determined from 
+   * function Path::GetExtension(). So that they are correctly determined from
    * their strings.
    */
   enum class Extension
@@ -208,7 +208,7 @@ public:
    * \brief Construct path.
    * \param path
    */
-  Path(const String& path = CURRENT);
+  Path(const String& path = "");
 
   /** Join another path at the end of this path. This correctly insert a
    * separator between the path components.
@@ -249,6 +249,10 @@ public:
    */
   Path GetAbsolutePath() const;
 
+  /** Returns a canonicalized (normalized) version of the path.
+   * \brief Returns canonicalized path.
+   * \return Canonicalized path.
+   */
   Path GetCanonical() const;
 
   /** Returns the path to the directory containing the object at this path.
@@ -267,23 +271,23 @@ public:
    */
   ArrayList<String> GetComponents() const;
 
-  /** Returns the name of the object at the path. This includes the base name 
-   * and the extension. This works similar to Path::GetBaseName(), however it 
+  /** Returns the name of the object at the path. This includes the base name
+   * and the extension. This works similar to Path::GetBaseName(), however it
    * does include the extension.
    * \brief Returns name.
    * \return Name.
-   * 
+   *
    * \example
    * auto name = Path{ "path/to/file.txt" }.GetName(); // 'file.txt'
    * auto name = Path{ "path/to/file" }.GetName(); // 'file'
    */
   String GetName() const;
 
-  /** Returns the base name of the object at the path. This works similar to 
+  /** Returns the base name of the object at the path. This works similar to
    * Path::GetName(), however without including the extension.
    * \brief Returns base name.
    * \return Base name.
-   * 
+   *
    * \example
    * auto name = Path{ "path/to/file.txt" }.GetName(); // 'file'
    * auto name = Path{ "path/to/file" }.GetName(); // 'file'
@@ -293,7 +297,7 @@ public:
   /** Returns the extension of the path.
    * \brief Returns extension.
    * \return Extension.
-   * 
+   *
    * \example
    * auto name = Path{ "path/to/file.txt" }.GetName(); // Extension::kTxt
    * auto name = Path{ "path/to/file.tar" }.GetName(); // Extension::kTar

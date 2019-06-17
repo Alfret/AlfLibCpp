@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +34,19 @@
 // Macros
 // ========================================================================== //
 
+#if defined(ALFLIB_TARGET_WINDOWS)
 /** Macro for asserting that a condition is true **/
 #define AlfAssert(condition, messageFormat, ...)                               \
   alflib::Assert(condition, __FILE__, __LINE__, messageFormat, ##__VA_ARGS__)
+
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+/** Macro for asserting that a condition is true **/
+#define AlfAssert(condition, messageFormat, ...)                               \
+  alflib::Assert(condition, __FILE__, __LINE__, messageFormat, ##__VA_ARGS__)
+#pragma GCC diagnostic pop
+#endif
 
 // ========================================================================== //
 // Functions
@@ -44,8 +54,7 @@
 
 namespace alflib {
 
-
-/** Assert that the condition is true. If the condition is false a message will 
+/** Assert that the condition is true. If the condition is false a message will
  * be displayed and the execution will stop.
  * \brief Assert condition.
  * \param condition Condition to assert true.
@@ -59,9 +68,9 @@ Assert(bool condition, const char8* file, u32 line, const String& message);
 // -------------------------------------------------------------------------- //
 
 /** Assert that the condition is true. If the condition is false a message will
- * be displayed and the execution will stop. This function takes a format string 
+ * be displayed and the execution will stop. This function takes a format string
  * and arguments that are used to format the actual message.
- * \note Formatting is done according to the formatting rules of a 
+ * \note Formatting is done according to the formatting rules of a
  * alflib::String.
  * \brief Assert condition.
  * \tparam ARGS Type of arguments to formatting.
@@ -71,7 +80,7 @@ Assert(bool condition, const char8* file, u32 line, const String& message);
  * \param format Format string.
  * \param arguments Arguments to format string.
  */
-template<typename ... ARGS>
+template<typename... ARGS>
 void
 Assert(bool condition,
        const char8* file,
@@ -79,10 +88,10 @@ Assert(bool condition,
        const String& format,
        ARGS&&... arguments)
 {
-  // TODO(Filip Björklund): Format the string
-  Assert(condition, file, line, format);
+  Assert(condition,
+         file,
+         line,
+         String(format).Format(std::forward<ARGS>(arguments)...));
 }
-
-
 
 }

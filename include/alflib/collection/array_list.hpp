@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@
 namespace alflib {
 
 /** \class ArrayList
- * \author Filip Björklund
+ * \author Filip Bjï¿½rklund
  * \date 07 juni 2019 - 21:32
  * \brief Array-list
  * \details
@@ -89,7 +89,6 @@ public:
 
     /** Retrieve pointer **/
     PointerType operator->();
-
   };
 
 private:
@@ -304,7 +303,7 @@ private:
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-ArrayList<T>::Iterator::Iterator(PointerType pointer) 
+ArrayList<T>::Iterator::Iterator(PointerType pointer)
   : mPointer(pointer)
 {}
 
@@ -338,8 +337,7 @@ ArrayList<T>::Iterator::operator!=(const Iterator& other)
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-typename ArrayList<T>::ReferenceType
-ArrayList<T>::Iterator::operator*()
+typename ArrayList<T>::ReferenceType ArrayList<T>::Iterator::operator*()
 {
   return *mPointer;
 }
@@ -347,8 +345,7 @@ ArrayList<T>::Iterator::operator*()
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-typename ArrayList<T>::PointerType
-ArrayList<T>::Iterator::operator->()
+typename ArrayList<T>::PointerType ArrayList<T>::Iterator::operator->()
 {
   return mPointer;
 }
@@ -373,7 +370,7 @@ ArrayList<T>::ArrayList(std::initializer_list<T> initializerList,
                         Allocator& allocator)
   : mCapacity(initializerList.size())
   , mSize(0)
-  , mAllocator(DefaultAllocator::Instance())
+  , mAllocator(allocator)
 {
   mBuffer =
     static_cast<T*>(mAllocator.Alloc(mCapacity * OBJECT_SIZE, alignof(T)));

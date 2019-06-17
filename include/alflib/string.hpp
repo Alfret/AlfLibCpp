@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,8 @@
 #include <string>
 
 // Library headers
-#include <fmt/ostream.h>
 #include "thirdparty/alf_unicode.h"
+#include <fmt/ostream.h>
 
 // Project headers
 #include "alflib/common.hpp"
@@ -49,7 +49,7 @@ class String
 {
 private:
   /** Underlying string buffer **/
-  std::string mString;
+  std::string mBuffer;
   /** Length of the string in codepoints **/
   u32 mLength = 0;
 
@@ -105,11 +105,11 @@ public:
    */
   s64 AtByteOffset(u32 offset, u32& width) const;
 
-  /** Find the index of the first occurance of a specified substring in the 
+  /** Find the index of the first occurance of a specified substring in the
    * string.
    * \brief Find occurance of substring.
    * \param substring Substring to find first occurance of.
-   * \return Index of first occurance or -1 if the substring never occurs in the 
+   * \return Index of first occurance or -1 if the substring never occurs in the
    * string.
    */
   s64 Find(const String& substring) const;
@@ -117,7 +117,7 @@ public:
   /** Returns the index of the first occurance of the specified codepoint.
    * \brief Returns index of first occurance.
    * \param codepoint Codepoint to return first occurance of.
-   * \return Index of the first occurance of the codepoint or -1 if the 
+   * \return Index of the first occurance of the codepoint or -1 if the
    * codepoint never occurs in the string.
    */
   s64 IndexOf(u32 codepoint) const;
@@ -144,7 +144,7 @@ public:
    * false.
    */
   bool StartsWith(u32 codepoint) const;
-  
+
   /** Returns whether or not the string ends with the specified other string.
    * \brief Returns whether string ends with other string.
    * \param string String to check if this string ends with.
@@ -155,13 +155,13 @@ public:
   /** Returns whether or not the string ends with the specified codepoint.
    * \brief Returns whether string ends with codepoint.
    * \param codepoint Codepoint to check if string ends with.
-   * \return True if the string ends with the specified codepoint otherwise 
+   * \return True if the string ends with the specified codepoint otherwise
    * false.
    */
   bool EndsWith(u32 codepoint) const;
 
-  /** Replace all occurances of the 
-   * \todo Currently the implementation is naïve and very inneficcient. A better
+  /** Replace all occurances of the
+   * \todo Currently the implementation is naï¿½ve and very inneficcient. A better
    * substring searching algorithm should be used.
    * \brief Replace all occurances of the string 'from' with the string 'to'.
    * \param from String to replace all occurances of.
@@ -177,20 +177,20 @@ public:
    */
   u32 Remove(u32 codepoint);
 
-  /** Returns a substring of the string from the 'from' index and 'count' 
+  /** Returns a substring of the string from the 'from' index and 'count'
    * codepoints ahead.
    * \brief Returns substring.
    * \param from Index to get substring from.
-   * \param count Number of codepoint in substring. -1 Means that the entire 
+   * \param count Number of codepoint in substring. -1 Means that the entire
    * string from the starting index should be returned.
    * \return Substring.
    */
   String Substring(u64 from, s64 count = -1) const;
 
-  /** Traverse the string and call the specified function with the codepoint 
-   * and index at each location. The specified arguments are also forwarded to 
+  /** Traverse the string and call the specified function with the codepoint
+   * and index at each location. The specified arguments are also forwarded to
    * the function.
-   * \note The callback arguments are passed after the codepoint (u32) and 
+   * \note The callback arguments are passed after the codepoint (u32) and
    * index (u32).
    * \brief Traverse string.
    * \tparam F Type of callback function.
@@ -203,11 +203,11 @@ public:
 
   /** Format the string according to the rules of the fmt library. The format is
    * the current string and the arguments are used to format that.
-   * \brief 
-   * \tparam ARGS 
-   * \param arguments 
-   * \return 
-   * 
+   * \brief
+   * \tparam ARGS
+   * \param arguments
+   * \return
+   *
    * \example
    * // "Sum: 2 + 2 = 4"
    * String str = String("Sum: {} + {} = {}").Format(2, "2", 4);
@@ -237,7 +237,7 @@ public:
   u32 At(u32 index) const;
 
   /** Returns the codepoint at the specified index in the string.
-   * \note This function will traverse the entire string due to the 
+   * \note This function will traverse the entire string due to the
    * variable-length encoding nature of UTF-8.
    * \brief Returns codepoint at index.
    * \param index Index to get codepoint at.
@@ -245,18 +245,18 @@ public:
    */
   u32 operator[](u32 index) const;
 
-  /** Returns a std::string that represents the same underlying data as this 
+  /** Returns a std::string that represents the same underlying data as this
    * string.
    * \brief Returns std::string.
    * \return String as std::string.
    */
-  std::string GetStdString() const { return mString; };
+  std::string GetStdString() const { return mBuffer; };
 
   /** Returns the raw underlying UTF-8 data.
    * \brief Returns UTF-8 data.
    * \return UTF-8 string.
    */
-  const char8* GetUTF8() const { return mString.c_str(); }
+  const char8* GetUTF8() const { return mBuffer.c_str(); }
 
   /** Convert the underlying string to UTF-16 and returns it.
    * \brief Convert and return UTF-16.
@@ -273,14 +273,14 @@ public:
   u32 GetLength() const { return mLength; }
 
   /** Returns the size of the string in number of bytes.
-   * \note Unlike String::GetLength() this function returns the same value as 
+   * \note Unlike String::GetLength() this function returns the same value as
    * the corresponding std::string.
-   * \note Value returned are always equal to, or greater than, the values 
+   * \note Value returned are always equal to, or greater than, the values
    * returned from the String::GetLength() function.
    * \brief Returns size.
    * \return Size of the string in bytes.
    */
-  u32 GetSize() const { return static_cast<u32>(mString.size()); }
+  u32 GetSize() const { return static_cast<u32>(mBuffer.size()); }
 
 public:
   friend std::ostream& operator<<(std::ostream& stream, const String& string);
@@ -307,7 +307,6 @@ public:
   static String ToString(T value);
 
   static u32 CodepointWidth(u32 codepoint);
-
 };
 
 // -------------------------------------------------------------------------- //
@@ -341,7 +340,7 @@ template<typename... ARGS>
 String
 String::Format(ARGS&&... arguments)
 {
-  return String(fmt::format(mString, std::forward<ARGS>(arguments)...));
+  return String(fmt::format(mBuffer, std::forward<ARGS>(arguments)...));
 }
 
 // -------------------------------------------------------------------------- //

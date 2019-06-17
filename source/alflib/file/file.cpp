@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -190,6 +190,14 @@ File::Open(const String& path) const
 
 // -------------------------------------------------------------------------- //
 
+File
+File::Sibling(const String& path)
+{
+  return mPath.GetDirectory().Join(path);
+}
+
+// -------------------------------------------------------------------------- //
+
 FileResult
 File::Create(Type type, bool overwrite)
 {
@@ -228,18 +236,18 @@ File::Create(Type type, bool overwrite)
     } else {
       flags |= O_EXCL;
     }
-    int result = open(mPath.GetPath().GetUTF8(), flags);
+    int result = open(mPath.GetPathString().GetUTF8(), flags);
     return FileErrorFromErrno(result);
   }
   if (type == Type::kDirectory) {
-    int result = mkdir(mPath.GetPath().GetUTF8(), 0);
+    int result = mkdir(mPath.GetPathString().GetUTF8(), 0);
     return FileErrorFromErrno(result);
   }
 #endif
 
   // Handle archive
   if (type == Type::kArchive) {
-    // TODO(Filip Björklund): Create in memory and then create file instead?
+    // TODO(Filip Bjï¿½rklund): Create in memory and then create file instead?
     mz_zip_archive archive{};
     const mz_bool success =
       mz_zip_writer_init_file(&archive, mPath.GetPathString().GetUTF8(), 0);
@@ -271,7 +279,6 @@ File::Delete(bool recursive)
     return FileResult::kSuccess;
   }
   if (GetType() == Type::kDirectory) {
-
   }
 #else
 
@@ -363,7 +370,7 @@ File::Enumerate(bool includeSpecial) const
 
   // Enumerate directory entries
   if (GetType() == Type::kDirectory) {
-    DIR* directory = opendir(mPath.GetPath().GetUTF8());
+    DIR* directory = opendir(mPath.GetPathString().GetUTF8());
     if (directory) {
       struct dirent* entry;
       while ((entry = readdir(directory)) != nullptr) {
@@ -411,7 +418,8 @@ File::GetType() const
     return Type::kDirectory;
   }
   if (mFileAttributes.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) {
-    // TODO(Filip Björklund): In documentation this looks incorrect. However it does work
+    // TODO(Filip Bjï¿½rklund): In documentation this looks incorrect. However it
+    // does work
     return Type::kArchive;
   }
   return Type::kFile;
@@ -453,7 +461,7 @@ File::UpdateAttributes()
   const UniquePointer<char16[]> path = mPath.GetPathString().GetUTF16();
   GetFileAttributesExW(path.Get(), GetFileExInfoStandard, &mFileAttributes);
 #else
-  int result = stat(mPath.GetPath().GetUTF8(), &mStats);
+  int result = stat(mPath.GetPathString().GetUTF8(), &mStats);
   mValidStats = result == 0;
 #endif
 }

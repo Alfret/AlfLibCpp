@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-#pragma once
 
 // ========================================================================== //
 // Headers
@@ -43,7 +41,7 @@ namespace tests {
 TEST_CASE("[File] - Enumerate")
 {
   // Directory
-  File f0("../../tests/res");
+  File f0("tests/res");
   CHECK(f0.Exists());
   CHECK(f0.GetType() == File::Type::kDirectory);
   if (f0.GetType() == File::Type::kDirectory) {
@@ -55,7 +53,7 @@ TEST_CASE("[File] - Enumerate")
     CHECK(files.Contains(File{ "smile.txt" }));
     CHECK(files.Contains(File{ "some.txt" }));
     CHECK(files.Contains(File{ "taping.tar" }));
-    
+
     files = f0.Enumerate(false);
     CHECK(files.GetSize() == 6);
     CHECK(files.Contains(File{ "some_dir" }));
@@ -67,7 +65,7 @@ TEST_CASE("[File] - Enumerate")
   }
 
   // Archive
-  File f1("../../tests/res/an_archive.zip");
+  File f1("tests/res/an_archive.zip");
   CHECK(f1.Exists());
   CHECK(f1.GetType() == File::Type::kArchive);
   if (f1.GetType() == File::Type::kArchive) {
@@ -96,13 +94,22 @@ TEST_CASE("[File] - Create")
 
 // -------------------------------------------------------------------------- //
 
+TEST_CASE("[File]")
+{
+  File file("tests/res/smile.txt");
+  File sibling = file.Sibling("some.txt");
+  CHECK(sibling == Path{ "tests/res/some.txt" });
+}
+
+// -------------------------------------------------------------------------- //
+
 TEST_CASE("[FileIO] - Open") {}
 
 // -------------------------------------------------------------------------- //
 
 TEST_CASE("[FileIO] - Read")
 {
-  FileIO f0("../../tests/res/smile.txt");
+  FileIO f0("tests/res/smile.txt");
   FileResult result = f0.Open(FileIO::Flag::kRead);
   CHECK(result == FileResult::kSuccess);
 

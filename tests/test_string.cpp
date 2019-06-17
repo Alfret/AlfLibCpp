@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-
 // ========================================================================== //
 // Headers
 // ========================================================================== //
@@ -169,7 +167,6 @@ TEST_CASE("[String] - Substring()")
 // -------------------------------------------------------------------------- //
 
 TEST_CASE("[String] - ForEach()") {}
-
 
 }
 }

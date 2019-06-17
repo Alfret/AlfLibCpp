@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bjï¿½rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-#pragma once
 
 // ========================================================================== //
 // Headers
@@ -62,10 +60,7 @@ struct Element
   }
   Element& operator=(const Element&) = delete;
   Element& operator=(Element&& other) = delete;
-  ~Element()
-  {
-    liveCount--;
-  }
+  ~Element() { liveCount--; }
 };
 
 // -------------------------------------------------------------------------- //
@@ -133,7 +128,6 @@ TEST_CASE("[ArrayList] - Remove")
 
     CHECK(list.GetSize() == 0);
   }
-  u32 _liveCount = Element::liveCount;
   CHECK(liveCount == Element::liveCount);
 }
 
@@ -146,13 +140,22 @@ TEST_CASE("[ArrayList] - Iterator")
   list.AppendEmplace(Element{ 3 });
   list.AppendEmplace(Element{ 5 });
   list.AppendEmplace(Element{ 7 });
+  CHECK(list.GetSize() == 4);
+  CHECK(list.GetCapacity() >= 4);
+  s32 index = 0;
   for (auto& e : list) {
-    int y = 0;
+    if (index == 0) {
+      CHECK(e.i == 1);
+    } else if (index == 1) {
+      CHECK(e.i == 3);
+    } else if (index == 2) {
+      CHECK(e.i == 5);
+    } else if (index == 3) {
+      CHECK(e.i == 7);
+    }
+    index++;
   }
-
-
 }
-
 
 }
 }

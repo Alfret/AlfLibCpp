@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "alflib/file/archive.hpp"
+#include <alflib/file/archive.hpp>
 
 // ========================================================================== //
 // Headers
@@ -30,12 +31,68 @@
 #include "alflib/file/file.hpp"
 
 // ========================================================================== //
+// Functions
+// ========================================================================== //
+
+namespace alflib {
+
+FileResult
+FromMinizResult(mz_zip_error error)
+{
+  switch (error) {
+
+    case MZ_ZIP_NO_ERROR:
+      return FileResult::kSuccess;
+    case MZ_ZIP_UNDEFINED_ERROR:
+      return FileResult::kUnknownError;
+    case MZ_ZIP_FILE_OPEN_FAILED:
+      return FileResult::kNotFound;
+    case MZ_ZIP_FILE_CLOSE_FAILED:
+      return FileResult::kNotOpen;
+    case MZ_ZIP_INVALID_PARAMETER:
+      return FileResult::kInvalidArgument;
+    case MZ_ZIP_TOO_MANY_FILES:
+    case MZ_ZIP_FILE_TOO_LARGE:
+    case MZ_ZIP_UNSUPPORTED_METHOD:
+    case MZ_ZIP_UNSUPPORTED_ENCRYPTION:
+    case MZ_ZIP_UNSUPPORTED_FEATURE:
+    case MZ_ZIP_FAILED_FINDING_CENTRAL_DIR:
+    case MZ_ZIP_NOT_AN_ARCHIVE:
+    case MZ_ZIP_INVALID_HEADER_OR_CORRUPTED:
+    case MZ_ZIP_UNSUPPORTED_MULTIDISK:
+    case MZ_ZIP_DECOMPRESSION_FAILED:
+    case MZ_ZIP_COMPRESSION_FAILED:
+    case MZ_ZIP_UNEXPECTED_DECOMPRESSED_SIZE:
+    case MZ_ZIP_CRC_CHECK_FAILED:
+    case MZ_ZIP_UNSUPPORTED_CDIR_SIZE:
+    case MZ_ZIP_ALLOC_FAILED:
+    case MZ_ZIP_FILE_CREATE_FAILED:
+    case MZ_ZIP_FILE_WRITE_FAILED:
+    case MZ_ZIP_FILE_READ_FAILED:
+    case MZ_ZIP_FILE_SEEK_FAILED:
+    case MZ_ZIP_FILE_STAT_FAILED:
+    case MZ_ZIP_INVALID_FILENAME:
+    case MZ_ZIP_BUF_TOO_SMALL:
+    case MZ_ZIP_INTERNAL_ERROR:
+    case MZ_ZIP_FILE_NOT_FOUND:
+    case MZ_ZIP_ARCHIVE_TOO_LARGE:
+    case MZ_ZIP_VALIDATION_FAILED:
+    case MZ_ZIP_WRITE_CALLBACK_FAILED:
+    case MZ_ZIP_TOTAL_ERRORS:
+    default:
+      return FileResult::kUnknownError;
+  }
+}
+
+}
+
+// ========================================================================== //
 // Archive Implementation
 // ========================================================================== //
 
 namespace alflib {
 
-Archive::Archive(File file, Type type) 
+Archive::Archive(File file, Type type)
   : mFile(file)
   , mIsOpen(false)
   , mData({})
@@ -80,13 +137,16 @@ Archive::Open()
     if (result != MTAR_ESUCCESS) {
       return FileResult::kUnknownError;
     }
-  } 
+  }
   if (mType == Type::kZip) {
-    // TODO(Filip Björklund): Do this correctly!
+    // TODO(Filip Bjï¿½rklund): Do this correctly!
+    mData.zip.reader = {};
+    mData.zip.writer = {};
     const mz_bool success = mz_zip_reader_init_file(
       &mData.zip.reader, mFile.GetPath().GetPathString().GetUTF8(), 0);
     if (!success) {
-      return FileResult::kUnknownError;
+      mz_zip_error error = mz_zip_get_last_error(&mData.zip.reader);
+      return FromMinizResult(error);
     }
   }
 
@@ -110,9 +170,9 @@ Archive::Close()
     mtar_close(&mData.tar);
   }
   if (mType == Type::kZip) {
-    // TODO(Filip Björklund): Fix reader/write
+    // TODO(Filip Bjï¿½rklund): Fix reader/write
     mz_zip_end(&mData.zip.reader);
-    //mz_zip_end(&mData.zip.writer);
+    // mz_zip_end(&mData.zip.writer);
   }
 
   // Finalize
