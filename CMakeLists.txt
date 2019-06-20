@@ -37,6 +37,7 @@ set(SOURCE_FILES
   source/alflib/file/path.cpp
   source/alflib/graphics/image.cpp
   source/alflib/memory/allocator.cpp
+  source/alflib/memory/memory_reader.cpp
   source/alflib/memory/memory_writer.cpp
   source/alflib/platform/os.cpp
   source/thirdparty/alf_unicode.c

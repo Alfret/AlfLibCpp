@@ -63,6 +63,7 @@ private:
 
 public:
   /** Construct a memory with a buffer of a specified size.
+   * \pre Buffer size must exceed zero (0).
    * \brief Construct memory writer.
    * \param bufferSize Size of the buffer.
    * \param allocator Allocator for allocating memory for the buffer.
@@ -75,7 +76,7 @@ public:
    * \param data Bytes to write.
    * \param size Size of data to write.
    */
-  void WriteBytes(u8* data, u64 size);
+  void WriteBytes(const u8* data, u64 size);
 
   /** Write an object of the type T to buffer.
    * \note This function requires the object to have a function
@@ -188,6 +189,18 @@ public:
    */
   template<typename T>
   void Write(const ArrayList<T>& list);
+
+  /** Returns the buffer of the memory writer.
+   * \brief Returns buffer.
+   * \return Buffer.
+   */
+  Buffer& GetBuffer() { return mBuffer; }
+
+  /** Returns the buffer of the memory writer.
+   * \brief Returns buffer.
+   * \return Buffer.
+   */
+  const Buffer& GetBuffer() const { return mBuffer; }
 };
 
 // -------------------------------------------------------------------------- //
@@ -214,7 +227,7 @@ template<typename T>
 void
 MemoryWriter::Write(const ArrayList<T>& list)
 {
-  Write(list.GetSize());
+  Write(static_cast<u64>(list.GetSize()));
   for (const T& object : list) {
     Write(object);
   }

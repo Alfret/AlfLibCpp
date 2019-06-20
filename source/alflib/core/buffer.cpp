@@ -106,10 +106,10 @@ Buffer::operator=(Buffer&& other)
 // -------------------------------------------------------------------------- //
 
 void
-Buffer::Write(u64 offset, u8* data, u64 size)
+Buffer::Write(u64 offset, const u8* data, u64 size)
 {
   // Assert precondition
-  AlfAssert(offset + size > mSize,
+  AlfAssert(offset + size <= mSize,
             "Offset + size is outside the bounds of the buffer {} > {}",
             offset + size,
             mSize);
@@ -155,7 +155,7 @@ Buffer
 Buffer::CopyRegion(u64 offset, u64 size)
 {
   // Assert precondition
-  AlfAssert(offset + size > mSize,
+  AlfAssert(offset + size <= mSize,
             "Offset + size is outside the bounds of the buffer {} > {}",
             offset + size,
             mSize);

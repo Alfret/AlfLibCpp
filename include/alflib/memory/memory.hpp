@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#pragma once
+
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-#include <doctest/doctest.h>
-#include "alflib/collection/array_list.hpp"
-#include "alflib/memory/memory_reader.hpp"
-#include "alflib/memory/memory_writer.hpp"
+// Project headers
+#include "alflib/core/common.hpp"
 
 // ========================================================================== //
 // Functions
@@ -35,24 +35,49 @@
 
 namespace alflib {
 
-TEST_CASE("[] - Memory Writer")
+/** Swap endian of a 16-bit value.
+ * \brief Swap 16-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u16
+SwapEndian(u16 value)
 {
-  // Write some data
-  MemoryWriter writer;
-  writer.Write(32);
-  writer.Write(3.14f);
-  writer.Write("This is a test");
-  writer.Write(String{ "Another string" });
+  return ((value & 0xff00u) >> 8u) | ((value & 0x00ffu) << 8u);
+}
 
-  ArrayList<s32> list = { 1, 3, 5, 7, 9 };
-  writer.Write(list);
+// -------------------------------------------------------------------------- //
 
-  // Read data back
-  MemoryReader reader(writer.GetBuffer());
-  s32 i = reader.Read<s32>();
-  f32 f = reader.Read<f32>();
-  String s0 = reader.Read<String>();
-  String s1 = reader.Read<String>();
+/** Swap endian of a 32-bit value.
+ * \brief Swap 32-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u32
+SwapEndian(u32 value)
+{
+  return ((value & 0xff000000u) >> 24u) | ((value & 0x00ff0000u) >> 8u) |
+         ((value & 0x0000ff00u) << 8u) | ((value & 0x000000ffu) << 24u);
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Swap endian of a 64-bit value.
+ * \brief Swap 64-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u64
+SwapEndian(u64 value)
+{
+  return ((value & 0xff00000000000000ull) >> 56u) |
+         ((value & 0x00ff000000000000ull) >> 40u) |
+         ((value & 0x0000ff0000000000ull) >> 24u) |
+         ((value & 0x000000ff00000000ull) >> 8u) |
+         ((value & 0x00000000ff000000ull) << 8u) |
+         ((value & 0x0000000000ff0000ull) << 24u) |
+         ((value & 0x000000000000ff00ull) << 40u) |
+         ((value & 0x00000000000000ffull) << 56u);
 }
 
 }

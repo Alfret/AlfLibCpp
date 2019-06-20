@@ -91,7 +91,7 @@ public:
    * \param data Data to write.
    * \param size Size of data to write.
    */
-  void Write(u64 offset, u8* data, u64 size);
+  void Write(u64 offset, const u8* data, u64 size);
 
   /** Resize the buffer to a new size.
    * \brief Resize buffer.
