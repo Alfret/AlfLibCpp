@@ -169,4 +169,19 @@ TEST_CASE("[String] - Substring()")
 TEST_CASE("[String] - ForEach()") {}
 
 }
+
+// -------------------------------------------------------------------------- //
+
+TEST_CASE("[String] - Iterate")
+{
+  String str("Smile åäö 😃");
+  u32 refCodepoints[] = { 'S', 'm', 'i', 'l', 'e',   ' ',
+                          229, 228, 246, ' ', 128515 };
+  s32 index = 0;
+  for (const auto& codepoint : str) {
+    CHECK(codepoint == refCodepoints[index]);
+    index++;
+  }
+}
+
 }

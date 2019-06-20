@@ -47,6 +47,32 @@ namespace alflib {
 /** String class **/
 class String
 {
+public:
+  /** String iterator **/
+  class Iterator
+  {
+  private:
+    /** Underlying string reference **/
+    const String& mString;
+    /** Offset in string buffer **/
+    u64 mOffset;
+    /** Current codepoint **/
+    u32 mCodepoint;
+
+  public:
+    /** Construct iterator for String **/
+    Iterator(const String& string, u64 offset);
+
+    /** Proceed in string **/
+    void operator++();
+
+    /** Check inequality **/
+    bool operator!=(const Iterator& other);
+
+    /** Retrieve reference **/
+    u32 operator*();
+  };
+
 private:
   /** Underlying string buffer **/
   std::string mBuffer;
@@ -59,6 +85,13 @@ public:
    * \param string String to construct from.
    */
   String(const char8* string);
+
+  /** Construct a string from a UTF-8 string of the specified size.
+   * \note Size is specified in bytes.
+   * \brief Construct from UTF-8.
+   * \param string String to construct from.
+   */
+  String(const char8* string, u32 size);
 
   /** Construct a string from a nul-terminated UTF-16 string.
    * \brief Construct from UTF-16.
@@ -244,6 +277,24 @@ public:
    * \return Codepoint at index.
    */
   u32 operator[](u32 index) const;
+
+  /** Returns the iterator to the beginning of the string.
+   * \brief Returns beginning iterator.
+   * \return Begin iterator.
+   */
+  Iterator Begin() const { return Iterator(*this, 0); }
+
+  /** \copydoc ArrayList::Begin **/
+  Iterator begin() const { return Begin(); }
+
+  /** Returns the iterator to the end of the string.
+   * \brief Returns ending iterator.
+   * \return End iterator.
+   */
+  Iterator End() const { return Iterator(*this, GetSize()); }
+
+  /** \copydoc ArrayList::End **/
+  Iterator end() const { return End(); }
 
   /** Returns a std::string that represents the same underlying data as this
    * string.

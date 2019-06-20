@@ -38,7 +38,7 @@
 namespace alflib {
 
 /** \class ArrayList
- * \author Filip Bj�rklund
+ * \author Filip Björklund
  * \date 07 juni 2019 - 21:32
  * \brief Array-list
  * \details
@@ -268,19 +268,19 @@ public:
    * \brief Returns beginning iterator.
    * \return Begin iterator.
    */
-  Iterator Begin() { return Iterator(mBuffer); }
+  Iterator Begin() const { return Iterator(mBuffer); }
 
   /** \copydoc ArrayList::Begin **/
-  Iterator begin() { return Begin(); }
+  Iterator begin() const { return Begin(); }
 
   /** Returns the iterator to the end of the list.
    * \brief Returns ending iterator.
    * \return End iterator.
    */
-  Iterator End() { return Iterator(mBuffer + mSize); }
+  Iterator End() const { return Iterator(mBuffer + mSize); }
 
   /** \copydoc ArrayList::End **/
-  Iterator end() { return End(); }
+  Iterator end() const { return End(); }
 
   /** Returns the capacity of the list.
    * \brief Returns capacity.
