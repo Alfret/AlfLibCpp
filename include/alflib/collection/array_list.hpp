@@ -26,9 +26,9 @@
 // Headers
 // ========================================================================== //
 
-#include "alflib/allocator.hpp"
-#include "alflib/assert.hpp"
-#include "alflib/common.hpp"
+#include "alflib/memory/allocator.hpp"
+#include "alflib/core/assert.hpp"
+#include "alflib/core/common.hpp"
 #include "alflib/math/math.hpp"
 
 // ========================================================================== //
@@ -40,6 +40,7 @@ namespace alflib {
 /** \class ArrayList
  * \author Filip Björklund
  * \date 07 juni 2019 - 21:32
+ * \tparam T Type of objects in list
  * \brief Array-list
  * \details
  * Represents an array-list where each object in the list is layed out linearly
@@ -282,6 +283,18 @@ public:
   /** \copydoc ArrayList::End **/
   Iterator end() const { return End(); }
 
+  /** Returns the underlying data buffer of the list.
+   * \brief Returns data.
+   * \return Data pointer.
+   */
+  PointerType GetData() { return mBuffer; }
+
+  /** Returns the underlying data buffer of the list.
+   * \brief Returns data.
+   * \return Data pointer.
+   */
+  const PointerType GetData() const { return mBuffer; }
+
   /** Returns the capacity of the list.
    * \brief Returns capacity.
    * \return Capacity.
@@ -293,6 +306,12 @@ public:
    * \return Size.
    */
   SizeType GetSize() const { return mSize; }
+
+  /** Returns the allocator of the list.
+   * \brief Returns allocator.
+   * \return Allocator.
+   */
+  Allocator& GetAllocator() const { return mAllocator; }
 
 private:
   /** Check that the capacity is enough to add an object. If it's not then
@@ -426,6 +445,13 @@ ArrayList<T>&
 ArrayList<T>::operator=(const ArrayList& other)
 {
   if (this != &other) {
+    // Destruct this list
+    for (SizeType i = 0; i < mSize; ++i) {
+      mBuffer[i].~T();
+    }
+    mAllocator.Free(mBuffer);
+
+    // Copy other list
     mCapacity = other.mCapacity;
     mSize = other.mSize;
     mAllocator = other.mAllocator;
@@ -445,6 +471,13 @@ ArrayList<T>&
 ArrayList<T>::operator=(ArrayList&& other)
 {
   if (this != &other) {
+    // Destruct this list
+    for (SizeType i = 0; i < mSize; ++i) {
+      mBuffer[i].~T();
+    }
+    mAllocator.Free(mBuffer);
+
+    // Move other list
     mBuffer = other.mBuffer;
     mCapacity = other.mCapacity;
     mSize = other.mSize;

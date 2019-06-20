@@ -20,13 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/allocator.hpp"
+#include "alflib/memory/allocator.hpp"
 
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-#include <alflib/math/math.hpp>
+// Project headers
+#include "alflib/math/math.hpp"
 
 // ========================================================================== //
 // DefaultAllocator Implementation

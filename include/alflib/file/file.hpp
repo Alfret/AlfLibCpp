@@ -28,7 +28,7 @@
 
 // Project headers
 #include "alflib/collection/array_list.hpp"
-#include "alflib/common.hpp"
+#include "alflib/core/common.hpp"
 #include "alflib/file/path.hpp"
 #include "alflib/file/result.hpp"
 #include "alflib/platform/platform.hpp"

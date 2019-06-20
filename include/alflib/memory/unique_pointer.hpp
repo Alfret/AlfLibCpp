@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@
 // ========================================================================== //
 
 // Project headers
-#include "alflib/allocator.hpp"
+#include "alflib/memory/allocator.hpp"
 
 // ========================================================================== //
 // Deleter<T>
@@ -36,7 +36,7 @@
 namespace alflib {
 
 /** \class DefaultDeleter
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 10 juni 2019 - 11:17
  * \brief Default deleter.
  * \details
@@ -72,7 +72,7 @@ DefaultDeleter<T>::operator()(Allocator& allocator, T* pointer) const
 namespace alflib {
 
 /** \class DefaultDeleter
- * \author Filip Björklund
+ * \author Filip Bjï¿½rklund
  * \date 10 juni 2019 - 11:17
  * \brief Default deleter.
  * \details
@@ -108,7 +108,7 @@ DefaultDeleter<T[]>::operator()(Allocator& allocator, T* pointer) const
 namespace alflib {
 
 /** \class UniquePointer
- * \author Filip Björklund
+ * \author Filip Bjï¿½rklund
  * \date 10 juni 2019 - 09:41
  * \brief Unique pointer.
  * \details
@@ -222,7 +222,6 @@ public:
    */
   template<typename... ARGS>
   static UniquePointer Make(Allocator& allocator, ARGS&&... arguments);
-
 };
 
 // -------------------------------------------------------------------------- //
@@ -238,7 +237,7 @@ UniquePointer<T, D>::UniquePointer(T* pointer, Allocator& allocator)
 
 template<typename T, typename D>
 UniquePointer<T, D>::UniquePointer(UniquePointer&& other)
-    : mAllocator(other.mAllocator)
+  : mAllocator(other.mAllocator)
 {
   mPointer = other.mPointer;
   mDeleter = other.mDeleter;
@@ -319,7 +318,7 @@ UniquePointer<T, D>::Reset(T* pointer)
 // -------------------------------------------------------------------------- //
 
 template<typename T, typename D>
-template<typename ... ARGS>
+template<typename... ARGS>
 UniquePointer<T, D>
 UniquePointer<T, D>::Make(Allocator& allocator, ARGS&&... arguments)
 {
@@ -335,9 +334,8 @@ UniquePointer<T, D>::Make(Allocator& allocator, ARGS&&... arguments)
 
 namespace alflib {
 
-
 /** \class UniquePointer
- * \author Filip Björklund
+ * \author Filip Bjï¿½rklund
  * \date 10 juni 2019 - 09:41
  * \brief Unique pointer.
  * \details
@@ -457,7 +455,7 @@ UniquePointer<T[], D>::UniquePointer(T* pointer, Allocator& allocator)
 
 template<typename T, typename D>
 UniquePointer<T[], D>::UniquePointer(UniquePointer&& other)
-    : mAllocator(other.mAllocator)
+  : mAllocator(other.mAllocator)
 {
   mPointer = other.mPointer;
   mDeleter = other.mDeleter;

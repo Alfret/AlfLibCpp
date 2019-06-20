@@ -29,7 +29,7 @@
 // Project headers
 #include "alflib/collection/array_list.hpp"
 #include "alflib/platform/platform.hpp"
-#include "alflib/string.hpp"
+#include "alflib/core/string.hpp"
 
 // ========================================================================== //
 // Path Declaration

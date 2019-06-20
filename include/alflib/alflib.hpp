@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,5 +26,34 @@
 // Headers
 // ========================================================================== //
 
-#include "alflib/common.hpp"
-#include "alflib/file.hpp"
+// Collection headers
+#include "alflib/collection/array_list.hpp"
+
+// Core headers
+#include "alflib/core/assert.hpp"
+#include "alflib/core/common.hpp"
+#include "alflib/core/console.hpp"
+#include "alflib/core/dialog.hpp"
+#include "alflib/core/macros.hpp"
+#include "alflib/core/string.hpp"
+
+// File headers
+#include "alflib/file/archive.hpp"
+#include "alflib/file/file.hpp"
+#include "alflib/file/file_io.hpp"
+#include "alflib/file/path.hpp"
+#include "alflib/file/result.hpp"
+
+// Graphics headers
+#include "alflib/graphics/image.hpp"
+
+// Math headers
+#include "alflib/math/math.hpp"
+
+// Memory headers
+#include "alflib/memory/allocator.hpp"
+#include "alflib/memory/unique_pointer.hpp"
+
+// Platform headers
+#include "alflib/platform/os.hpp"
+#include "alflib/platform/platform.hpp"

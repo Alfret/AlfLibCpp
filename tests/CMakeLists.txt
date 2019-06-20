@@ -16,6 +16,7 @@ add_executable(test
   test_array_list.cpp
   test_file.cpp
   test_image.cpp
+  test_mem_read_write.cpp
   test_path.cpp
   test_pointer.cpp
   test_string.cpp)

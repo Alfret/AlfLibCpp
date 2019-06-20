@@ -24,8 +24,8 @@
 // Headers
 // ========================================================================== //
 
-#include "alflib/allocator.hpp"
 #include <doctest/doctest.h>
+#include "alflib/memory/allocator.hpp"
 
 // ========================================================================== //
 // Tests

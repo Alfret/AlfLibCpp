@@ -24,41 +24,25 @@
 // Headers
 // ========================================================================== //
 
-// Library headers
 #include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/core/common.hpp"
-#include "alflib/memory/unique_pointer.hpp"
+#include <alflib/collection/array_list.hpp>
+#include "alflib/memory/memory_writer.hpp"
 
 // ========================================================================== //
-// Tests
+// Functions
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-/** Datastructure for UniquePointer tests **/
-struct Data
+TEST_CASE("[] - Memory Writer")
 {
-  s32 i0;
-  s32 i1;
-  Data(s32 i0, s32 i1)
-    : i0(i0)
-    , i1(i1)
-  {}
-};
+  MemoryWriter writer;
+  writer.Write(32);
+  writer.Write(3.14f);
+  writer.Write("This is a test");
 
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[UniquePointer] - Make")
-{
-  using namespace alflib;
-
-  auto p = UniquePointer<Data>::Make(DefaultAllocator::Instance(), 32, 240);
-  CHECK(p->i0 == 32);
-  CHECK(p->i1 == 240);
+  ArrayList<s32> list = { 1, 3, 5, 7, 9 };
+  writer.Write(list);
 }
 
-}
 }

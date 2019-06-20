@@ -45,6 +45,17 @@ namespace alflib {
 class Image
 {
 public:
+  /** Results enumeration **/
+  enum class Result
+  {
+    /** Success **/
+    kSuccess,
+    /** Failed allocation **/
+    kOutOfMemory,
+    /** Image file could not be found **/
+    kFileNotFound,
+  };
+
   /** Enumeration of image formats  **/
   enum class Format
   {
@@ -65,40 +76,54 @@ public:
 
 private:
   /** Width of the image in pixels **/
-  u32 mWidth;
+  u32 mWidth = 0;
   /** Height of the image in pixels **/
-  u32 mHeight;
+  u32 mHeight = 0;
   /** Format of the image **/
-  Format mFormat;
+  Format mFormat = Format::kUnknown;
 
   /** Allocator **/
   Allocator& mAllocator;
   /** Image data **/
-  u8* mData;
+  u8* mData = nullptr;
   /** Size of image data in bytes **/
-  u64 mDataSize;
+  u64 mDataSize = 0;
 
 public:
-  /** Construct an image by loading the data from a file at the specified path.
-   * \brief Construct image by loading from file.
-   * \param path Path to image file.
-   * \param format Format of the image.
-   * \param allocator Allocator to allocate the data with.
+  /** Construct an empty image without dimensions and data. The image data must
+   * either be setup by a call to Image::Load(...), to load from a file, or by a
+   * call to Image::Create(...), to create the image from data.
+   * \param allocator Allocator to allocate data with.
    */
-  explicit Image(const Path& path,
-                 Format format = Format::kUnknown,
-                 Allocator& allocator = DefaultAllocator::Instance());
+  explicit Image(Allocator& allocator = DefaultAllocator::Instance());
 
-  /** Construct an empty image from the specified dimensions and format. Data
-   * for the image can also be specified, along with a format for the data.
+  /** Load the image data from a file at the specified path. An optional format
+   * can be specified that the data should be converted to after loading it from
+   * the file. If the format is Format::kUnknown (default) then the format is
+   * determined from the file.
+   * \param path Path to the image file.
+   * \param format Format to store the image in. If the format Format::kUnknown
+   * is specified then the image is stored in the format determined by the file.
+   * \return Result.
+   * Result::kSuccess: Successfully loaded image data from file.
+   * Result::kFileNotFound: Failed to find the image file.
+   * Result::kOutOfMemory: Failed to allocate memory for the image data.
+   */
+  Result Load(const Path& path, Format format = Format::kUnknown);
+
+  /** Create the image data from the specified dimensions and format. Data for
+   * the image can also be specified, along with a format for the data.
    * \note The data is copied by the image if it's not null, therefore the data
    * is still owned by the caller.
    * \note If the data format is Format::kUnknown, then the data is assumed to
    * have the same format as the constructed image.
+   * \note The data is expected to be at least the size that is required by the
+   * image (width * height * format-bytes-per-pixel). Any size less than that
+   * gives undefined behaviour.
    * \pre Width must be greater than zero.
    * \pre Height must be greater than zero.
    * \pre Format cannot be unknown.
-   * \brief Construct empty image.
+   * \brief Create image data.
    * \param width Width of the image.
    * \param height Height of the image.
    * \param format Format of the image.
@@ -107,24 +132,39 @@ public:
    * data is converted to the correct format before being used to initialize the
    * image.
    * \param dataFormat Format of the data.
-   * \param allocator Allocator to allocate the data with.
+   * \return Result.
+   * Result::kSuccess: Successfully loaded image data from file.
+   * Result::kOutOfMemory: Failed to allocate memory for the image data.
    */
-  Image(u32 width,
-        u32 height,
-        Format format,
-        const u8* data = nullptr,
-        Format dataFormat = Format::kUnknown,
-        Allocator& allocator = DefaultAllocator::Instance());
+  Result Create(u32 width,
+                u32 height,
+                Format format,
+                const u8* data = nullptr,
+                Format dataFormat = Format::kUnknown);
 
+  /** Copy-constructor **/
   Image(const Image& other);
 
+  /** Move-constructor **/
   Image(Image&& other);
 
+  /** Destruct image and free data **/
   ~Image();
 
+  /** Copy-assignment **/
   Image& operator=(const Image& other);
 
+  /** Move-assignment **/
   Image& operator=(Image&& other);
+
+public:
+  /** Returns the number of bytes that are required to store a single pixel in
+   * the specified format
+   * \brief Returns bytes per pixel for format.
+   * \param format Format to get bytes per pixel for.
+   * \return Bytes per pixel.
+   */
+  static u32 BytesPerPixel(Format format);
 };
 
 }
