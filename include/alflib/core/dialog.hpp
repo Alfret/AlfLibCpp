@@ -23,59 +23,46 @@
 #pragma once
 
 // ========================================================================== //
-// Platform Detection
+// Headers
 // ========================================================================== //
 
-#if defined(_WIN32)
-/** Microsoft Windows target platform **/
-#define ALFLIB_TARGET_WINDOWS
-#elif defined(__linux__) && !defined(__ANDROID__)
-/** Linux target platform **/
-#define ALFLIB_TARGET_LINUX
-#elif defined(__APPLE__)
-#include <TargetConditionals.h>
-#if TARGET_IPHONE_SIMULATOR
-/** Apple iOS simulator target platform **/
-#define ALFLIB_TARGET_IOS_SIMULATOR
-#elif TARGET_OS_IPHONE
-/** Apple iOS target platform **/
-#define ALFLIB_TARGET_IOS
-#elif TARGET_OS_MAC
-/** Apple MacOS target platform **/
-#define ALFLIB_TARGET_MACOS
-#else
-#error "Unknown Apple OS"
-#endif
-#elif defined(__ANDROID__)
-#define ALFLIB_TARGET_ANDROID
-#endif
+#include "alflib/string.hpp"
 
 // ========================================================================== //
-// Windows Headers
+// Functions
 // ========================================================================== //
 
-#if defined(ALFLIB_TARGET_WINDOWS)
+namespace alflib {
 
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <pathcch.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
+/** Show an information dialog with the specified title and message. The dialog
+ * will block the function until the user closes it.
+ * \brief Show info dialog.
+ * \param title Title of dialog.
+ * \param message Message in dialog.
+ */
+void
+ShowInfoDialog(const String& title, const String& message);
 
-#endif // defined(ALFLIB_TARGET_WINDOWS)
+// -------------------------------------------------------------------------- //
 
-// ========================================================================== //
-// Linux Headers
-// ========================================================================== //
+/** Show a warning dialog with the specified title and message. The dialog will
+ * block the function until the user closes it.
+ * \brief Show warning dialog.
+ * \param title Title of dialog.
+ * \param message Message in dialog.
+ */
+void
+ShowWarningDialog(const String& title, const String& message);
 
-#if defined(ALFLIB_TARGET_LINUX)
+// -------------------------------------------------------------------------- //
 
-#include <dirent.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+/** Show an error dialog with the specified title and message. The dialog will
+ * block the function until the user closes it.
+ * \brief Show error dialog.
+ * \param title Title of dialog.
+ * \param message Message in dialog.
+ */
+void
+ShowErrorDialog(const String& title, const String& message);
 
-#endif
+}

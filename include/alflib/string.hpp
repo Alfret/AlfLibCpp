@@ -47,6 +47,32 @@ namespace alflib {
 /** String class **/
 class String
 {
+public:
+  /** String iterator **/
+  class Iterator
+  {
+  private:
+    /** Underlying string reference **/
+    const String& mString;
+    /** Offset in string buffer **/
+    u64 mOffset;
+    /** Current codepoint **/
+    u32 mCodepoint;
+
+  public:
+    /** Construct iterator for String **/
+    Iterator(const String& string, u64 offset);
+
+    /** Proceed in string **/
+    void operator++();
+
+    /** Check inequality **/
+    bool operator!=(const Iterator& other);
+
+    /** Retrieve reference **/
+    u32 operator*();
+  };
+
 private:
   /** Underlying string buffer **/
   std::string mBuffer;
@@ -59,6 +85,13 @@ public:
    * \param string String to construct from.
    */
   String(const char8* string);
+
+  /** Construct a string from a UTF-8 string of the specified size.
+   * \note Size is specified in bytes.
+   * \brief Construct from UTF-8.
+   * \param string String to construct from.
+   */
+  String(const char8* string, u32 size);
 
   /** Construct a string from a nul-terminated UTF-16 string.
    * \brief Construct from UTF-16.
@@ -160,19 +193,19 @@ public:
    */
   bool EndsWith(u32 codepoint) const;
 
-  /** Replace all occurances of the
-   * \todo Currently the implementation is na�ve and very inneficcient. A better
-   * substring searching algorithm should be used.
-   * \brief Replace all occurances of the string 'from' with the string 'to'.
-   * \param from String to replace all occurances of.
-   * \param to String to replace the occurances with.
-   * \return Number of replaced occurances.
+  /** Replace all occurrences of the
+   * \todo Currently the implementation is naïve and not very efficient. A
+   * better substring searching algorithm should be used.
+   * \brief Replace all occurrences of the string 'from' with the string 'to'.
+   * \param from String to replace all occurrences of.
+   * \param to String to replace the occurrences with.
+   * \return Number of replaced occurrences.
    */
   u32 Replace(const String& from, const String& to);
 
-  /** Remove all occurances of the specified codepoint from the string.
-   * \brief Remove all occurances of codepoint.
-   * \param codepoint Codepoint to remove occurances of.
+  /** Remove all occurrences of the specified codepoint from the string.
+   * \brief Remove all occurrences of codepoint.
+   * \param codepoint Codepoint to remove occurrences of.
    * \return Number of removed codepoints.
    */
   u32 Remove(u32 codepoint);
@@ -213,7 +246,7 @@ public:
    * String str = String("Sum: {} + {} = {}").Format(2, "2", 4);
    */
   template<typename... ARGS>
-  String Format(ARGS&&... arguments);
+  String Format(ARGS&&... arguments) const;
 
   /** Concatenate another string at the end of this string.
    * \brief Concatenate string.
@@ -244,6 +277,24 @@ public:
    * \return Codepoint at index.
    */
   u32 operator[](u32 index) const;
+
+  /** Returns the iterator to the beginning of the string.
+   * \brief Returns beginning iterator.
+   * \return Begin iterator.
+   */
+  Iterator Begin() const { return Iterator(*this, 0); }
+
+  /** \copydoc ArrayList::Begin **/
+  Iterator begin() const { return Begin(); }
+
+  /** Returns the iterator to the end of the string.
+   * \brief Returns ending iterator.
+   * \return End iterator.
+   */
+  Iterator End() const { return Iterator(*this, GetSize()); }
+
+  /** \copydoc ArrayList::End **/
+  Iterator end() const { return End(); }
 
   /** Returns a std::string that represents the same underlying data as this
    * string.
@@ -338,7 +389,7 @@ String::ForEach(F&& function, ARGS&&... arguments) const
 
 template<typename... ARGS>
 String
-String::Format(ARGS&&... arguments)
+String::Format(ARGS&&... arguments) const
 {
   return String(fmt::format(mBuffer, std::forward<ARGS>(arguments)...));
 }

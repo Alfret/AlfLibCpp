@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,11 +38,16 @@
 
 namespace alflib {
 
+// TODO(Filip BjÃ¶rklund): Change Linux and MacOS implementation to use 64-bit
+// functions. This requires open/close instead of fopen/fclose
+
 /** \class FileIO
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 09 juni 2019 - 19:53
- * \brief
+ * \brief File IO.
  * \details
+ * Class that represents an interface to perform operations on a file in the
+ * filesystem.
  */
 class FileIO
 {
@@ -59,7 +64,6 @@ private:
   /** Handle **/
   FILE* mFileHandle = nullptr;
 #endif
-
 
 public:
   /** Flags that can be specified when opening the file handle **/
@@ -201,7 +205,6 @@ public:
    * \return Cursor position.
    */
   u64 GetCursorPosition() const;
-
 };
 
 }

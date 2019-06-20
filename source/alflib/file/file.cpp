@@ -279,6 +279,7 @@ File::Delete(bool recursive)
     return FileResult::kSuccess;
   }
   if (GetType() == Type::kDirectory) {
+    AlfAssertBasic(false, "Directories does not support being deleted yet");
   }
 #else
 

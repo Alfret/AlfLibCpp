@@ -20,62 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "alflib/core/console.hpp"
 
 // ========================================================================== //
-// Platform Detection
+// Headers
 // ========================================================================== //
 
-#if defined(_WIN32)
-/** Microsoft Windows target platform **/
-#define ALFLIB_TARGET_WINDOWS
-#elif defined(__linux__) && !defined(__ANDROID__)
-/** Linux target platform **/
-#define ALFLIB_TARGET_LINUX
-#elif defined(__APPLE__)
-#include <TargetConditionals.h>
-#if TARGET_IPHONE_SIMULATOR
-/** Apple iOS simulator target platform **/
-#define ALFLIB_TARGET_IOS_SIMULATOR
-#elif TARGET_OS_IPHONE
-/** Apple iOS target platform **/
-#define ALFLIB_TARGET_IOS
-#elif TARGET_OS_MAC
-/** Apple MacOS target platform **/
-#define ALFLIB_TARGET_MACOS
-#else
-#error "Unknown Apple OS"
-#endif
-#elif defined(__ANDROID__)
-#define ALFLIB_TARGET_ANDROID
-#endif
+// Project headers
+#include "alflib/platform/platform.hpp"
 
 // ========================================================================== //
-// Windows Headers
+// Console Implementation
 // ========================================================================== //
 
+namespace alflib {
+
+void
+Console::Write_(const String& message)
+{
 #if defined(ALFLIB_TARGET_WINDOWS)
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <pathcch.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
-
-#endif // defined(ALFLIB_TARGET_WINDOWS)
-
-// ========================================================================== //
-// Linux Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_LINUX)
-
-#include <dirent.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
+  OutputDebugStringW(message.GetUTF16().Get());
 #endif
+  puts(message.GetUTF8());
+}
+
+// -------------------------------------------------------------------------- //
+
+void
+Console::WriteLine_(const String& message)
+{
+#if defined(ALFLIB_TARGET_WINDOWS)
+  OutputDebugStringW(message.GetUTF16().Get());
+#endif
+  printf("%s", message.GetUTF8());
+}
+}

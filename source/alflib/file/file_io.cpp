@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bj�rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -364,7 +364,6 @@ FileIO::GetCursorPosition() const
   seekOffset.QuadPart = 0ull;
   return SetFilePointerEx(mFileHandle, seekOffset, nullptr, FILE_CURRENT);
 #else
-  // TODO 64 bit
   return static_cast<u64>(ftell(mFileHandle));
 #endif
 }

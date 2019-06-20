@@ -35,10 +35,54 @@
 
 namespace alflib {
 
+String::Iterator::Iterator(const String& string, u64 offset)
+  : mString(string)
+  , mOffset(offset)
+{
+  u32 numBytes;
+  alfUTF8Decode(string.GetUTF8(), offset, &mCodepoint, &numBytes);
+}
+
+// -------------------------------------------------------------------------- //
+
+void
+String::Iterator::operator++()
+{
+  mOffset += alfUTF8CodepointWidth(mCodepoint);
+  u32 numBytes;
+  alfUTF8Decode(mString.GetUTF8(), mOffset, &mCodepoint, &numBytes);
+}
+
+// -------------------------------------------------------------------------- //
+
+bool
+String::Iterator::operator!=(const String::Iterator& other)
+{
+  return &mString != &other.mString || mOffset != other.mOffset;
+}
+
+// -------------------------------------------------------------------------- //
+
+u32 String::Iterator::operator*()
+{
+  return mCodepoint;
+}
+
+// -------------------------------------------------------------------------- //
+
 String::String(const char8* string)
   : mBuffer(string ? string : "")
   , mLength(static_cast<u32>(alfUTF8StringLength(string)))
 {}
+
+// -------------------------------------------------------------------------- //
+
+String::String(const char8* string, u32 size)
+  : mBuffer(string, size)
+  , mLength(static_cast<u32>(alfUTF8StringLength(string)))
+{
+  // TODO(Filip Björklund): Stop as first nul-terminator
+}
 
 // -------------------------------------------------------------------------- //
 
