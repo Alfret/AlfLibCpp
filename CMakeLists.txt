@@ -35,6 +35,7 @@ set(SOURCE_FILES
   source/alflib/file/file.cpp
   source/alflib/file/file_io.cpp
   source/alflib/file/path.cpp
+  source/alflib/graphics/image.cpp
   source/alflib/platform/os.cpp
   source/thirdparty/alf_unicode.c
   source/thirdparty/miniz/miniz.c
