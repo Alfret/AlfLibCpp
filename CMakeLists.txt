@@ -14,10 +14,10 @@ set(CMAKE_CXX_STANDARD 14)
 
 # Compiler flags flags
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else ()
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 endif ()
 
 ## ========================================================================== ##
@@ -26,18 +26,20 @@ endif ()
 
 # Specify source files
 set(SOURCE_FILES
-        source/alflib/allocator.cpp
-        source/alflib/assert.cpp
-        source/alflib/string.cpp
-        source/alflib/file/archive.cpp
-        source/alflib/file/file.cpp
-        source/alflib/file/file_io.cpp
-        source/alflib/file/path.cpp
-        source/alflib/platform/os.cpp
-        source/thirdparty/alf_unicode.c
-        source/thirdparty/miniz/miniz.c
-        source/thirdparty/microtar/microtar.c
-        )
+  source/alflib/allocator.cpp
+  source/alflib/assert.cpp
+  source/alflib/string.cpp
+  source/alflib/core/console.cpp
+  source/alflib/core/dialog.cpp
+  source/alflib/file/archive.cpp
+  source/alflib/file/file.cpp
+  source/alflib/file/file_io.cpp
+  source/alflib/file/path.cpp
+  source/alflib/platform/os.cpp
+  source/thirdparty/alf_unicode.c
+  source/thirdparty/miniz/miniz.c
+  source/thirdparty/microtar/microtar.c
+  )
 
 ## ========================================================================== ##
 ## Output
@@ -58,12 +60,24 @@ target_link_libraries(${PROJECT_NAME} fmt)
 
 # Project headers
 target_include_directories(${PROJECT_NAME} PUBLIC
-        include
-        include/thirdparty
-        include/thirdparty/miniz
-        include/thirdparty/microtar
-        external/fmt/include
-        )
+  include
+  include/thirdparty
+  include/thirdparty/miniz
+  include/thirdparty/microtar
+  external/fmt/include
+  )
+
+## ========================================================================== ##
+## Linux-specifics
+## ========================================================================== ##
+
+if (UNIX AND NOT APPLE)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK4 REQUIRED gtk4)
+  target_link_directories(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARY_DIRS})
+  target_include_directories(${PROJECT_NAME} PRIVATE ${GTK4_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${GTK4_LIBRARIES})
+endif ()
 
 ## ========================================================================== ##
 ## Preprocessor definitions
@@ -71,7 +85,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 # Debug macro
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE ALFLIB_DEBUG)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE ALFLIB_DEBUG)
 endif ()
 
 ## ========================================================================== ##
@@ -80,10 +94,10 @@ endif ()
 
 # Add samples subdirectory
 if (ALFLIBCPP_BUILD_SAMPLES)
-    add_subdirectory(samples)
+  add_subdirectory(samples)
 endif ()
 
 # Add tests subdirectory
 if (ALFLIBCPP_BUILD_TESTS)
-    add_subdirectory(tests)
+  add_subdirectory(tests)
 endif ()

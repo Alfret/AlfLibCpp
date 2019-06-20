@@ -34,6 +34,10 @@
 // Macros
 // ========================================================================== //
 
+/** Macro for a asserting a condition. This does not depend on any other classes
+ * in the library to function **/
+#define AlfBasicAssert(condition, message) assert(!!(condition) && message)
+
 #if defined(ALFLIB_TARGET_WINDOWS)
 /** Macro for asserting that a condition is true **/
 #define AlfAssert(condition, messageFormat, ...)                               \

@@ -160,19 +160,19 @@ public:
    */
   bool EndsWith(u32 codepoint) const;
 
-  /** Replace all occurances of the
-   * \todo Currently the implementation is na�ve and very inneficcient. A better
-   * substring searching algorithm should be used.
-   * \brief Replace all occurances of the string 'from' with the string 'to'.
-   * \param from String to replace all occurances of.
-   * \param to String to replace the occurances with.
-   * \return Number of replaced occurances.
+  /** Replace all occurrences of the
+   * \todo Currently the implementation is naïve and not very efficient. A
+   * better substring searching algorithm should be used.
+   * \brief Replace all occurrences of the string 'from' with the string 'to'.
+   * \param from String to replace all occurrences of.
+   * \param to String to replace the occurrences with.
+   * \return Number of replaced occurrences.
    */
   u32 Replace(const String& from, const String& to);
 
-  /** Remove all occurances of the specified codepoint from the string.
-   * \brief Remove all occurances of codepoint.
-   * \param codepoint Codepoint to remove occurances of.
+  /** Remove all occurrences of the specified codepoint from the string.
+   * \brief Remove all occurrences of codepoint.
+   * \param codepoint Codepoint to remove occurrences of.
    * \return Number of removed codepoints.
    */
   u32 Remove(u32 codepoint);
@@ -213,7 +213,7 @@ public:
    * String str = String("Sum: {} + {} = {}").Format(2, "2", 4);
    */
   template<typename... ARGS>
-  String Format(ARGS&&... arguments);
+  String Format(ARGS&&... arguments) const;
 
   /** Concatenate another string at the end of this string.
    * \brief Concatenate string.
@@ -338,7 +338,7 @@ String::ForEach(F&& function, ARGS&&... arguments) const
 
 template<typename... ARGS>
 String
-String::Format(ARGS&&... arguments)
+String::Format(ARGS&&... arguments) const
 {
   return String(fmt::format(mBuffer, std::forward<ARGS>(arguments)...));
 }

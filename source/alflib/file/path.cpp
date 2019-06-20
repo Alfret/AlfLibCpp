@@ -115,7 +115,7 @@ Path::GetAbsolutePath() const
   if (length != 0) {
     // Canonicalize path
     char16 _buffer[MAX_PATH];
-    // TODO(Filip Bj�rklund): Handle case where function is not available
+    // TODO(Filip Björklund): Handle case where function is not available
     const HRESULT result =
       SharedLibraries::GetKernelBase().pPathCchCanonicalizeEx(
         _buffer, MAX_PATH, buffer, PATHCCH_NONE);
@@ -164,7 +164,7 @@ Path::GetCanonical() const
     path.Join(components[i]);
   }
 
-  return std::move(path);
+  return path;
 }
 
 // -------------------------------------------------------------------------- //
