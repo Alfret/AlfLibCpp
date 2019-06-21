@@ -81,86 +81,6 @@ public:
   template<typename T>
   T Read();
 
-  /** Read a value of the type s8.
-   * \brief Read s8.
-   * \return Read value.
-   */
-  template<>
-  s8 Read();
-
-  /** Read a value of the type u8.
-   * \brief Read u8.
-   * \return Read value.
-   */
-  template<>
-  u8 Read();
-
-  /** Read a value of the type s16.
-   * \brief Read s16.
-   * \return Read value.
-   */
-  template<>
-  s16 Read();
-
-  /** Read a value of the type u16.
-   * \brief Read u16.
-   * \return Read value.
-   */
-  template<>
-  u16 Read();
-
-  /** Read a value of the type s32.
-   * \brief Read s32.
-   * \return Read value.
-   */
-  template<>
-  s32 Read();
-
-  /** Read a value of the type u32.
-   * \brief Read u32.
-   * \return Read value.
-   */
-  template<>
-  u32 Read();
-
-  /** Read a value of the type s64.
-   * \brief Read s64.
-   * \return Read value.
-   */
-  template<>
-  s64 Read();
-
-  /** Read a value of the type u64.
-   * \brief Read u64.
-   * \return Read value.
-   */
-  template<>
-  u64 Read();
-
-  /** Read a value of the type f32.
-   * \brief Read f32.
-   * \return Read value.
-   */
-  template<>
-  f32 Read();
-
-  /** Read a value of the type f64.
-   * \brief Read f64.
-   * \return Read value.
-   */
-  template<>
-  f64 Read();
-
-  /** Read a string from the buffer.
-   * \note This function is compatible with the 'const char8*' version of the
-   * corresponding function on the writer. This means that this function can be
-   * used to read strings that were written as 'const char8*'.
-   * \brief Read string.
-   * \return Read string.
-   */
-  template<>
-  String Read();
-
   /** Read an array-list from the buffer.
    * \brief Read array list.
    * \tparam T Type of objects in list.
@@ -200,6 +120,138 @@ T
 MemoryReader::Read()
 {
   return T::FromBytes(*this);
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+s8 inline MemoryReader::Read()
+{
+  const s8* bytes = reinterpret_cast<const s8*>(ReadBytes(sizeof(s8)));
+  return *bytes;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+u8 inline MemoryReader::Read()
+{
+  const u8* bytes = ReadBytes(sizeof(s8));
+  return *bytes;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+s16 inline MemoryReader::Read()
+{
+  const s16* data = reinterpret_cast<const s16*>(ReadBytes(sizeof(s16)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+u16 inline MemoryReader::Read()
+{
+  const u16* data = reinterpret_cast<const u16*>(ReadBytes(sizeof(u16)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+s32 inline MemoryReader::Read()
+{
+  const s32* data = reinterpret_cast<const s32*>(ReadBytes(sizeof(s32)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+u32 inline MemoryReader::Read()
+{
+  const u32* data = reinterpret_cast<const u32*>(ReadBytes(sizeof(u32)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+s64 inline MemoryReader::Read()
+{
+  const s64* data = reinterpret_cast<const s64*>(ReadBytes(sizeof(s64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+u64 inline MemoryReader::Read()
+{
+  const u64* data = reinterpret_cast<const u64*>(ReadBytes(sizeof(u64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+f32 inline MemoryReader::Read()
+{
+  const f32* data = reinterpret_cast<const f32*>(ReadBytes(sizeof(f32)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+f64 inline MemoryReader::Read()
+{
+  const f64* data = reinterpret_cast<const f64*>(ReadBytes(sizeof(f64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+String inline MemoryReader::Read()
+{
+  u32 size = Read<u32>();
+  const char8* data = reinterpret_cast<const char8*>(ReadBytes(size));
+  return String(data, size);
 }
 
 // -------------------------------------------------------------------------- //
