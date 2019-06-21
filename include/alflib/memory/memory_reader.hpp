@@ -26,6 +26,9 @@
 // Headers
 // ========================================================================== //
 
+// Standard headers
+#include <unordered_map>
+
 // Project headers
 #include "alflib/core/common.hpp"
 #include "alflib/core/buffer.hpp"
@@ -58,44 +61,115 @@ public:
    */
   explicit MemoryReader(const Buffer& buffer);
 
+  /** Read the specified number of bytes from the reader.
+   * \brief Read bytes.
+   * \param size Number or bytes to read.
+   * \return Read bytes.
+   */
+  const u8* ReadBytes(u64 size);
+
+  /** Read an object of the type T from the buffer.
+   * \note This function requires the object to have a static function
+   * 'FromBytes(MemoryReader&)' defined for it. This function will receive  the
+   * reader and is responsible for reading all data that is required to
+   * reconstruct the object.
+   * \brief Read object.
+   * \tparam T Type of object.
+   * \return Read object.
+   */
   template<typename T>
   T Read();
 
+  /** Read a value of the type s8.
+   * \brief Read s8.
+   * \return Read value.
+   */
   template<>
   s8 Read();
 
+  /** Read a value of the type u8.
+   * \brief Read u8.
+   * \return Read value.
+   */
   template<>
   u8 Read();
 
+  /** Read a value of the type s16.
+   * \brief Read s16.
+   * \return Read value.
+   */
   template<>
   s16 Read();
 
+  /** Read a value of the type u16.
+   * \brief Read u16.
+   * \return Read value.
+   */
   template<>
   u16 Read();
 
+  /** Read a value of the type s32.
+   * \brief Read s32.
+   * \return Read value.
+   */
   template<>
   s32 Read();
 
+  /** Read a value of the type u32.
+   * \brief Read u32.
+   * \return Read value.
+   */
   template<>
   u32 Read();
 
+  /** Read a value of the type s64.
+   * \brief Read s64.
+   * \return Read value.
+   */
   template<>
   s64 Read();
 
+  /** Read a value of the type u64.
+   * \brief Read u64.
+   * \return Read value.
+   */
   template<>
   u64 Read();
 
+  /** Read a value of the type f32.
+   * \brief Read f32.
+   * \return Read value.
+   */
   template<>
   f32 Read();
 
+  /** Read a value of the type f64.
+   * \brief Read f64.
+   * \return Read value.
+   */
   template<>
   f64 Read();
 
+  /** Read a string from the buffer.
+   * \note This function is compatible with the 'const char8*' version of the
+   * corresponding function on the writer. This means that this function can be
+   * used to read strings that were written as 'const char8*'.
+   * \brief Read string.
+   * \return Read string.
+   */
   template<>
   String Read();
 
+  /** Read an array-list from the buffer.
+   * \brief Read array list.
+   * \tparam T Type of objects in list.
+   * \return Read list.
+   */
   template<typename T>
   ArrayList<T> ReadArrayList();
+
+  template<typename K, typename V>
+  std::unordered_map<K, V> ReadStdUnorderedMap();
 };
 
 // -------------------------------------------------------------------------- //
@@ -120,6 +194,21 @@ MemoryReader::ReadArrayList()
     list[i] = Read<T>();
   }
   return list;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+std::unordered_map<K, V>
+MemoryReader::ReadStdUnorderedMap()
+{
+  std::unordered_map<K, V> map;
+  u64 size = Read<u64>();
+  for (u64 i = 0; i < size; i++) {
+    K key = Read<K>();
+    map[key] = Read<V>();
+  }
+  return map;
 }
 
 }

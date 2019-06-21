@@ -26,6 +26,9 @@
 // Headers
 // ========================================================================== //
 
+// Standard headers
+#include <unordered_map>
+
 // Project headers
 #include "alflib/core/buffer.hpp"
 
@@ -190,6 +193,15 @@ public:
   template<typename T>
   void Write(const ArrayList<T>& list);
 
+  /** Write a std::unordered_map to the buffer.
+   * \brief Write map.
+   * \tparam K Key type.
+   * \tparam V Value type.
+   * \param map Map to write.
+   */
+  template<typename K, typename V>
+  void Write(const std::unordered_map<K, V>& map);
+
   /** Returns the buffer of the memory writer.
    * \brief Returns buffer.
    * \return Buffer.
@@ -230,6 +242,19 @@ MemoryWriter::Write(const ArrayList<T>& list)
   Write(static_cast<u64>(list.GetSize()));
   for (const T& object : list) {
     Write(object);
+  }
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+void
+MemoryWriter::Write(const std::unordered_map<K, V>& map)
+{
+  Write(static_cast<u64>(map.size()));
+  for (const auto& entry : map) {
+    Write<K>(entry.first);
+    Write<V>(entry.second);
   }
 }
 

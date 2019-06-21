@@ -35,6 +35,28 @@
 
 namespace alflib {
 
+struct DataObject
+{
+  String str;
+  f64 num;
+
+  void ToBytes(MemoryWriter& writer) const
+  {
+    writer.Write(str);
+    writer.Write(num);
+  }
+
+  static DataObject FromBytes(MemoryReader& reader)
+  {
+    DataObject obj;
+    obj.str = reader.Read<String>();
+    obj.num = reader.Read<f64>();
+    return obj;
+  }
+};
+
+// -------------------------------------------------------------------------- //
+
 TEST_CASE("[] - Memory Writer")
 {
   // Write some data
@@ -43,16 +65,37 @@ TEST_CASE("[] - Memory Writer")
   writer.Write(3.14f);
   writer.Write("This is a test");
   writer.Write(String{ "Another string" });
+  writer.Write(DataObject{ "String", 27.89 });
 
   ArrayList<s32> list = { 1, 3, 5, 7, 9 };
   writer.Write(list);
 
+  std::unordered_map<String, s32> mapIn;
+  mapIn["A key"] = 22;
+  mapIn["My other key"] = 138;
+  writer.Write(mapIn);
+
   // Read data back
   MemoryReader reader(writer.GetBuffer());
-  s32 i = reader.Read<s32>();
-  f32 f = reader.Read<f32>();
-  String s0 = reader.Read<String>();
-  String s1 = reader.Read<String>();
+  CHECK(reader.Read<s32>() == 32);
+  CHECK(reader.Read<f32>() == doctest::Approx(3.14f));
+  CHECK(reader.Read<String>() == "This is a test");
+  CHECK(reader.Read<String>() == "Another string");
+
+  DataObject obj = reader.Read<DataObject>();
+  CHECK(obj.str == "String");
+  CHECK(obj.num == doctest::Approx(27.89));
+
+  u32 refValues[5] = { 1, 3, 5, 7, 9 };
+  ArrayList<s32> _list = reader.ReadArrayList<s32>();
+  for (u32 i = 0; i < list.GetSize(); i++) {
+    CHECK(list[i] == refValues[i]);
+  }
+
+  auto mapOut = reader.ReadStdUnorderedMap<String, s32>();
+  CHECK(mapOut.size() == 2);
+  CHECK(mapOut["A key"] == 22);
+  CHECK(mapOut["My other key"] == 138);
 }
 
 }
