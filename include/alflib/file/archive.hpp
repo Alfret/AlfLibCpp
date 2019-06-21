@@ -34,7 +34,7 @@
 #include "alflib/collection/array_list.hpp"
 #include "alflib/file/file.hpp"
 #include "alflib/file/result.hpp"
-#include "alflib/macros.hpp"
+#include "alflib/core/macros.hpp"
 
 // ========================================================================== //
 // Archive Declaration

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip Bj�rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,45 +20,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "alflib/memory/allocator.hpp"
+
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-// Library headers
-#include <doctest/doctest.h>
-
 // Project headers
-#include "alflib/core/common.hpp"
-#include "alflib/memory/unique_pointer.hpp"
+#include "alflib/math/math.hpp"
 
 // ========================================================================== //
-// Tests
+// DefaultAllocator Implementation
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-/** Datastructure for UniquePointer tests **/
-struct Data
+void*
+DefaultAllocator::Alloc(u64 size, u32 alignment)
 {
-  s32 i0;
-  s32 i1;
-  Data(s32 i0, s32 i1)
-    : i0(i0)
-    , i1(i1)
-  {}
-};
+  if (size == 0) {
+    return nullptr;
+  }
+
+#if defined(_WIN32)
+  return _aligned_malloc(size, alignment);
+#elif defined(__linux__) || defined(__APPLE__)
+  alignment = Max(DEFAULT_ALIGNMENT, alignment);
+  void* memory;
+  if (posix_memalign(&memory, alignment, size) != 0) {
+    return nullptr;
+  }
+  return memory;
+#endif
+}
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[UniquePointer] - Make")
+void
+DefaultAllocator::Free(void* memory)
 {
-  using namespace alflib;
-
-  auto p = UniquePointer<Data>::Make(DefaultAllocator::Instance(), 32, 240);
-  CHECK(p->i0 == 32);
-  CHECK(p->i1 == 240);
+#if defined(_WIN32)
+  _aligned_free(memory);
+#elif defined(__linux__) || defined(__APPLE__)
+  free(memory);
+#endif
 }
 
+// -------------------------------------------------------------------------- //
+
+DefaultAllocator&
+DefaultAllocator::Instance()
+{
+  static DefaultAllocator allocator;
+  return allocator;
 }
+
 }

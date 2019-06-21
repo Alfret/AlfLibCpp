@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bj�rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,6 @@
 namespace alflib {
 namespace tests {
 
-/** Test element **/
 struct Element
 {
   static u32 liveCount;

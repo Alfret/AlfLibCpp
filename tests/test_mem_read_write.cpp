@@ -24,41 +24,78 @@
 // Headers
 // ========================================================================== //
 
-// Library headers
 #include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/core/common.hpp"
-#include "alflib/memory/unique_pointer.hpp"
+#include "alflib/collection/array_list.hpp"
+#include "alflib/memory/memory_reader.hpp"
+#include "alflib/memory/memory_writer.hpp"
 
 // ========================================================================== //
-// Tests
+// Functions
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-/** Datastructure for UniquePointer tests **/
-struct Data
+struct DataObject
 {
-  s32 i0;
-  s32 i1;
-  Data(s32 i0, s32 i1)
-    : i0(i0)
-    , i1(i1)
-  {}
+  String str;
+  f64 num;
+
+  void ToBytes(MemoryWriter& writer) const
+  {
+    writer.Write(str);
+    writer.Write(num);
+  }
+
+  static DataObject FromBytes(MemoryReader& reader)
+  {
+    DataObject obj;
+    obj.str = reader.Read<String>();
+    obj.num = reader.Read<f64>();
+    return obj;
+  }
 };
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[UniquePointer] - Make")
+TEST_CASE("[] - Memory Writer")
 {
-  using namespace alflib;
+  // Write some data
+  MemoryWriter writer;
+  writer.Write(32);
+  writer.Write(3.14f);
+  writer.Write("This is a test");
+  writer.Write(String{ "Another string" });
+  writer.Write(DataObject{ "String", 27.89 });
 
-  auto p = UniquePointer<Data>::Make(DefaultAllocator::Instance(), 32, 240);
-  CHECK(p->i0 == 32);
-  CHECK(p->i1 == 240);
+  ArrayList<s32> list = { 1, 3, 5, 7, 9 };
+  writer.Write(list);
+
+  std::unordered_map<String, s32> mapIn;
+  mapIn["A key"] = 22;
+  mapIn["My other key"] = 138;
+  writer.Write(mapIn);
+
+  // Read data back
+  MemoryReader reader(writer.GetBuffer());
+  CHECK(reader.Read<s32>() == 32);
+  CHECK(reader.Read<f32>() == doctest::Approx(3.14f));
+  CHECK(reader.Read<String>() == "This is a test");
+  CHECK(reader.Read<String>() == "Another string");
+
+  DataObject obj = reader.Read<DataObject>();
+  CHECK(obj.str == "String");
+  CHECK(obj.num == doctest::Approx(27.89));
+
+  u32 refValues[5] = { 1, 3, 5, 7, 9 };
+  ArrayList<s32> _list = reader.ReadArrayList<s32>();
+  for (u32 i = 0; i < list.GetSize(); i++) {
+    CHECK(list[i] == refValues[i]);
+  }
+
+  auto mapOut = reader.ReadStdUnorderedMap<String, s32>();
+  CHECK(mapOut.size() == 2);
+  CHECK(mapOut["A key"] == 22);
+  CHECK(mapOut["My other key"] == 138);
 }
 
-}
 }

@@ -20,40 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/assert.hpp"
-
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
+// Library headers
+#include <doctest/doctest.h>
+
 // Project headers
-#include "alflib/core/dialog.hpp"
-#include "alflib/core/console.hpp"
+#include "alflib/file/file.hpp"
+#include "alflib/file/file_io.hpp"
 
 // ========================================================================== //
-// Functions
+// Tests
 // ========================================================================== //
 
 namespace alflib {
+namespace tests {
 
-void
-Assert(bool condition, const char8* file, u32 line, const String& message)
+TEST_CASE("[Image] - Load")
 {
-  // Return if the condition is true (holds)
-  if (condition) {
-    return;
-  }
-
-  // Display message and abort
-  String output =
-    String("{}:{}: Failed with message: '{}'").Format(file, line, message);
-
-  // Print to stdout and show dialog
-  Console::WriteLine(output);
-  ShowErrorDialog("Assertion", output);
-
-  // Abort execution
-  exit(-1);
+  CHECK(true);
 }
 
+}
 }

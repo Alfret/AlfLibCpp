@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bj�rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,58 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/allocator.hpp"
+#include "alflib/core/assert.hpp"
 
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-#include <alflib/math/math.hpp>
+// Project headers
+#include "alflib/core/dialog.hpp"
+#include "alflib/core/console.hpp"
 
 // ========================================================================== //
-// DefaultAllocator Implementation
+// Functions
 // ========================================================================== //
 
 namespace alflib {
 
-void*
-DefaultAllocator::Alloc(u64 size, u32 alignment)
-{
-  if (size == 0) {
-    return nullptr;
-  }
-
-#if defined(_WIN32)
-  return _aligned_malloc(size, alignment);
-#elif defined(__linux__) || defined(__APPLE__)
-  alignment = Max(DEFAULT_ALIGNMENT, alignment);
-  void* memory;
-  if (posix_memalign(&memory, alignment, size) != 0) {
-    return nullptr;
-  }
-  return memory;
-#endif
-}
-
-// -------------------------------------------------------------------------- //
-
 void
-DefaultAllocator::Free(void* memory)
+Assert(bool condition, const char8* file, u32 line, const String& message)
 {
-#if defined(_WIN32)
-  _aligned_free(memory);
-#elif defined(__linux__) || defined(__APPLE__)
-  free(memory);
-#endif
-}
+  // Return if the condition is true (holds)
+  if (condition) {
+    return;
+  }
 
-// -------------------------------------------------------------------------- //
+  // Display message and abort
+  String output =
+    String("{}:{}: Failed with message: '{}'").Format(file, line, message);
 
-DefaultAllocator&
-DefaultAllocator::Instance()
-{
-  static DefaultAllocator allocator;
-  return allocator;
+  // Print to stdout and show dialog
+  Console::WriteLine(output);
+  ShowErrorDialog("Assertion", output);
+
+  // Abort execution
+  exit(-1);
 }
 
 }

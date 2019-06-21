@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,8 +26,11 @@
 // Headers
 // ========================================================================== //
 
+// Standard headers
 #include <utility>
-#include "common.hpp"
+
+// Project headers
+#include "alflib/core/common.hpp"
 
 // ========================================================================== //
 // Allocator Declaration
@@ -36,7 +39,7 @@
 namespace alflib {
 
 /** \class Allocator
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 07 juni 2019 - 20:46
  * \brief Allocator.
  * \details
@@ -70,8 +73,8 @@ public:
    */
   virtual void Free(void* memory) = 0;
 
-  /** Safer version of the Allocator::Free function that sets the pointer to 
-   * null after freeing the data. This lessens the risk of double free or use 
+  /** Safer version of the Allocator::Free function that sets the pointer to
+   * null after freeing the data. This lessens the risk of double free or use
    * after free.
    * \brief Safe free.
    * \param memory Memory to free.
@@ -84,7 +87,7 @@ public:
     }
   }
 
-  /** Allocate and initialize an object of the type T with the arguments 
+  /** Allocate and initialize an object of the type T with the arguments
    * forwarded to the constructor.
    * \brief Allocate object.
    * \tparam T Type of object.
@@ -92,18 +95,18 @@ public:
    * \param arguments Arguments to constructor.
    * \return Object or null on failure.
    */
-  template<typename T, typename ... ARGS>
+  template<typename T, typename... ARGS>
   T* New(ARGS&&... arguments)
   {
     return new (Alloc(sizeof(T), alignof(T)))
       T{ std::forward<ARGS>(arguments)... };
   }
 
-  /** Allocate new array of N number of object of the type T. Each element is 
+  /** Allocate new array of N number of object of the type T. Each element is
    * default constructed.
    * \brief Allocate new array.
    * \tparam T Type of array elements.
-   * \param n Number of object in array. 
+   * \param n Number of object in array.
    * \return Array or null on failure.
    */
   template<typename T>
@@ -130,7 +133,6 @@ public:
       Free(object);
     }
   }
-
 };
 
 }
@@ -142,7 +144,7 @@ public:
 namespace alflib {
 
 /** \class DefaultAllocator
- * \author Filip Björklund
+ * \author Filip BjÃ¶rklund
  * \date 07 juni 2019 - 21:11
  * \brief Default allocator.
  * \details
@@ -174,7 +176,6 @@ public:
    * \return Allocator.
    */
   static DefaultAllocator& Instance();
-
 };
 
 }

@@ -27,8 +27,8 @@
 // ========================================================================== //
 
 // Project headers
-#include "alflib/common.hpp"
-#include "alflib/string.hpp"
+#include "alflib/core/common.hpp"
+#include "alflib/core/string.hpp"
 
 // ========================================================================== //
 // Macros

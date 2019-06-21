@@ -26,8 +26,9 @@
 // Headers
 // ========================================================================== //
 
-#include "alflib/assert.hpp"
-#include "alflib/common.hpp"
+// Project headers
+#include "alflib/core/assert.hpp"
+#include "alflib/core/common.hpp"
 
 // ========================================================================== //
 // Functions

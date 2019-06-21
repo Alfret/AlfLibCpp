@@ -20,14 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/string.hpp"
+#include "alflib/core/string.hpp"
 
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-#include "alflib/assert.hpp"
+// Standard headers
 #include <vector>
+
+// Project headers
+#include "alflib/core/assert.hpp"
 
 // ========================================================================== //
 // String Implementation

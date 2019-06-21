@@ -9,12 +9,14 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/bin)
 add_subdirectory(external/doctest)
 
 # Add executable and libraries to link
-add_executable(test 
-  main.cpp 
-  test_allocator.cpp 
+add_executable(test
+  main.cpp
+  test_allocator.cpp
   test_archive.cpp
-  test_array_list.cpp 
+  test_array_list.cpp
   test_file.cpp
+  test_image.cpp
+  test_mem_read_write.cpp
   test_path.cpp
   test_pointer.cpp
   test_string.cpp)

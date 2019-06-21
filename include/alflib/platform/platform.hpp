@@ -23,6 +23,13 @@
 #pragma once
 
 // ========================================================================== //
+// Headers
+// ========================================================================== //
+
+// Project headers
+#include "alflib/core/common.hpp"
+
+// ========================================================================== //
 // Platform Detection
 // ========================================================================== //
 
@@ -49,6 +56,31 @@
 #elif defined(__ANDROID__)
 #define ALFLIB_TARGET_ANDROID
 #endif
+
+// ========================================================================== //
+// Endianness
+// ========================================================================== //
+
+/** Macro for little endian **/
+#define ALFLIB_LITTLE_ENDIAN 0x03020100ul
+/** Macro for big endian **/
+#define ALFLIB_BIG_ENDIAN 0x00010203ul
+/** Macro for PDP endian **/
+#define ALFLIB_PDP_ENDIAN 0x01000302ul
+
+namespace alflib {
+
+/** Union used to determine host endianness **/
+static const union
+{
+  u8 bytes[4];
+  u32 value;
+} sHostOrder = { { 0, 1, 2, 3 } };
+
+}
+
+/** Macro for the endianness of the host **/
+#define ALFLIB_HOST_ENDIAN (alflib::sHostOrder.value)
 
 // ========================================================================== //
 // Windows Headers

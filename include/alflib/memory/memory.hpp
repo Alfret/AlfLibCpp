@@ -20,45 +20,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#pragma once
+
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-// Library headers
-#include <doctest/doctest.h>
-
 // Project headers
 #include "alflib/core/common.hpp"
-#include "alflib/memory/unique_pointer.hpp"
 
 // ========================================================================== //
-// Tests
+// Functions
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-/** Datastructure for UniquePointer tests **/
-struct Data
+/** Swap endian of a 16-bit value.
+ * \brief Swap 16-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u16
+SwapEndian(u16 value)
 {
-  s32 i0;
-  s32 i1;
-  Data(s32 i0, s32 i1)
-    : i0(i0)
-    , i1(i1)
-  {}
-};
+  return ((value & 0xff00u) >> 8u) | ((value & 0x00ffu) << 8u);
+}
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[UniquePointer] - Make")
+/** Swap endian of a 32-bit value.
+ * \brief Swap 32-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u32
+SwapEndian(u32 value)
 {
-  using namespace alflib;
-
-  auto p = UniquePointer<Data>::Make(DefaultAllocator::Instance(), 32, 240);
-  CHECK(p->i0 == 32);
-  CHECK(p->i1 == 240);
+  return ((value & 0xff000000u) >> 24u) | ((value & 0x00ff0000u) >> 8u) |
+         ((value & 0x0000ff00u) << 8u) | ((value & 0x000000ffu) << 24u);
 }
 
+// -------------------------------------------------------------------------- //
+
+/** Swap endian of a 64-bit value.
+ * \brief Swap 64-bit endian.
+ * \param value Value to swap endian of.
+ * \return Value with swapped endian.
+ */
+constexpr u64
+SwapEndian(u64 value)
+{
+  return ((value & 0xff00000000000000ull) >> 56u) |
+         ((value & 0x00ff000000000000ull) >> 40u) |
+         ((value & 0x0000ff0000000000ull) >> 24u) |
+         ((value & 0x000000ff00000000ull) >> 8u) |
+         ((value & 0x00000000ff000000ull) << 8u) |
+         ((value & 0x0000000000ff0000ull) << 24u) |
+         ((value & 0x000000000000ff00ull) << 40u) |
+         ((value & 0x00000000000000ffull) << 56u);
 }
+
 }

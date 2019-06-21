@@ -35,8 +35,8 @@
 #include <fmt/ostream.h>
 
 // Project headers
-#include "alflib/common.hpp"
-#include "alflib/unique_pointer.hpp"
+#include "alflib/core/common.hpp"
+#include "alflib/memory/unique_pointer.hpp"
 
 // ========================================================================== //
 // String Declaration

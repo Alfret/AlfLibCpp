@@ -26,15 +26,19 @@ endif ()
 
 # Specify source files
 set(SOURCE_FILES
-  source/alflib/allocator.cpp
-  source/alflib/assert.cpp
-  source/alflib/string.cpp
+  source/alflib/core/assert.cpp
+  source/alflib/core/buffer.cpp
   source/alflib/core/console.cpp
   source/alflib/core/dialog.cpp
+  source/alflib/core/string.cpp
   source/alflib/file/archive.cpp
   source/alflib/file/file.cpp
   source/alflib/file/file_io.cpp
   source/alflib/file/path.cpp
+  source/alflib/graphics/image.cpp
+  source/alflib/memory/allocator.cpp
+  source/alflib/memory/memory_reader.cpp
+  source/alflib/memory/memory_writer.cpp
   source/alflib/platform/os.cpp
   source/thirdparty/alf_unicode.c
   source/thirdparty/miniz/miniz.c

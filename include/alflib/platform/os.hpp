@@ -28,7 +28,7 @@
 
 // Project headers
 #include "alflib/platform/platform.hpp"
-#include "alflib/string.hpp"
+#include "alflib/core/string.hpp"
 
 // ========================================================================== //
 // Windows
