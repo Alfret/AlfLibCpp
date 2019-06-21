@@ -43,6 +43,7 @@ Buffer::Buffer(u64 size, const u8* data, Allocator& allocator)
 
 Buffer::Buffer(const Buffer& other)
   : mAllocator(other.mAllocator)
+  , mData(nullptr)
   , mSize(other.mSize)
 {
   if (other.mData) {
@@ -67,6 +68,7 @@ Buffer::Buffer(Buffer&& other)
 Buffer::~Buffer()
 {
   mAllocator.Free(mData);
+  mSize = 0;
 }
 
 // -------------------------------------------------------------------------- //
