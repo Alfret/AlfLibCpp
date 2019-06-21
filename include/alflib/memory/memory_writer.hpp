@@ -167,132 +167,74 @@ MemoryWriter::Write(const T* object)
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const s8& object)
-{
-  WriteBytes(reinterpret_cast<const u8*>(&object), 1);
-}
+void
+MemoryWriter::Write(const s8& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const u8& object)
-{
-  WriteBytes(&object, 1);
-}
+void
+MemoryWriter::Write(const u8& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const s16& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(s16));
-#else
-  s16 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(s16));
-#endif
-}
+void
+MemoryWriter::Write(const s16& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const u16& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u16));
-#else
-  u16 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u16));
-#endif
-}
+void
+MemoryWriter::Write(const u16& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const s32& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(s32));
-#else
-  s32 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(s32));
-#endif
-}
+void
+MemoryWriter::Write(const s32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const u32& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u32));
-#else
-  u32 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u32));
-#endif
-}
+void
+MemoryWriter::Write(const u32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const s64& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(s64));
-#else
-  s64 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(s64));
-#endif
-}
+void
+MemoryWriter::Write(const s64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const u64& object)
-{
-#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u64));
-#else
-  u64 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u64));
-#endif
-}
+void
+MemoryWriter::Write(const u64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const f32& object)
-{
-  Write(reinterpret_cast<const u32&>(object));
-}
+void
+MemoryWriter::Write(const f32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const f64& object)
-{
-  Write(reinterpret_cast<const u64&>(object));
-}
+void
+MemoryWriter::Write(const f64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const String& object)
-{
-  u32 size = object.GetSize();
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object.GetUTF8()), size);
-}
+void
+MemoryWriter::Write(const String& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void inline MemoryWriter::Write(const char8* object)
-{
-  u32 size = strlen(object);
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object), size);
-}
+void
+MemoryWriter::Write(const char8* object);
 
 // -------------------------------------------------------------------------- //
 
