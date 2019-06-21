@@ -56,7 +56,7 @@ add_subdirectory(external/fmt)
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 # Libraries to link with
-target_link_libraries(${PROJECT_NAME} fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt-header-only)
 
 ## ========================================================================== ##
 ## Headers
@@ -80,7 +80,7 @@ if (UNIX AND NOT APPLE)
   pkg_check_modules(GTK4 REQUIRED gtk4)
   target_link_directories(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARY_DIRS})
   target_include_directories(${PROJECT_NAME} PRIVATE ${GTK4_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} ${GTK4_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARIES})
 endif ()
 
 ## ========================================================================== ##
