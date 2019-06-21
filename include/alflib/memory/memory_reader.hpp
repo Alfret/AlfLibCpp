@@ -51,7 +51,7 @@ class MemoryReader
 {
 private:
   /** Buffer that is being read **/
-  const Buffer& mBuffer;
+  Buffer mBuffer;
   /** Read offset **/
   u64 mReadOffset = 0;
 
@@ -60,7 +60,7 @@ public:
    * \brief Construct memory reader.
    * \param buffer Buffer for the reader to work on.
    */
-  explicit MemoryReader(const Buffer& buffer);
+  explicit MemoryReader(Buffer buffer);
 
   /** Read the specified number of bytes from the reader.
    * \brief Read bytes.

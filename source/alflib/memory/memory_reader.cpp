@@ -35,8 +35,8 @@
 
 namespace alflib {
 
-MemoryReader::MemoryReader(const Buffer& buffer)
-  : mBuffer(buffer)
+MemoryReader::MemoryReader(Buffer buffer)
+  : mBuffer(std::move(buffer))
 {}
 
 // -------------------------------------------------------------------------- //
