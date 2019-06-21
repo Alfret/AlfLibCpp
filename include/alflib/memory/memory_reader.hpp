@@ -28,6 +28,7 @@
 
 // Standard headers
 #include <unordered_map>
+#include <vector>
 
 // Project headers
 #include "alflib/core/common.hpp"
@@ -168,8 +169,28 @@ public:
   template<typename T>
   ArrayList<T> ReadArrayList();
 
+  /** Read a std::vector from the buffer.
+   * \brief Read vector.
+   * \tparam T Type of objects in vector.
+   * \return Read vector.
+   */
+  template<typename T>
+  std::vector<T> ReadStdVector();
+
+  /** Read a std::unordered_map from the buffer.
+   * \brief Read map.
+   * \tparam K Key type.
+   * \tparam V Value type.
+   * \return Read map.
+   */
   template<typename K, typename V>
   std::unordered_map<K, V> ReadStdUnorderedMap();
+
+  /** Returns the current read offset in the underlying buffer.
+   * \brief Returns read offset.
+   * \return Read offset.
+   */
+  u64 GetOffset() const { return mReadOffset; }
 };
 
 // -------------------------------------------------------------------------- //
@@ -190,6 +211,21 @@ MemoryReader::ReadArrayList()
   const u64 size = Read<u64>();
   ArrayList<T> list;
   list.Resize(size);
+  for (u64 i = 0; i < size; i++) {
+    list[i] = Read<T>();
+  }
+  return list;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+std::vector<T>
+MemoryReader::ReadStdVector()
+{
+  const u64 size = Read<u64>();
+  std::vector<T> list;
+  list.resize(size);
   for (u64 i = 0; i < size; i++) {
     list[i] = Read<T>();
   }

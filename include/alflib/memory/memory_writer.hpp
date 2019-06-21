@@ -28,6 +28,7 @@
 
 // Standard headers
 #include <unordered_map>
+#include <vector>
 
 // Project headers
 #include "alflib/core/buffer.hpp"
@@ -193,6 +194,14 @@ public:
   template<typename T>
   void Write(const ArrayList<T>& list);
 
+  /** Write a std::vector to the buffer.
+   * \brief Write vector.
+   * \tparam T Object type.
+   * \param vector Vector to write.
+   */
+  template<typename T>
+  void Write(const std::vector<T>& vector);
+
   /** Write a std::unordered_map to the buffer.
    * \brief Write map.
    * \tparam K Key type.
@@ -213,6 +222,12 @@ public:
    * \return Buffer.
    */
   const Buffer& GetBuffer() const { return mBuffer; }
+
+  /** Returns the current write offset in the underlying buffer.
+   * \brief Returns write offset.
+   * \return Write offset.
+   */
+  u64 GetOffset() const { return mWriteOffset; }
 };
 
 // -------------------------------------------------------------------------- //
@@ -241,6 +256,18 @@ MemoryWriter::Write(const ArrayList<T>& list)
 {
   Write(static_cast<u64>(list.GetSize()));
   for (const T& object : list) {
+    Write(object);
+  }
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename T>
+void
+MemoryWriter::Write(const std::vector<T>& vector)
+{
+  Write(static_cast<u64>(vector.size()));
+  for (const T& object : vector) {
     Write(object);
   }
 }
