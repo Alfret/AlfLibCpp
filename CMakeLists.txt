@@ -77,10 +77,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 if (UNIX AND NOT APPLE)
   find_package(PkgConfig REQUIRED)
-  pkg_check_modules(GTK4 REQUIRED gtk4)
-  target_link_directories(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARY_DIRS})
-  target_include_directories(${PROJECT_NAME} PRIVATE ${GTK4_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARIES})
+  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+  target_link_directories(${PROJECT_NAME} PRIVATE ${GTK3_LIBRARY_DIRS})
+  target_include_directories(${PROJECT_NAME} PRIVATE ${GTK3_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK3_LIBRARIES})
 endif ()
 
 ## ========================================================================== ##

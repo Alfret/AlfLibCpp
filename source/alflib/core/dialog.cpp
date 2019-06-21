@@ -47,7 +47,7 @@ ShowInfoDialog(const String& title, const String& message)
               title.GetUTF16().Get(),
               MB_OK | MB_APPLMODAL | MB_ICONINFORMATION);
 #elif defined(ALFLIB_TARGET_LINUX)
-  if (!gtk_init_check()) {
+  if (!gtk_init_check(0, nullptr)) {
     return;
   }
 
@@ -79,7 +79,7 @@ ShowWarningDialog(const String& title, const String& message)
               title.GetUTF16().Get(),
               MB_OK | MB_APPLMODAL | MB_ICONWARNING);
 #elif defined(ALFLIB_TARGET_LINUX)
-  if (!gtk_init_check()) {
+  if (!gtk_init_check(0, nullptr)) {
     return;
   }
 
@@ -115,7 +115,7 @@ ShowErrorDialog(const String& title, const String& message)
               title.GetUTF16().Get(),
               MB_OK | MB_APPLMODAL | MB_ICONERROR);
 #elif defined(ALFLIB_TARGET_LINUX)
-  if (!gtk_init_check()) {
+  if (!gtk_init_check(0, nullptr)) {
     return;
   }
 
