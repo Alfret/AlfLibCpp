@@ -20,69 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "alflib/debug/debugger.hpp"
 
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
 // Project headers
-#include "alflib/core/common.hpp"
-#include "alflib/platform/detection.hpp"
+#include "alflib/platform/platform.hpp"
 
 // ========================================================================== //
-// Endianness
+// Functions
 // ========================================================================== //
-
-/** Macro for little endian **/
-#define ALFLIB_LITTLE_ENDIAN 0x03020100ul
-/** Macro for big endian **/
-#define ALFLIB_BIG_ENDIAN 0x00010203ul
-/** Macro for PDP endian **/
-#define ALFLIB_PDP_ENDIAN 0x01000302ul
 
 namespace alflib {
 
-/** Union used to determine host endianness **/
-static const union
+void
+BreakDebugger()
 {
-  u8 bytes[4];
-  u32 value;
-} sHostOrder = { { 0, 1, 2, 3 } };
-
+#if defined(ALFLIB_TARGET_WINDOWS)
+  DebugeBreak();
+#elif defined(ALFLIB_TARGET_LINUX) || defined(ALFLIB_TARGET_MACOS)
+  raise(SIGINT);
+#endif
 }
 
-/** Macro for the endianness of the host **/
-#define ALFLIB_HOST_ENDIAN (alflib::sHostOrder.value)
-
-// ========================================================================== //
-// Windows Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_WINDOWS)
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <pathcch.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
-
-#endif // defined(ALFLIB_TARGET_WINDOWS)
-
-// ========================================================================== //
-// Linux Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_LINUX)
-
-#include <csignal>
-
-#include <dirent.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#endif
+}

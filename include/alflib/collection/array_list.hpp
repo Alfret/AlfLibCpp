@@ -54,6 +54,8 @@ public:
   using SizeType = u64;
   /** Pointer type **/
   using PointerType = T*;
+  /** Const pointer type **/
+  using ConstPointerType = T const*;
   /** Reference type **/
   using ReferenceType = T&;
 
@@ -293,7 +295,7 @@ public:
    * \brief Returns data.
    * \return Data pointer.
    */
-  const PointerType GetData() const { return mBuffer; }
+  ConstPointerType GetData() const { return mBuffer; }
 
   /** Returns the capacity of the list.
    * \brief Returns capacity.

@@ -53,7 +53,7 @@ namespace alflib {
  */
 class Archive
 {
-  ALFLIB_CLASS_NON_COPYABLE(Archive);
+  ALFLIB_CLASS_NON_COPYABLE(Archive)
 
 public:
   /** Archive type **/

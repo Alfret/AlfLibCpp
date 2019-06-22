@@ -20,47 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// ========================================================================== //
-// Headers
-// ========================================================================== //
-
-// Library headers
-#include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/file/archive.hpp"
-#include "alflib/file/file.hpp"
+#pragma once
 
 // ========================================================================== //
-// Tests
+// Functions
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Archive] - Open")
-{
-  // Tar Archive
-  Archive a1(Path{ "res/test/taping.tar" });
-  FileResult result = a1.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a1.Enumerate();
-    CHECK(files.Contains(File{ "inside_tar.txt" }));
-    CHECK(files.Contains(File{ "also_in_tar.txt" }));
-    CHECK(files.Contains(File{ "tar_img.png" }));
-  }
+/** Break the debugger if one is attached.
+ * \brief Break debugger.
+ */
+void
+BreakDebugger();
 
-  // Zip Archive
-  Archive a2(Path{ "res/test/an_archive.zip" });
-  result = a2.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a2.Enumerate();
-    CHECK(files.Contains(File{ "file_inside.txt" }));
-    CHECK(files.Contains(File{ "some_other.txt" }));
-  }
-}
-
-}
 }

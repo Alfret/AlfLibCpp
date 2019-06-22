@@ -20,42 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/core/assert.hpp"
+#pragma once
 
 // ========================================================================== //
-// Headers
+// Platform Detection
 // ========================================================================== //
 
-// Project headers
-#include "alflib/core/dialog.hpp"
-#include "alflib/core/console.hpp"
-#include "alflib/debug/debugger.hpp"
-
-// ========================================================================== //
-// Functions
-// ========================================================================== //
-
-namespace alflib {
-
-void
-Assert(bool condition, const char8* file, u32 line, const String& message)
-{
-  // Return if the condition is true (holds)
-  if (condition) {
-    return;
-  }
-
-  // Display message and abort
-  String output =
-    String("{}:{}: Failed with message: '{}'").Format(file, line, message);
-
-  // Print to stdout and show dialog
-  Console::WriteLine(output);
-  ShowErrorDialog("Assertion", output);
-
-  // Break debugger then abort execution
-  BreakDebugger();
-  exit(-1);
-}
-
-}
+#if defined(_WIN32)
+/** Microsoft Windows target platform **/
+#define ALFLIB_TARGET_WINDOWS
+#elif defined(__linux__) && !defined(__ANDROID__)
+/** Linux target platform **/
+#define ALFLIB_TARGET_LINUX
+#elif defined(__APPLE__)
+#include <TargetConditionals.h>
+#if TARGET_IPHONE_SIMULATOR
+/** Apple iOS simulator target platform **/
+#define ALFLIB_TARGET_IOS_SIMULATOR
+#elif TARGET_OS_IPHONE
+/** Apple iOS target platform **/
+#define ALFLIB_TARGET_IOS
+#elif TARGET_OS_MAC
+/** Apple MacOS target platform **/
+#define ALFLIB_TARGET_MACOS
+#else
+#error "Unknown Apple OS"
+#endif
+#elif defined(__ANDROID__)
+#define ALFLIB_TARGET_ANDROID
+#endif

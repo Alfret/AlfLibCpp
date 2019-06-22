@@ -41,7 +41,7 @@ namespace tests {
 TEST_CASE("[File] - Enumerate")
 {
   // Directory
-  File f0("tests/res");
+  File f0("res/test");
   CHECK(f0.Exists());
   CHECK(f0.GetType() == File::Type::kDirectory);
   if (f0.GetType() == File::Type::kDirectory) {
@@ -65,7 +65,7 @@ TEST_CASE("[File] - Enumerate")
   }
 
   // Archive
-  File f1("tests/res/an_archive.zip");
+  File f1("res/test/an_archive.zip");
   CHECK(f1.Exists());
   CHECK(f1.GetType() == File::Type::kArchive);
   if (f1.GetType() == File::Type::kArchive) {
@@ -96,9 +96,9 @@ TEST_CASE("[File] - Create")
 
 TEST_CASE("[File]")
 {
-  File file("tests/res/smile.txt");
+  File file("res/test/smile.txt");
   File sibling = file.Sibling("some.txt");
-  CHECK(sibling == Path{ "tests/res/some.txt" });
+  CHECK(sibling == Path{ "res/test/some.txt" });
 }
 
 // -------------------------------------------------------------------------- //
@@ -109,7 +109,7 @@ TEST_CASE("[FileIO] - Open") {}
 
 TEST_CASE("[FileIO] - Read")
 {
-  FileIO f0("tests/res/smile.txt");
+  FileIO f0("res/test/smile.txt");
   FileResult result = f0.Open(FileIO::Flag::kRead);
   CHECK(result == FileResult::kSuccess);
 

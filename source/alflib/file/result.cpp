@@ -20,47 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// ========================================================================== //
-// Headers
-// ========================================================================== //
-
-// Library headers
-#include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/file/archive.hpp"
-#include "alflib/file/file.hpp"
+#include "alflib/file/result.hpp"
 
 // ========================================================================== //
-// Tests
+// Functions
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Archive] - Open")
+std::ostream&
+operator<<(std::ostream& os, const FileResult& result)
 {
-  // Tar Archive
-  Archive a1(Path{ "res/test/taping.tar" });
-  FileResult result = a1.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a1.Enumerate();
-    CHECK(files.Contains(File{ "inside_tar.txt" }));
-    CHECK(files.Contains(File{ "also_in_tar.txt" }));
-    CHECK(files.Contains(File{ "tar_img.png" }));
+  switch (result) {
+    case FileResult::kSuccess: {
+      os << "kSuccess";
+      break;
+    }
+    case FileResult::kUnknownError: {
+      os << "kUnknownError";
+      break;
+    }
+    case FileResult::kInvalidArgument: {
+      os << "kInvalidArgument";
+      break;
+    }
+    case FileResult::kOutOfMemory: {
+      os << "kOutOfMemory";
+      break;
+    }
+    case FileResult::kNotOpen: {
+      os << "kNotOpen";
+      break;
+    }
+    case FileResult::kAlreadyOpen: {
+      os << "kAlreadyOpen";
+      break;
+    }
+    case FileResult::kNotFound: {
+      os << "kNotFound";
+      break;
+    }
+    case FileResult::kAlreadyExists: {
+      os << "kAlreadyExists";
+      break;
+    }
+    case FileResult::kAccessDenied: {
+      os << "kAccessDenied";
+      break;
+    }
+    case FileResult::kEOF: {
+      os << "kEOF";
+      break;
+    }
   }
-
-  // Zip Archive
-  Archive a2(Path{ "res/test/an_archive.zip" });
-  result = a2.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a2.Enumerate();
-    CHECK(files.Contains(File{ "file_inside.txt" }));
-    CHECK(files.Contains(File{ "some_other.txt" }));
-  }
+  return os;
 }
 
-}
 }

@@ -120,10 +120,13 @@ public:
    */
   ~FileIO();
 
-  /** Open the file IO handle to start performing operations on the file.
+  /** Open the file IO handle to start performing operations on the file. The
+   * flags determine how the file is opened, and whether non-existent files
+   * should be created, and existing files be truncated.
    * \brief Open handle.
    * \param[in] flags Flags specifying how the file should be opened.
-   * \return Restult.
+   * \return Result.
+   * - FileResult::kSuccess: Successfully opened file IO.
    */
   FileResult Open(Flag flags);
 

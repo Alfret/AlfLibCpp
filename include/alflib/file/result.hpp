@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Bj�rklund
+// Copyright (c) 2019 Filip Björklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,13 @@
 // SOFTWARE.
 
 #pragma once
+
+// ========================================================================== //
+// Headers
+// ========================================================================== //
+
+// Standard headers
+#include <ostream>
 
 // ========================================================================== //
 // FileResult Enumeration
@@ -54,5 +61,22 @@ enum class FileResult
   /** Reached end-of-file (EOF) **/
   kEOF
 };
+
+}
+
+// ========================================================================== //
+// Functions
+// ========================================================================== //
+
+namespace alflib {
+
+/** Function for writing a 'FileResult' to an output stream.
+ * \brief Write 'FileResult' to output stream.
+ * \param os Output stream.
+ * \param result Result to write to stream.
+ * \return Output stream.
+ */
+std::ostream&
+operator<<(std::ostream& os, const FileResult& result);
 
 }

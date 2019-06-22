@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019 Filip Björklund
+// Copyright (c) 2019 Filip BjÃ¶rklund
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@
 // -------------------------------------------------------------------------- //
 
 /** Macro for generating operators for an enum class **/
-#define ALFLIB_ENUM_CLASS_OPERATORS(prefix, type, underlying_type)          \
+#define ALFLIB_ENUM_CLASS_OPERATORS(prefix, type, underlying_type)             \
   prefix type operator|(type lhs, type rhs)                                    \
   {                                                                            \
     return static_cast<type>(static_cast<underlying_type>(lhs) |               \
@@ -47,18 +47,23 @@
   {                                                                            \
     return static_cast<type>(static_cast<underlying_type>(lhs) &               \
                              static_cast<underlying_type>(rhs));               \
+  }                                                                            \
+  prefix type& operator|=(type& lhs, type rhs)                                 \
+  {                                                                            \
+    lhs = (lhs | rhs);                                                         \
+    return lhs;                                                                \
   }
 
 // -------------------------------------------------------------------------- //
 
 /** Macro for declaring a class non-copyable **/
-#define ALFLIB_CLASS_NON_COPYABLE(type)                                     \
+#define ALFLIB_CLASS_NON_COPYABLE(type)                                        \
   type(const type&) = delete;                                                  \
   type& operator=(const type&) = delete;
 
 // -------------------------------------------------------------------------- //
 
 /** Macro for declaring a class default-movable **/
-#define ALFLIB_CLASS_DEFAULT_MOVABLE(type)                                  \
+#define ALFLIB_CLASS_DEFAULT_MOVABLE(type)                                     \
   type(type&&) = default;                                                      \
   type& operator=(type&&) = default;
