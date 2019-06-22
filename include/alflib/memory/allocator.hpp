@@ -79,7 +79,8 @@ public:
    * \brief Safe free.
    * \param memory Memory to free.
    */
-  virtual void SafeFree(void** memory)
+  template<typename T>
+  void SafeFree(T** memory)
   {
     if (memory) {
       Free(*memory);

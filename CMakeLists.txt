@@ -31,10 +31,13 @@ set(SOURCE_FILES
   source/alflib/core/console.cpp
   source/alflib/core/dialog.cpp
   source/alflib/core/string.cpp
+  source/alflib/debug/debugger.cpp
   source/alflib/file/archive.cpp
   source/alflib/file/file.cpp
   source/alflib/file/file_io.cpp
   source/alflib/file/path.cpp
+  source/alflib/file/result.cpp
+  source/alflib/graphics/color.cpp
   source/alflib/graphics/image.cpp
   source/alflib/memory/allocator.cpp
   source/alflib/memory/memory_reader.cpp

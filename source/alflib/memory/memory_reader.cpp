@@ -131,7 +131,7 @@ template<>
 s64
 MemoryReader::Read()
 {
-  const s64* data = reinterpret_cast<const s64*>(ReadBytes(sizeof(s64)));
+  const u64* data = reinterpret_cast<const u64*>(ReadBytes(sizeof(s64)));
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
   return *data;
 #else

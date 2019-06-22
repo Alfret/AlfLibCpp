@@ -29,6 +29,8 @@
 // Project headers
 #include "alflib/core/assert.hpp"
 #include "alflib/core/common.hpp"
+#include "alflib/platform/detection.hpp"
+#include "alflib/math/limits.hpp"
 
 // ========================================================================== //
 // Functions
@@ -68,6 +70,67 @@ Max(T a, T b)
 
 // -------------------------------------------------------------------------- //
 
+/** Returns the absolute value of 'a'.
+ * \brief Returns absolute value.
+ * \tparam T Type of value.
+ * \param a Value to get absolute value of.
+ * \return Absolute value of 'a'.
+ */
+template<typename T>
+constexpr T
+Absolute(T a)
+{
+  return a > T{ 0 } ? a : -a;
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Clamp a value in a range between two other value, 'min' and 'max'.
+ * \brief Clamp value.
+ * \tparam T Type of value.
+ * \param value Value to clamp.
+ * \param min Minimum value.
+ * \param max Maximum value.
+ * \return Clamped value.
+ */
+template<typename T>
+constexpr T
+Clamp(T value, T min, T max)
+{
+  return value < min ? min : value > max ? max : value;
+}
+
+// --------------------------------------------------------------------------
+// //
+
+/** Raise a value to a power.
+ * \brief Raise value to power.
+ * \param value Value to raise.
+ * \param power Power to raise the value with.
+ * \return Resulting value.
+ */
+inline f32
+Power(f32 value, f32 power)
+{
+  return powf(value, power);
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Raise a value to a power.
+ * \brief Raise value to power.
+ * \param value Value to raise.
+ * \param power Power to raise the value with.
+ * \return Resulting value.
+ */
+inline f64
+Power(f64 value, f64 power)
+{
+  return powf(value, power);
+}
+
+// -------------------------------------------------------------------------- //
+
 /** Returns whether or not a value is a power of two.
  * \brief Returns whether value is power of two.
  * \param value Value to check if power of two.
@@ -76,7 +139,7 @@ Max(T a, T b)
 constexpr bool
 IsPowerOfTwo(u64 value)
 {
-  return value && !(value & value - 1);
+  return value && !(value & (value - 1));
 }
 
 // -------------------------------------------------------------------------- //
@@ -90,7 +153,7 @@ IsPowerOfTwo(u64 value)
 inline u64
 AlignPowerOfTwo(u64 base, u32 alignment)
 {
-#if defined(_WIN32)
+#if defined(ALFLIB_TARGET_WINDOWS)
 #pragma warning(push)
 #pragma warning(disable : 4146)
   AlfAssert(alignment > 0 && IsPowerOfTwo(alignment),
@@ -102,6 +165,36 @@ AlignPowerOfTwo(u64 base, u32 alignment)
             "Alignment must be a power of two");
   return (base + alignment - 1) & -alignment;
 #endif
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Compare two floating-point numbers for equality. The machine epsilon is used
+ * to correctly compare values even though they may deviate slightly.
+ * \brief Compare floats.
+ * \param lhs Left-hand side.
+ * \param rhs Right-hand side.
+ * \return True if the two floating-point numbers are equal otherwise false.
+ */
+inline bool
+FloatEqual(f32 lhs, f32 rhs)
+{
+  return Absolute(lhs - rhs) < F32_EPSILON;
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Compare two floating-point numbers for equality. The machine epsilon is used
+ * to correctly compare values even though they may deviate slightly.
+ * \brief Compare floats.
+ * \param lhs Left-hand side.
+ * \param rhs Right-hand side.
+ * \return True if the two floating-point numbers are equal otherwise false.
+ */
+inline bool
+FloatEqual(f64 lhs, f64 rhs)
+{
+  return Absolute(lhs - rhs) < F64_EPSILON;
 }
 
 }

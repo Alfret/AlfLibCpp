@@ -230,14 +230,22 @@ File::Create(Type type, bool overwrite)
 
 #else
   if (type == Type::kFile) {
-    int flags = O_CREAT;
+    if (Exists() && !overwrite) {
+      return FileResult::kAlreadyExists;
+    }
+
+    int flags = O_CREAT | O_RDWR;
     if (overwrite) {
       flags = O_TRUNC;
     } else {
       flags |= O_EXCL;
     }
-    int result = open(mPath.GetPathString().GetUTF8(), flags);
-    return FileErrorFromErrno(result);
+    int result =
+      open(mPath.GetPathString().GetUTF8(), flags, S_IRUSR | S_IWUSR);
+    if (result < 0) {
+      return FileErrorFromErrno(errno);
+    }
+    return FileResult::kSuccess;
   }
   if (type == Type::kDirectory) {
     int result = mkdir(mPath.GetPathString().GetUTF8(), 0);
@@ -279,10 +287,19 @@ File::Delete(bool recursive)
     return FileResult::kSuccess;
   }
   if (GetType() == Type::kDirectory) {
-    AlfAssertBasic(false, "Directories does not support being deleted yet");
+    AlfBasicAssert(false, "Directories does not support being deleted yet");
   }
 #else
-
+  if (GetType() == Type::kFile || GetType() == Type::kArchive) {
+    int result = remove(mPath.GetPathString().GetUTF8());
+    if (result != 0) {
+      return FileErrorFromErrno(errno);
+    }
+    return FileResult::kSuccess;
+  } else if (GetType() == Type::kDirectory) {
+    (void)recursive;
+    AlfBasicAssert(false, "Directories does not support being deleted yet");
+  }
 #endif
   return FileResult::kUnknownError;
 }
@@ -292,6 +309,8 @@ File::Delete(bool recursive)
 FileResult
 File::Rename(const String& name)
 {
+  // TODO(Filip Björklund): Implement
+  (void)name;
   return FileResult::kUnknownError;
 }
 
@@ -300,6 +319,8 @@ File::Rename(const String& name)
 FileResult
 File::Copy(const Path& to)
 {
+  // TODO(Filip Björklund): Implement
+  (void)to;
   return FileResult::kUnknownError;
 }
 
@@ -308,6 +329,8 @@ File::Copy(const Path& to)
 FileResult
 File::Move(const Path& to)
 {
+  // TODO(Filip Björklund): Implement
+  (void)to;
   return FileResult::kUnknownError;
 }
 

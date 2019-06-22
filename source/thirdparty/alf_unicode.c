@@ -751,13 +751,7 @@ alfUTF8Iterate(const AlfChar8* string,
 int32_t
 alfUTF16CodepointWidthFromFirstByte(AlfChar16 c)
 {
-  if (c <= 0xFFFF && (c < 0xD800 || c > 0xDFFF)) {
-    return 1;
-  }
-  if (c <= 0x10FFFF) {
-    return 2;
-  }
-  return -1;
+  return (c >> 10u & 0x3F) == 0x36 ? 2 : 1;
 }
 
 // ========================================================================== //

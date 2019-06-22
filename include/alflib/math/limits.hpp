@@ -20,47 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// ========================================================================== //
-// Headers
-// ========================================================================== //
-
-// Library headers
-#include <doctest/doctest.h>
-
-// Project headers
-#include "alflib/file/archive.hpp"
-#include "alflib/file/file.hpp"
+#pragma once
 
 // ========================================================================== //
-// Tests
+// Constants
 // ========================================================================== //
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Archive] - Open")
-{
-  // Tar Archive
-  Archive a1(Path{ "res/test/taping.tar" });
-  FileResult result = a1.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a1.Enumerate();
-    CHECK(files.Contains(File{ "inside_tar.txt" }));
-    CHECK(files.Contains(File{ "also_in_tar.txt" }));
-    CHECK(files.Contains(File{ "tar_img.png" }));
-  }
+/** Minimum value of 's8' **/
+static constexpr s8 S8_MIN = -128;
+/** Maximum value of 's8' **/
+static constexpr s8 S8_MAX = 127;
 
-  // Zip Archive
-  Archive a2(Path{ "res/test/an_archive.zip" });
-  result = a2.Open();
-  CHECK(result == FileResult::kSuccess);
-  if (result == FileResult::kSuccess) {
-    ArrayList<File> files = a2.Enumerate();
-    CHECK(files.Contains(File{ "file_inside.txt" }));
-    CHECK(files.Contains(File{ "some_other.txt" }));
-  }
-}
+/** Maximum value of 'u8' **/
+static constexpr u8 U8_MAX = 255;
 
-}
+/** Minimum value of 's16' **/
+static constexpr s16 S16_MIN = -32768;
+/** Maximum value of 's16' **/
+static constexpr s16 S16_MAX = 32767;
+
+/** Maximum value of 'u16' **/
+static constexpr u16 U16_MAX = 65535;
+
+/** Minimum value of 's32' **/
+static constexpr s32 S32_MIN = -2147483648;
+/** Maximum value of 's32' **/
+static constexpr s32 S32_MAX = 2147483647;
+
+/** Maximum value of 'u32' **/
+static constexpr u32 U32_MAX = 4294967295u;
+
+/** Minimum value of 's64' **/
+static constexpr s64 S64_MIN = -9223372036854775807L - 1;
+/** Maximum value of 's64' **/
+static constexpr s64 S64_MAX = 9223372036854775807;
+
+/** Maximum value of 'u64' **/
+static constexpr u64 U64_MAX = 18446744073709551615ull;
+
+/** Machine epsilon for 'f32' **/
+static constexpr f32 F32_EPSILON = 1.192093e-07;
+/** Machine epsilon for 'f64' **/
+static constexpr f64 F64_EPSILON = 2.220446e-16;
+
 }
