@@ -153,24 +153,46 @@ IsPowerOfTwo(u64 value)
 inline u64
 AlignPowerOfTwo(u64 base, u32 alignment)
 {
+#if !defined(ALFLIB_DISABLE_ASSERT)
+  AlfAssert(alignment > 0 && IsPowerOfTwo(alignment),
+            "Alignment must be a power of two");
+#endif
+
 #if defined(ALFLIB_TARGET_WINDOWS)
 #pragma warning(push)
 #pragma warning(disable : 4146)
-  AlfAssert(alignment > 0 && IsPowerOfTwo(alignment),
-            "Alignment must be a power of two");
   return (base + alignment - 1) & -alignment;
 #pragma warning(pop)
 #else
-  AlfAssert(alignment > 0 && IsPowerOfTwo(alignment),
-            "Alignment must be a power of two");
   return (base + alignment - 1) & -alignment;
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
-/** Compare two floating-point numbers for equality. The machine epsilon is used
- * to correctly compare values even though they may deviate slightly.
+/**
+ *
+ * \tparam T
+ * \param value
+ * \param modulus
+ * \return
+ */
+template<typename T>
+constexpr T
+ModuloPowerOfTwo(T value, T modulus)
+{
+#if !defined(ALFLIB_DISABLE_ASSERT)
+  AlfAssert(modulus > 0 && IsPowerOfTwo(modulus),
+            "Modulus must be a power of two");
+#endif
+  return (value & (modulus - 1));
+}
+
+// --------------------------------------------------------------------------
+// //
+
+/** Compare two floating-point numbers for equality. The machine epsilon is
+ * used to correctly compare values even though they may deviate slightly.
  * \brief Compare floats.
  * \param lhs Left-hand side.
  * \param rhs Right-hand side.
@@ -196,5 +218,4 @@ FloatEqual(f64 lhs, f64 rhs)
 {
   return Absolute(lhs - rhs) < F64_EPSILON;
 }
-
 }

@@ -40,6 +40,23 @@ namespace tests {
 TEST_CASE("[RobinHoodMap] - Construct()")
 {
   CHECK(true);
+
+  RobinHoodMap<s32, s32> map;
+  map[2] = 1;
+  map[34] = 2;
+  map[66] = 3;
+  map[35] = 4;
+  map[36] = 5;
+  map[65] = 6;
+  map[67] = 7;
+
+  CHECK(map[2] == 1);
+  CHECK(map[34] == 2);
+  CHECK(map[66] == 3);
+  CHECK(map[35] == 4);
+  CHECK(map[36] == 5);
+  CHECK(map[65] == 6);
+  CHECK(map[67] == 7);
 }
 
 // -------------------------------------------------------------------------- //
