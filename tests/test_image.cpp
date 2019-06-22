@@ -91,7 +91,8 @@ TEST_CASE("[Image] - Blit")
   dst.Blit(im1, 8, 0);
   dst.Blit(im2, 24, 0);
 
-  CHECK(dst.GetPixel(9, 4) == Color::RED);
+  CHECK(dst.GetPixel(2, 7) == Color::RED);
+  CHECK(dst.GetPixel(9, 4) == Color::MAGENTA);
   CHECK(dst.GetPixel(13, 0) == Color::MAGENTA);
   CHECK(dst.GetPixel(27, 6) == Color::CORNFLOWER_BLUE);
 

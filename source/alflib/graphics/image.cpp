@@ -536,33 +536,33 @@ Image::SetPixel(u32 x, u32 y, const Color& color)
   u8* address = mData + (_y * mWidth * bytesPerPixel) + (_x * bytesPerPixel);
   switch (mFormat) {
     case Format::kGrayscale: {
-      address[0] = color.GetRedU8();
+      address[0] = color.Red();
       break;
     }
     case Format::kRGBA: {
-      address[0] = color.GetRedU8();
-      address[1] = color.GetGreenU8();
-      address[2] = color.GetBlueU8();
-      address[3] = color.GetAlphaU8();
+      address[0] = color.Red();
+      address[1] = color.Green();
+      address[2] = color.Blue();
+      address[3] = color.Alpha();
       break;
     }
     case Format::kRGB: {
-      address[0] = color.GetRedU8();
-      address[1] = color.GetGreenU8();
-      address[2] = color.GetBlueU8();
+      address[0] = color.Red();
+      address[1] = color.Green();
+      address[2] = color.Blue();
       break;
     }
     case Format::kBGRA: {
-      address[2] = color.GetRedU8();
-      address[1] = color.GetGreenU8();
-      address[0] = color.GetBlueU8();
-      address[3] = color.GetAlphaU8();
+      address[2] = color.Red();
+      address[1] = color.Green();
+      address[0] = color.Blue();
+      address[3] = color.Alpha();
       break;
     }
     case Format::kBGR: {
-      address[2] = color.GetRedU8();
-      address[1] = color.GetGreenU8();
-      address[0] = color.GetBlueU8();
+      address[2] = color.Red();
+      address[1] = color.Green();
+      address[0] = color.Blue();
       break;
     }
     case Format::kUnknown:

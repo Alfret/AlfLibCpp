@@ -72,18 +72,17 @@ public:
   static Color CORNFLOWER_BLUE;
 
 private:
-  /** Value of red channel (0.0 -> 1.0) **/
-  f32 mRed;
-  /** Value of green channel (0.0 -> 1.0) **/
-  f32 mGreen;
-  /** Value of blue channel (0.0 -> 1.0) **/
-  f32 mBlue;
-  /** Value of alpha channel (0.0 -> 1.0) **/
-  f32 mAlpha;
+  /** Value of red channel (0 -> 255) **/
+  u8 mRed;
+  /** Value of green channel (0 -> 255) **/
+  u8 mGreen;
+  /** Value of blue channel (0 -> 255) **/
+  u8 mBlue;
+  /** Value of alpha channel (0 -> 255) **/
+  u8 mAlpha;
 
 public:
   /** Construct a color from values for the four (4) separate color channels.
-   * Each value is normalized on the range 0.0 -> 1.0.
    * \brief Construct color.
    * \param red Red channel value.
    * \param green Green channel value.
@@ -93,8 +92,6 @@ public:
   Color(u8 red, u8 green, u8 blue, u8 alpha = U8_MAX);
 
   /** Construct a color from values for the four (4) separate color channels.
-   * Each value is normalized on the range 0.0 -> 1.0 as though it would have
-   * been of the type 'u8'. Meaning values are mapped from the range 0 -> 255.
    * \brief Construct color.
    * \param red Red channel value.
    * \param green Green channel value.
@@ -104,8 +101,6 @@ public:
   Color(s32 red, s32 green, s32 blue, s32 alpha = U8_MAX);
 
   /** Construct a color from values for the four (4) separate color channels.
-   * Each value is normalized on the range 0.0 -> 1.0 as though it would have
-   * been of the type 'u8'. Meaning values are mapped from the range 0 -> 255.
    * \brief Construct color.
    * \param red Red channel value.
    * \param green Green channel value.
@@ -115,6 +110,8 @@ public:
   Color(u32 red, u32 green, u32 blue, u32 alpha = U8_MAX);
 
   /** Construct a color from values for the four (4) separate color channels.
+   * The values are transformed from the range 0.0 -> 1.0. Values outside this
+   * range are clamped.
    * \brief Construct color.
    * \param red Red channel value.
    * \param green Green channel value.
@@ -159,73 +156,73 @@ public:
    * \brief Returns red channel.
    * \return Red channel.
    */
-  f32& Red() { return mRed; }
+  u8& Red() { return mRed; }
 
   /** Returns the red channel.
    * \brief Returns red channel.
    * \return Red channel.
    */
-  const f32& Red() const { return mRed; }
+  const u8& Red() const { return mRed; }
 
   /** Returns the green channel.
    * \brief Returns green channel.
    * \return Green channel.
    */
-  f32& Green() { return mGreen; }
+  u8& Green() { return mGreen; }
 
   /** Returns the green channel.
    * \brief Returns green channel.
    * \return Green channel.
    */
-  const f32& Green() const { return mGreen; }
+  const u8& Green() const { return mGreen; }
 
   /** Returns the blue channel.
    * \brief Returns blue channel.
    * \return Blue channel.
    */
-  f32& Blue() { return mBlue; }
+  u8& Blue() { return mBlue; }
 
   /** Returns the blue channel.
    * \brief Returns blue channel.
    * \return Blue channel.
    */
-  const f32& Blue() const { return mBlue; }
+  const u8& Blue() const { return mBlue; }
 
   /** Returns the alpha channel.
    * \brief Returns alpha channel.
    * \return Alpha channel.
    */
-  f32& Alpha() { return mAlpha; }
+  u8& Alpha() { return mAlpha; }
 
   /** Returns the alpha channel.
    * \brief Returns alpha channel.
    * \return Alpha channel.
    */
-  const f32& Alpha() const { return mAlpha; }
+  const u8& Alpha() const { return mAlpha; }
 
-  /** Returns the value of the red channel mapped to the range 0 -> 255.
-   * \brief Returns red channel as u8.
+  /** Returns the value of the red channel mapped to the range 0.0 -> 1.0
+   * \brief Returns red channel as 'f32'.
    * \return Red channel.
    */
-  u8 GetRedU8() const { return u8(mRed * U8_MAX); }
+  f32 GetRedF32() const { return mRed / f32(U8_MAX); }
 
-  /** Returns the value of the green channel mapped to the range 0 -> 255.
-   * \brief Returns green channel as u8.
+  /** Returns the value of the green channel mapped to the range 0.0 -> 1.0
+   * \brief Returns green channel as 'f32'.
    * \return Green channel.
    */
-  u8 GetGreenU8() const { return u8(mGreen * U8_MAX); }
+  f32 GetGreenF32() const { return mGreen / f32(U8_MAX); }
 
-  /** Returns the value of the blue channel mapped to the range 0 -> 255.
-   * \brief Returns blue channel as u8.
+  /** Returns the value of the blue channel mapped to the range 0.0 -> 1.0
+   * \brief Returns blue channel as 'f32'.
    * \return Blue channel.
    */
-  u8 GetBlueU8() const { return u8(mBlue * U8_MAX); }
+  f32 GetBlueF32() const { return mBlue / f32(U8_MAX); }
 
-  /** Returns the value of the alpha channel mapped to the range 0 -> 255.
-   * \brief Returns alpha channel as u8.
+  /** Returns the value of the alpha channel mapped to the range 0.0 -> 1.0
+   * \brief Returns alpha channel as 'f32'.
    * \return Alpha channel.
    */
-  u8 GetAlphaU8() const { return u8(mAlpha * U8_MAX); }
+  f32 GetAlphaF32() const { return mAlpha / f32(U8_MAX); }
 
 public:
   /** Compare two colors for equality.

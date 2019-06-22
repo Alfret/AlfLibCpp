@@ -94,8 +94,8 @@ Absolute(T a)
  * \return Clamped value.
  */
 template<typename T>
-constexpr T&
-Clamp(T& value, const T& min, const T& max)
+constexpr T
+Clamp(T value, T min, T max)
 {
   return value < min ? min : value > max ? max : value;
 }
