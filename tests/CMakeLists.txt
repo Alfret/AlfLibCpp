@@ -19,6 +19,7 @@ add_executable(test
   test_mem_read_write.cpp
   test_path.cpp
   test_pointer.cpp
+  test_robin_hood_map.cpp
   test_string.cpp)
 
 target_link_libraries(test alflibcpp)
