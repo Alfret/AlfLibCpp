@@ -57,7 +57,14 @@ public:
    * \brief Construct map entry from key and optional value.
    * \param key Key to construct entry with.
    */
-  explicit MapEntry(K&& key, const V& = V());
+  explicit MapEntry(K&& key, const V& value = V());
+
+  /** Construct a map entry with a key and a optional value that may be default
+   * constructed.
+   * \brief Construct map entry from key and optional value.
+   * \param key Key to construct entry with.
+   */
+  explicit MapEntry(const K& key, const V& value = V());
 
   /** Returns the key of the map entry.
    * \brief Returns key.
@@ -97,6 +104,14 @@ MapEntry<K, V>::MapEntry(K&& key, V&& value)
 template<typename K, typename V>
 MapEntry<K, V>::MapEntry(K&& key, const V& value)
   : mKey({ std::forward<K>(key) })
+  , mValue(value)
+{}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+MapEntry<K, V>::MapEntry(const K& key, const V& value)
+  : mKey({ key })
   , mValue(value)
 {}
 
