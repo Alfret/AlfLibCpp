@@ -150,13 +150,15 @@ public:
   void Append(T&& object);
 
   /** Append an object to the end of the list. The object is created in-place in
-   * the list from the specified arguments forwarded to its constructor.
+   * the list from the specified arguments forwarded to its constructor. A
+   * reference to the inserted object is also returned from the function.
    * \brief Append object.
    * \tparam ARGS Types of arguments to object constructor.
    * \param arguments Arguments to object constructor.
+   * \return Reference to the inserted object.
    */
   template<typename... ARGS>
-  void AppendEmplace(ARGS&&... arguments);
+  T& AppendEmplace(ARGS&&... arguments);
 
   /** Prepend an object to the beginning of the list.
    * \brief Prepend object.
@@ -172,13 +174,15 @@ public:
 
   /** Prepend an object to the beginning of the list. The object is created
    * in-place in the list from the specified arguments forwarded to its
-   * constructor.
+   * constructor. A reference to the inserted object is also returned from the
+   * function.
    * \brief Prepend object.
    * \tparam ARGS Types of arguments to object constructor.
    * \param arguments Arguments to object constructor.
+   * \return Reference to the inserted object.
    */
   template<typename... ARGS>
-  void PrependEmplace(ARGS&&... arguments);
+  T& PrependEmplace(ARGS&&... arguments);
 
   /** Remove an object from the list at the specified index.
    * \brief Remove object.
@@ -515,11 +519,12 @@ ArrayList<T>::Append(T&& object)
 
 template<typename T>
 template<typename... ARGS>
-void
+T&
 ArrayList<T>::AppendEmplace(ARGS&&... arguments)
 {
   CheckCapacityToAdd();
-  new (mBuffer + (mSize++)) T{ std::forward<ARGS>(arguments)... };
+  new (mBuffer + mSize) T{ std::forward<ARGS>(arguments)... };
+  return At(mSize++);
 }
 
 // -------------------------------------------------------------------------- //
@@ -556,7 +561,7 @@ ArrayList<T>::Prepend(T&& object)
 
 template<typename T>
 template<typename... ARGS>
-void
+T&
 ArrayList<T>::PrependEmplace(ARGS&&... arguments)
 {
   CheckCapacityToAdd();
@@ -566,6 +571,7 @@ ArrayList<T>::PrependEmplace(ARGS&&... arguments)
   }
   new (mBuffer) T{ std::forward<ARGS>(arguments)... };
   ++mSize;
+  return At(0);
 }
 
 // -------------------------------------------------------------------------- //
