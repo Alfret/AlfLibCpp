@@ -28,6 +28,7 @@
 
 // Project headers
 #include "alflib/core/common.hpp"
+#include "alflib/core/traits.hpp"
 
 // ========================================================================== //
 // Functions
@@ -78,6 +79,31 @@ SwapEndian(u64 value)
          ((value & 0x0000000000ff0000ull) << 24u) |
          ((value & 0x000000000000ff00ull) << 40u) |
          ((value & 0x00000000000000ffull) << 56u);
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Relocate memory from the source memory location to the destination location.
+ * If the type is trivially relocatable then this will copy the memory using
+ * 'memcpy' instead of invoking the move constructor and then destruct the
+ * source value.
+ * \brief Relocate memory.
+ * \tparam T Type of object to relocate memory of.
+ * \param destination Destination address.
+ * \param source Source address.
+ * \return Destination address.
+ */
+template<typename T>
+T*
+Relocate(T* destination, T* source)
+{
+  if constexpr (!IsTriviallyRelocatable<T>::Value) {
+    ::new (destination) T{ std::move(*source) };
+    source->~T();
+  } else {
+    memcpy(destination, source, sizeof(T));
+  }
+  return destination;
 }
 
 }

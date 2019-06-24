@@ -29,13 +29,29 @@
 #include "alflib/memory/allocator.hpp"
 #include "alflib/core/assert.hpp"
 #include "alflib/core/common.hpp"
+#include "alflib/core/traits.hpp"
 #include "alflib/math/math.hpp"
+#include "alflib/memory/memory.hpp"
 
 // ========================================================================== //
 // ArrayList Declaration
 // ========================================================================== //
 
 namespace alflib {
+
+template<typename T, bool R>
+class ArrayList;
+
+// -------------------------------------------------------------------------- //
+
+/** \copydoc alflib::IsTriviallyRelocatable<T> **/
+template<typename T, bool R>
+struct IsTriviallyRelocatable<ArrayList<T, R>>
+{
+  static constexpr bool Value = IsTriviallyRelocatable<T>::Value;
+};
+
+// -------------------------------------------------------------------------- //
 
 /** \class ArrayList
  * \author Filip Björklund
@@ -46,7 +62,7 @@ namespace alflib {
  * Represents an array-list where each object in the list is layed out linearly
  * in memory.
  */
-template<typename T>
+template<typename T, bool R = IsTriviallyRelocatable<T>::Value>
 class ArrayList
 {
 public:
@@ -194,13 +210,13 @@ public:
    * \brief Remove object.
    * \param object Object to search for and remove.
    */
-  void Remove(const T& object);
+  void RemoveObject(const T& object);
 
   /** Remove an object from that list that is equal to the specified object.
    * \brief Remove object.
    * \param object Object to search for and remove.
    */
-  void Remove(T&& object);
+  void RemoveObject(T&& object);
 
   /** Resize the list to the specified size. This is useful if the user is using
    * the index operator to access objects instead of inserting them.
@@ -327,58 +343,58 @@ private:
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::Iterator::Iterator(PointerType pointer)
+template<typename T, bool R>
+ArrayList<T, R>::Iterator::Iterator(ArrayList::PointerType pointer)
   : mPointer(pointer)
 {}
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Iterator::operator++()
+ArrayList<T, R>::Iterator::operator++()
 {
   ++mPointer;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Iterator::operator--()
+ArrayList<T, R>::Iterator::operator--()
 {
   --mPointer;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 bool
-ArrayList<T>::Iterator::operator!=(const Iterator& other)
+ArrayList<T, R>::Iterator::operator!=(const Iterator& other)
 {
   return mPointer != other.mPointer;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-typename ArrayList<T>::ReferenceType ArrayList<T>::Iterator::operator*()
+template<typename T, bool R>
+typename ArrayList<T, R>::ReferenceType ArrayList<T, R>::Iterator::operator*()
 {
   return *mPointer;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-typename ArrayList<T>::PointerType ArrayList<T>::Iterator::operator->()
+template<typename T, bool R>
+typename ArrayList<T, R>::PointerType ArrayList<T, R>::Iterator::operator->()
 {
   return mPointer;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::ArrayList(u64 capacity, Allocator& allocator)
+template<typename T, bool R>
+ArrayList<T, R>::ArrayList(u64 capacity, Allocator& allocator)
   : mBuffer(nullptr)
   , mCapacity(capacity)
   , mSize(0)
@@ -390,9 +406,9 @@ ArrayList<T>::ArrayList(u64 capacity, Allocator& allocator)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::ArrayList(std::initializer_list<T> initializerList,
-                        Allocator& allocator)
+template<typename T, bool R>
+ArrayList<T, R>::ArrayList(std::initializer_list<T> initializerList,
+                           Allocator& allocator)
   : mCapacity(initializerList.size())
   , mSize(0)
   , mAllocator(allocator)
@@ -406,8 +422,8 @@ ArrayList<T>::ArrayList(std::initializer_list<T> initializerList,
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::ArrayList(const ArrayList& other)
+template<typename T, bool R>
+ArrayList<T, R>::ArrayList(const ArrayList& other)
   : mCapacity(other.mCapacity)
   , mSize(other.mSize)
   , mAllocator(other.mAllocator)
@@ -421,8 +437,8 @@ ArrayList<T>::ArrayList(const ArrayList& other)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::ArrayList(ArrayList&& other)
+template<typename T, bool R>
+ArrayList<T, R>::ArrayList(ArrayList&& other)
   : mBuffer(other.mBuffer)
   , mCapacity(other.mCapacity)
   , mSize(other.mSize)
@@ -435,8 +451,8 @@ ArrayList<T>::ArrayList(ArrayList&& other)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>::~ArrayList()
+template<typename T, bool R>
+ArrayList<T, R>::~ArrayList()
 {
   for (SizeType i = 0; i < mSize; ++i) {
     mBuffer[i].~T();
@@ -446,9 +462,9 @@ ArrayList<T>::~ArrayList()
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>&
-ArrayList<T>::operator=(const ArrayList& other)
+template<typename T, bool R>
+ArrayList<T, R>&
+ArrayList<T, R>::operator=(const ArrayList& other)
 {
   if (this != &other) {
     // Destruct this list
@@ -472,9 +488,9 @@ ArrayList<T>::operator=(const ArrayList& other)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-ArrayList<T>&
-ArrayList<T>::operator=(ArrayList&& other)
+template<typename T, bool R>
+ArrayList<T, R>&
+ArrayList<T, R>::operator=(ArrayList&& other)
 {
   if (this != &other) {
     // Destruct this list
@@ -497,9 +513,9 @@ ArrayList<T>::operator=(ArrayList&& other)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Append(const T& object)
+ArrayList<T, R>::Append(const T& object)
 {
   CheckCapacityToAdd();
   new (mBuffer + (mSize++)) T{ object };
@@ -507,9 +523,9 @@ ArrayList<T>::Append(const T& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Append(T&& object)
+ArrayList<T, R>::Append(T&& object)
 {
   CheckCapacityToAdd();
   new (mBuffer + (mSize++)) T{ std::move(object) };
@@ -517,10 +533,10 @@ ArrayList<T>::Append(T&& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 template<typename... ARGS>
 T&
-ArrayList<T>::AppendEmplace(ARGS&&... arguments)
+ArrayList<T, R>::AppendEmplace(ARGS&&... arguments)
 {
   CheckCapacityToAdd();
   new (mBuffer + mSize) T{ std::forward<ARGS>(arguments)... };
@@ -529,14 +545,13 @@ ArrayList<T>::AppendEmplace(ARGS&&... arguments)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Prepend(const T& object)
+ArrayList<T, R>::Prepend(const T& object)
 {
   CheckCapacityToAdd();
-  for (SizeType i = mSize - 1; i > 0; ++i) {
-    mBuffer[i] = std::move(mBuffer[i - 1]);
-    mBuffer[i - 1].~T();
+  for (SizeType i = (mSize > 0) ? (mSize - 1) : 0; i > 0; --i) {
+    Relocate(mBuffer + i, mBuffer + i - 1);
   }
   new (mBuffer) T{ object };
   ++mSize;
@@ -544,14 +559,13 @@ ArrayList<T>::Prepend(const T& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Prepend(T&& object)
+ArrayList<T, R>::Prepend(T&& object)
 {
   CheckCapacityToAdd();
-  for (SizeType i = mSize - 1; i > 0; ++i) {
-    mBuffer[i] = std::move(mBuffer[i - 1]);
-    mBuffer[i - 1].~T();
+  for (SizeType i = (mSize > 0) ? (mSize - 1) : 0; i > 0; --i) {
+    Relocate(mBuffer + i, mBuffer + i - 1);
   }
   new (mBuffer) T{ std::move(object) };
   ++mSize;
@@ -559,15 +573,14 @@ ArrayList<T>::Prepend(T&& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 template<typename... ARGS>
 T&
-ArrayList<T>::PrependEmplace(ARGS&&... arguments)
+ArrayList<T, R>::PrependEmplace(ARGS&&... arguments)
 {
   CheckCapacityToAdd();
-  for (SizeType i = mSize - 1; i > 0; ++i) {
-    mBuffer[i] = std::move(mBuffer[i - 1]);
-    mBuffer[i - 1].~T();
+  for (SizeType i = (mSize > 0) ? (mSize - 1) : 0; i > 0; --i) {
+    Relocate(mBuffer + i, mBuffer + i - 1);
   }
   new (mBuffer) T{ std::forward<ARGS>(arguments)... };
   ++mSize;
@@ -576,9 +589,9 @@ ArrayList<T>::PrependEmplace(ARGS&&... arguments)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Remove(SizeType index)
+ArrayList<T, R>::Remove(SizeType index)
 {
   // Assert preconditions
   AlfAssert(index >= 0 && index < mSize,
@@ -587,24 +600,22 @@ ArrayList<T>::Remove(SizeType index)
   // Destruct object and move other into spots
   mBuffer[index].~T();
   for (SizeType i = index; i < mSize - 1; ++i) {
-    new (mBuffer + i) T{ std::move(mBuffer[i + 1]) };
-    mBuffer[i + 1].~T();
+    Relocate(mBuffer + i, mBuffer + i + 1);
   }
   mSize--;
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Remove(const T& object)
+ArrayList<T, R>::RemoveObject(const T& object)
 {
   for (SizeType i = 0; i < mSize; ++i) {
     if (this[i] == object) {
       mBuffer[i].~T();
       for (SizeType j = i; j < mSize - 1; ++j) {
-        new (mBuffer + j) T{ std::move(mBuffer[j + 1]) };
-        mBuffer[j + 1].~T();
+        Relocate(mBuffer + j, mBuffer + j + 1);
       }
       mSize--;
       return;
@@ -614,16 +625,15 @@ ArrayList<T>::Remove(const T& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Remove(T&& object)
+ArrayList<T, R>::RemoveObject(T&& object)
 {
   for (SizeType i = 0; i < mSize; ++i) {
     if (this[i] == object) {
       mBuffer[i].~T();
       for (SizeType j = i; j < mSize - 1; ++j) {
-        new (mBuffer + j) T{ std::move(mBuffer[j + 1]) };
-        mBuffer[j + 1].~T();
+        Relocate(mBuffer + j, mBuffer + j + 1);
       }
       mSize--;
       return;
@@ -633,9 +643,9 @@ ArrayList<T>::Remove(T&& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Resize(SizeType size)
+ArrayList<T, R>::Resize(SizeType size)
 {
   if (size < mCapacity) {
     // Destruct objects if new size is lesser
@@ -652,8 +662,7 @@ ArrayList<T>::Resize(SizeType size)
     T* newBuffer =
       static_cast<T*>(mAllocator.Alloc(size * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < Min(mSize, size); ++i) {
-      new (newBuffer + i) T{ std::move(mBuffer[i]) };
-      mBuffer[i].~T();
+      Relocate(newBuffer + i, mBuffer + i);
     }
     for (SizeType i = mSize; i < size; ++i) {
       new (newBuffer + i) T{};
@@ -666,17 +675,16 @@ ArrayList<T>::Resize(SizeType size)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Reserve(SizeType capacity)
+ArrayList<T, R>::Reserve(SizeType capacity)
 {
   // Only do something if new capacity is greater than old
   if (capacity > mCapacity) {
     T* newBuffer =
       static_cast<T*>(mAllocator.Alloc(capacity * OBJECT_SIZE, alignof(T)));
     for (SizeType i = 0; i < mSize; ++i) {
-      new (newBuffer + i) T{ std::move(mBuffer[i]) };
-      mBuffer[i].~T();
+      Relocate(newBuffer + i, mBuffer + i);
     }
     mAllocator.Free(mBuffer);
     mBuffer = newBuffer;
@@ -686,9 +694,9 @@ ArrayList<T>::Reserve(SizeType capacity)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::Shrink(SizeType capacity)
+ArrayList<T, R>::Shrink(SizeType capacity)
 {
   // Only shrink if new capacity is less than old
   if (capacity < mCapacity) {
@@ -709,18 +717,18 @@ ArrayList<T>::Shrink(SizeType capacity)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::ShrinkToFit()
+ArrayList<T, R>::ShrinkToFit()
 {
   Shrink(mSize);
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 bool
-ArrayList<T>::Contains(const T& object)
+ArrayList<T, R>::Contains(const T& object)
 {
   for (SizeType i = 0; i < mSize; ++i) {
     if (At(i) == object) {
@@ -732,9 +740,9 @@ ArrayList<T>::Contains(const T& object)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 T&
-ArrayList<T>::At(SizeType index)
+ArrayList<T, R>::At(SizeType index)
 {
   // Assert precondition
   AlfAssert(index >= 0 && index < mSize,
@@ -744,9 +752,9 @@ ArrayList<T>::At(SizeType index)
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 const T&
-ArrayList<T>::At(SizeType index) const
+ArrayList<T, R>::At(SizeType index) const
 {
   // Assert precondition
   AlfAssert(index >= 0 && index < mSize,
@@ -756,29 +764,42 @@ ArrayList<T>::At(SizeType index) const
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-T& ArrayList<T>::operator[](SizeType index)
+template<typename T, bool R>
+T& ArrayList<T, R>::operator[](SizeType index)
 {
   return At(index);
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
-const T& ArrayList<T>::operator[](SizeType index) const
+template<typename T, bool R>
+const T& ArrayList<T, R>::operator[](SizeType index) const
 {
   return At(index);
 }
 
 // -------------------------------------------------------------------------- //
 
-template<typename T>
+template<typename T, bool R>
 void
-ArrayList<T>::CheckCapacityToAdd()
+ArrayList<T, R>::CheckCapacityToAdd()
 {
   if (mSize >= mCapacity) {
     Reserve(mCapacity ? mCapacity * RESIZE_FACTOR : DEFAULT_CAPACITY);
   }
 }
+
+}
+
+// ========================================================================== //
+// Specialization for relocatable T
+// ========================================================================== //
+
+namespace alflib {
+
+/*template<typename T>
+class ArrayList<T, true>
+{
+};*/
 
 }

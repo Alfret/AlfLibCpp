@@ -10,7 +10,7 @@ option(ALFLIBCPP_BUILD_SAMPLES "Build sample program" OFF)
 option(ALFLIBCPP_BUILD_TESTS "Build tests" OFF)
 
 # Language standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Compiler flags flags
 if (MSVC)
