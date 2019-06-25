@@ -57,11 +57,11 @@ TEST_CASE("[Image] - Save")
   Image image;
   Image::Result result = image.Load(Path{ "res/test_image.png" });
   CHECK(result == Image::Result::kSuccess);
-  CHECK(image.Save(Path{ "res/test_image_other.tga" }) ==
+  CHECK(image.Save(Path{ "res/out/test_image_other.tga" }) ==
         Image::Result::kSuccess);
 
   // Cleanup
-  File file(Path{ "res/test_image_other.tga" });
+  File file(Path{ "res/out/test_image_other.tga" });
   CHECK(file.Delete() == FileResult::kSuccess);
 }
 
@@ -97,8 +97,8 @@ TEST_CASE("[Image] - Blit")
   CHECK(dst.GetPixel(27, 6) == Color::CORNFLOWER_BLUE);
 
   // Save image
-  dst.Save(Path{ "res/atlas.tga" }, true);
-  CHECK(File(Path{ "res/atlas.tga" }).Exists());
+  dst.Save(Path{ "res/out/atlas.tga" }, true);
+  CHECK(File(Path{ "res/out/atlas.tga" }).Exists());
 }
 
 }

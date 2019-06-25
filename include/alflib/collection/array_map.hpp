@@ -30,6 +30,7 @@
 #include "alflib/core/assert.hpp"
 #include "alflib/collection/array_list.hpp"
 #include "alflib/collection/map.hpp"
+#include "alflib/core/traits.hpp"
 
 // ========================================================================== //
 // ArrayMap Declaration
@@ -79,6 +80,14 @@ public:
    * \param key Key to check if present in map.
    * \return True if the key is present in the map otherwise false.
    */
+  bool HasKey(const K& key) const;
+
+  /** Returns whether or not the map currently stores an entry with the
+   * specified key.
+   * \brief Returns whether key is in map.
+   * \param key Key to check if present in map.
+   * \return True if the key is present in the map otherwise false.
+   */
   bool HasKey(K&& key) const;
 
   /** Remove from the map an entry that has the specified key.
@@ -87,6 +96,22 @@ public:
    * \param key Key of the entry to remove.
    */
   void Remove(K&& key);
+
+  /** Returns a reference to the value stored with the specified key. If the key
+   * does not yet exist, then it's inserted first.
+   * \brief Returns value corresponding to key.
+   * \param key Key to lookup value for.
+   * \return Value found by looking up key.
+   */
+  V& At(const K& key);
+
+  /** Returns a reference to the value stored with the specified key. If the key
+   * does not yet exist, then it's inserted first.
+   * \brief Returns value corresponding to key.
+   * \param key Key to lookup value for.
+   * \return Value found by looking up key.
+   */
+  const V& At(const K& key) const;
 
   /** Returns a reference to the value stored with the specified key. If the key
    * does not yet exist, then it's inserted first.
@@ -110,7 +135,7 @@ public:
    * \param key Key to lookup value for.
    * \return Value found by looking up key.
    */
-  V& operator[](K&& key);
+  V& operator[](const K& key);
 
   /** Returns a reference to the value stored with the specified key. If the key
    * does not yet exist, then it's inserted first.
@@ -118,7 +143,7 @@ public:
    * \param key Key to lookup value for.
    * \return Value found by looking up key.
    */
-  const V& operator[](K&& key) const;
+  V& operator[](K&& key);
 
   /** Returns the number of entries that are currently stored in the map.
    * \brief Returns size.
@@ -133,6 +158,20 @@ template<typename K, typename V>
 ArrayMap<K, V>::ArrayMap(Allocator& allocator)
   : mEntries(ArrayList<EntryType>::DEFAULT_CAPACITY, allocator)
 {}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+bool
+ArrayMap<K, V>::HasKey(const K& key) const
+{
+  for (EntryType& entry : mEntries) {
+    if (entry.GetKey() == key) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // -------------------------------------------------------------------------- //
 
@@ -166,6 +205,36 @@ ArrayMap<K, V>::Remove(K&& key)
 
 template<typename K, typename V>
 V&
+ArrayMap<K, V>::At(const K& key)
+{
+  for (EntryType& entry : mEntries) {
+    if (key == entry.GetKey()) {
+      return entry.GetValue();
+    }
+  }
+  AlfAssert(false, "Key is not present in map");
+  return mEntries[0].GetValue();
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+const V&
+ArrayMap<K, V>::At(const K& key) const
+{
+  for (EntryType& entry : mEntries) {
+    if (key == entry.GetKey()) {
+      return entry.GetValue();
+    }
+  }
+  AlfAssert(false, "Key is not present in map");
+  return mEntries[0].GetValue();
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+V&
 ArrayMap<K, V>::At(K&& key)
 {
   for (EntryType& entry : mEntries) {
@@ -173,7 +242,8 @@ ArrayMap<K, V>::At(K&& key)
       return entry.GetValue();
     }
   }
-  return mEntries.AppendEmplace(std::forward<K>(key)).GetValue();
+  AlfAssert(false, "Key is not present in map");
+  return mEntries[0].GetValue();
 }
 
 // -------------------------------------------------------------------------- //
@@ -187,7 +257,21 @@ ArrayMap<K, V>::At(K&& key) const
       return entry.GetValue();
     }
   }
-  return mEntries.AppendEmplace(std::forward<K>(key)).GetValue();
+  AlfAssert(false, "Key is not present in map");
+  return mEntries[0].GetValue();
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename K, typename V>
+V& ArrayMap<K, V>::operator[](const K& key)
+{
+  for (EntryType& entry : mEntries) {
+    if (key == entry.GetKey()) {
+      return entry.GetValue();
+    }
+  }
+  return mEntries.AppendEmplace(key).GetValue();
 }
 
 // -------------------------------------------------------------------------- //
@@ -195,15 +279,12 @@ ArrayMap<K, V>::At(K&& key) const
 template<typename K, typename V>
 V& ArrayMap<K, V>::operator[](K&& key)
 {
-  return At(std::forward<K>(key));
-}
-
-// -------------------------------------------------------------------------- //
-
-template<typename K, typename V>
-const V& ArrayMap<K, V>::operator[](K&& key) const
-{
-  return At(std::forward<K>(key));
+  for (EntryType& entry : mEntries) {
+    if (key == entry.GetKey()) {
+      return entry.GetValue();
+    }
+  }
+  return mEntries.AppendEmplace(std::forward<K>(key)).GetValue();
 }
 
 }

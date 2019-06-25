@@ -28,7 +28,7 @@
 #include <doctest/doctest.h>
 
 // Project headers
-#include "alflib/collection/array_map.hpp"
+#include "alflib/graphics/image_atlas.hpp"
 
 // ========================================================================== //
 // Tests
@@ -37,39 +37,33 @@
 namespace alflib {
 namespace tests {
 
-TEST_CASE("[ArrayMap] - Construct")
+TEST_CASE("[ImageAtlas] - Construct")
 {
-  ArrayMap<String, s32> map;
-  CHECK(map.GetSize() == 0);
-  map["first"] = 22;
-  map["second"] = 37;
-  CHECK(map.GetSize() == 2);
+  // Create some images
+  Image imageRed;
+  imageRed.Create(8, 8);
+  imageRed.Fill(Color::RED);
+  Image imageGreen;
+  imageGreen.Create(8, 8);
+  imageGreen.Fill(Color::GREEN);
+  Image imageMagenta;
+  imageMagenta.Create(8, 8);
+  imageMagenta.Fill(Color::MAGENTA);
+  Image imageBlue;
+  imageBlue.Create(8, 8);
+  imageBlue.Fill(Color::BLUE);
+  Image imageYellow;
+  imageYellow.Create(8, 8);
+  imageYellow.Fill(Color::YELLOW);
 
-  CHECK(map.HasKey("first"));
-  CHECK(map.HasKey("second"));
-  CHECK(!map.HasKey("third"));
+  // Create atlas
+  ImageAtlas atlas(
+    { &imageRed, &imageGreen, &imageMagenta, &imageBlue, &imageYellow },
+    { "red", "green", "magenta", "blue", "yellow" },
+    32,
+    32);
 
-  CHECK(map["first"] == 22);
-  CHECK(map["second"] == 37);
-
-  map.Remove("first");
-  CHECK(map.GetSize() == 1);
-  CHECK(!map.HasKey("first"));
-
-  CHECK(map["second"] == 37);
-}
-
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[ArrayMap] - Entry creation")
-{
-  ArrayMap<String, u32> map;
-
-  String key0 = "first";
-  u32 val0 = 1;
-  map[key0] = val0;
-
-  map[String{ "second" }] = 2;
+  atlas.GetImage().Save(Path{ "res/out/image_atlas.tga" }, true);
 }
 
 }
