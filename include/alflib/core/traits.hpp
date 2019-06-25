@@ -20,86 +20,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#pragma once
+
 // ========================================================================== //
 // Headers
 // ========================================================================== //
 
-// Library headers
-#include <doctest/doctest.h>
-
 // Project headers
-#include "alflib/graphics/image.hpp"
-#include "alflib/file/file.hpp"
+#include "alflib/core/common.hpp"
 
 // ========================================================================== //
-// Tests
+// IsTriviallyRelocatable
 // ========================================================================== //
+
+#define ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(type)                              \
+  template<>                                                                   \
+  struct IsTriviallyRelocatable<type>                                          \
+  {                                                                            \
+    static constexpr bool Value = true;                                        \
+  };
 
 namespace alflib {
-namespace tests {
 
-TEST_CASE("[Image] - Load")
+/** Trait that determines whether or not a type is trivially relocatable.
+ * Meaning that we don't need to use a 'Move-Destruct' pair when moving the data
+ * of the object, but can rather just use a 'memcpy'.
+ * \brief Trait for trivially relocatable types.
+ * \tparam T Type that may be trivially relocatable.
+ */
+template<typename T>
+struct IsTriviallyRelocatable
 {
-  // Load image
-  Image image;
-  Image::Result result = image.Load(Path{ "res/test_image.png" });
-  CHECK(result == Image::Result::kSuccess);
-  CHECK(image.GetWidth() == 32);
-  CHECK(image.GetHeight() == 40);
-  CHECK(image.GetFormat() == Image::Format::kRGB);
-}
+  static constexpr bool Value = false;
+};
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Image] - Save")
+/** \copydoc alflib::IsTriviallyRelocatable<T> **/
+template<typename T>
+struct IsTriviallyRelocatable<T*>
 {
-  // Save image
-  Image image;
-  Image::Result result = image.Load(Path{ "res/test_image.png" });
-  CHECK(result == Image::Result::kSuccess);
-  CHECK(image.Save(Path{ "res/out/test_image_other.tga" }) ==
-        Image::Result::kSuccess);
-
-  // Cleanup
-  File file(Path{ "res/out/test_image_other.tga" });
-  CHECK(file.Delete() == FileResult::kSuccess);
-}
+  static constexpr bool Value = true;
+};
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Image] - Blit")
-{
-  // Create src images
-  Image im0;
-  im0.Create(8, 8);
-  im0.Fill(Color::RED);
-  Image im1;
-  im1.Create(8, 8);
-  im1.Fill(Color::MAGENTA);
-  Image im2;
-  im2.Create(8, 8);
-  im2.Fill(Color::CORNFLOWER_BLUE);
-  CHECK(im2.GetPixel(0, 0) == Color::CORNFLOWER_BLUE);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(char);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(unsigned char);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(short);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(unsigned short);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(int);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(unsigned int);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(long);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(unsigned long);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(long long);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(unsigned long long);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(float);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(double);
+ALFLIB_DEFINE_TRIVIALLY_RELOCATABLE(long double);
 
-  // Create destination image
-  Image dst;
-  dst.Create(32, 32);
-  dst.Fill(Color::WHITE);
-
-  // Blit images
-  dst.Blit(im0, 0, 0);
-  dst.Blit(im1, 8, 0);
-  dst.Blit(im2, 24, 0);
-
-  CHECK(dst.GetPixel(2, 7) == Color::RED);
-  CHECK(dst.GetPixel(9, 4) == Color::MAGENTA);
-  CHECK(dst.GetPixel(13, 0) == Color::MAGENTA);
-  CHECK(dst.GetPixel(27, 6) == Color::CORNFLOWER_BLUE);
-
-  // Save image
-  dst.Save(Path{ "res/out/atlas.tga" }, true);
-  CHECK(File(Path{ "res/out/atlas.tga" }).Exists());
-}
-
-}
 }

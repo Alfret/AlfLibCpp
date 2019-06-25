@@ -70,6 +70,15 @@ u32 Element::liveCount = 0;
 
 TEST_CASE("[ArrayList] - Create")
 {
+
+  static_assert(IsTriviallyRelocatable<u8>::Value, "");
+  static_assert(IsTriviallyRelocatable<unsigned char>::Value, "");
+  static_assert(IsTriviallyRelocatable<f32>::Value, "");
+  static_assert(!IsTriviallyRelocatable<String>::Value, "");
+  static_assert(IsTriviallyRelocatable<String*>::Value, "");
+  static_assert(IsTriviallyRelocatable<ArrayList<String*>>::Value, "");
+  static_assert(!IsTriviallyRelocatable<ArrayList<String>>::Value, "");
+
   const ArrayList<Element> l0;
   CHECK(l0.GetSize() == 0);
 
@@ -84,24 +93,63 @@ TEST_CASE("[ArrayList] - Append")
 {
   u32 liveCount = Element::liveCount;
   {
-    constexpr u32 count = 16;
-
-    ArrayList<Element> list;
-    CHECK(list.GetSize() == 0);
-
-    for (u32 i = 0; i < count; ++i) {
-      list.Append(Element(i));
+    // 'u32' list
+    {
+      constexpr u32 count = 16;
+      ArrayList<u32> list;
+      CHECK(list.GetSize() == 0);
+      for (u32 i = 0; i < count; ++i) {
+        list.Append(i);
+      }
+      CHECK(list.GetSize() == count);
+      CHECK(list.GetCapacity() >= count);
     }
 
-    CHECK(list.GetSize() == count);
-    CHECK(list.GetCapacity() >= count);
+    // 'Element' list
+    {
+      constexpr u32 count = 16;
+      ArrayList<Element> list;
+      CHECK(list.GetSize() == 0);
+      for (u32 i = 0; i < count; ++i) {
+        list.Append(Element(i));
+      }
+      CHECK(list.GetSize() == count);
+      CHECK(list.GetCapacity() >= count);
+    }
   }
   CHECK(liveCount == Element::liveCount);
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[ArrayList] - Prepend") {}
+TEST_CASE("[ArrayList] - Prepend")
+{
+  // 'u32' list (trivially relocatable)
+  {
+    u32 ref[] = { 2, 1, 4, 3, 6, 5 };
+    u32 refCount = 6;
+    ArrayList<u32> list;
+    CHECK(list.GetSize() == 0);
+    for (u32 i = 0; i < refCount; ++i) {
+      list.Prepend(ref[i]);
+    }
+    CHECK(list.GetSize() == refCount);
+    CHECK(list.GetCapacity() >= refCount);
+  }
+
+  // Element list (NOT trivially relocatable)
+  {
+    u32 ref[] = { 2, 1, 4, 3, 6, 5 };
+    u32 refCount = 6;
+    ArrayList<Element> list;
+    CHECK(list.GetSize() == 0);
+    for (u32 i = 0; i < refCount; ++i) {
+      list.Prepend(Element(ref[i]));
+    }
+    CHECK(list.GetSize() == refCount);
+    CHECK(list.GetCapacity() >= refCount);
+  }
+}
 
 // -------------------------------------------------------------------------- //
 
@@ -109,23 +157,37 @@ TEST_CASE("[ArrayList] - Remove")
 {
   u32 liveCount = Element::liveCount;
   {
-    constexpr u32 count = 16;
-
-    ArrayList<Element> list;
-    CHECK(list.GetSize() == 0);
-
-    for (u32 i = 0; i < count; ++i) {
-      list.Append(Element(i));
+    // 'u32' list
+    {
+      constexpr u32 count = 16;
+      ArrayList<u32> list;
+      CHECK(list.GetSize() == 0);
+      for (u32 i = 0; i < count; ++i) {
+        list.Append(i);
+      }
+      CHECK(list.GetSize() == count);
+      CHECK(list.GetCapacity() >= count);
+      while (list.GetSize() > 0) {
+        list.Remove(0);
+      }
+      CHECK(list.GetSize() == 0);
     }
 
-    CHECK(list.GetSize() == count);
-    CHECK(list.GetCapacity() >= count);
-
-    while (list.GetSize() > 0) {
-      list.Remove(0);
+    // 'Element' list
+    {
+      constexpr u32 count = 16;
+      ArrayList<Element> list;
+      CHECK(list.GetSize() == 0);
+      for (u32 i = 0; i < count; ++i) {
+        list.Append(Element(i));
+      }
+      CHECK(list.GetSize() == count);
+      CHECK(list.GetCapacity() >= count);
+      while (list.GetSize() > 0) {
+        list.Remove(0);
+      }
+      CHECK(list.GetSize() == 0);
     }
-
-    CHECK(list.GetSize() == 0);
   }
   CHECK(liveCount == Element::liveCount);
 }
@@ -134,24 +196,20 @@ TEST_CASE("[ArrayList] - Remove")
 
 TEST_CASE("[ArrayList] - Iterator")
 {
+  s32 ref[] = { 3, 1, 4, 2, 7, 5, 8, 6 };
+  u32 refCount = 8;
+
   ArrayList<Element> list;
-  list.AppendEmplace(Element{ 1 });
-  list.AppendEmplace(Element{ 3 });
-  list.AppendEmplace(Element{ 5 });
-  list.AppendEmplace(Element{ 7 });
-  CHECK(list.GetSize() == 4);
-  CHECK(list.GetCapacity() >= 4);
+  for (u32 i = 0; i < refCount; i++) {
+    list.AppendEmplace(Element{ ref[i] });
+  }
+
+  CHECK(list.GetSize() == refCount);
+  CHECK(list.GetCapacity() >= refCount);
+
   s32 index = 0;
   for (auto& e : list) {
-    if (index == 0) {
-      CHECK(e.i == 1);
-    } else if (index == 1) {
-      CHECK(e.i == 3);
-    } else if (index == 2) {
-      CHECK(e.i == 5);
-    } else if (index == 3) {
-      CHECK(e.i == 7);
-    }
+    CHECK(e.i == ref[index]);
     index++;
   }
 }

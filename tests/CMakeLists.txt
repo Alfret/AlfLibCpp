@@ -14,8 +14,10 @@ add_executable(test
   test_allocator.cpp
   test_archive.cpp
   test_array_list.cpp
+  test_array_map.cpp
   test_file.cpp
   test_image.cpp
+  test_image_atlas.cpp
   test_mem_read_write.cpp
   test_path.cpp
   test_pointer.cpp

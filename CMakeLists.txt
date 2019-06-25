@@ -10,7 +10,7 @@ option(ALFLIBCPP_BUILD_SAMPLES "Build sample program" OFF)
 option(ALFLIBCPP_BUILD_TESTS "Build tests" OFF)
 
 # Language standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Compiler flags flags
 if (MSVC)
@@ -39,6 +39,11 @@ set(SOURCE_FILES
   source/alflib/file/result.cpp
   source/alflib/graphics/color.cpp
   source/alflib/graphics/image.cpp
+  source/alflib/math/matrix4f.cpp
+  source/alflib/math/simd.cpp
+  source/alflib/math/vector2f.cpp
+  source/alflib/math/vector3f.cpp
+  source/alflib/math/vector4f.cpp
   source/alflib/memory/allocator.cpp
   source/alflib/memory/memory_reader.cpp
   source/alflib/memory/memory_writer.cpp

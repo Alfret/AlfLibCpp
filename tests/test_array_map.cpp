@@ -28,8 +28,7 @@
 #include <doctest/doctest.h>
 
 // Project headers
-#include "alflib/graphics/image.hpp"
-#include "alflib/file/file.hpp"
+#include "alflib/collection/array_map.hpp"
 
 // ========================================================================== //
 // Tests
@@ -38,67 +37,39 @@
 namespace alflib {
 namespace tests {
 
-TEST_CASE("[Image] - Load")
+TEST_CASE("[ArrayMap] - Construct")
 {
-  // Load image
-  Image image;
-  Image::Result result = image.Load(Path{ "res/test_image.png" });
-  CHECK(result == Image::Result::kSuccess);
-  CHECK(image.GetWidth() == 32);
-  CHECK(image.GetHeight() == 40);
-  CHECK(image.GetFormat() == Image::Format::kRGB);
+  ArrayMap<String, s32> map;
+  CHECK(map.GetSize() == 0);
+  map["first"] = 22;
+  map["second"] = 37;
+  CHECK(map.GetSize() == 2);
+
+  CHECK(map.HasKey("first"));
+  CHECK(map.HasKey("second"));
+  CHECK(!map.HasKey("third"));
+
+  CHECK(map["first"] == 22);
+  CHECK(map["second"] == 37);
+
+  map.Remove("first");
+  CHECK(map.GetSize() == 1);
+  CHECK(!map.HasKey("first"));
+
+  CHECK(map["second"] == 37);
 }
 
 // -------------------------------------------------------------------------- //
 
-TEST_CASE("[Image] - Save")
+TEST_CASE("[ArrayMap] - Entry creation")
 {
-  // Save image
-  Image image;
-  Image::Result result = image.Load(Path{ "res/test_image.png" });
-  CHECK(result == Image::Result::kSuccess);
-  CHECK(image.Save(Path{ "res/out/test_image_other.tga" }) ==
-        Image::Result::kSuccess);
+  ArrayMap<String, u32> map;
 
-  // Cleanup
-  File file(Path{ "res/out/test_image_other.tga" });
-  CHECK(file.Delete() == FileResult::kSuccess);
-}
+  String key0 = "first";
+  u32 val0 = 1;
+  map[key0] = val0;
 
-// -------------------------------------------------------------------------- //
-
-TEST_CASE("[Image] - Blit")
-{
-  // Create src images
-  Image im0;
-  im0.Create(8, 8);
-  im0.Fill(Color::RED);
-  Image im1;
-  im1.Create(8, 8);
-  im1.Fill(Color::MAGENTA);
-  Image im2;
-  im2.Create(8, 8);
-  im2.Fill(Color::CORNFLOWER_BLUE);
-  CHECK(im2.GetPixel(0, 0) == Color::CORNFLOWER_BLUE);
-
-  // Create destination image
-  Image dst;
-  dst.Create(32, 32);
-  dst.Fill(Color::WHITE);
-
-  // Blit images
-  dst.Blit(im0, 0, 0);
-  dst.Blit(im1, 8, 0);
-  dst.Blit(im2, 24, 0);
-
-  CHECK(dst.GetPixel(2, 7) == Color::RED);
-  CHECK(dst.GetPixel(9, 4) == Color::MAGENTA);
-  CHECK(dst.GetPixel(13, 0) == Color::MAGENTA);
-  CHECK(dst.GetPixel(27, 6) == Color::CORNFLOWER_BLUE);
-
-  // Save image
-  dst.Save(Path{ "res/out/atlas.tga" }, true);
-  CHECK(File(Path{ "res/out/atlas.tga" }).Exists());
+  map[String{ "second" }] = 2;
 }
 
 }

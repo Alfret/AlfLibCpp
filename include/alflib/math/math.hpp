@@ -100,8 +100,33 @@ Clamp(T value, T min, T max)
   return value < min ? min : value > max ? max : value;
 }
 
-// --------------------------------------------------------------------------
-// //
+// -------------------------------------------------------------------------- //
+
+/** Returns the square root of a value.
+ * \brief Returns square root.
+ * \param value Value to get square root of.
+ * \return Square root value.
+ */
+inline f32
+SquareRoot(f32 value)
+{
+  return sqrtf(value);
+}
+
+// -------------------------------------------------------------------------- //
+
+/** Returns the square root of a value.
+ * \brief Returns square root.
+ * \param value Value to get square root of.
+ * \return Square root value.
+ */
+inline f64
+SquareRoot(f64 value)
+{
+  return sqrt(value);
+}
+
+// -------------------------------------------------------------------------- //
 
 /** Raise a value to a power.
  * \brief Raise value to power.
