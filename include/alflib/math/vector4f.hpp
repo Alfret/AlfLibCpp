@@ -27,72 +27,79 @@
 // ========================================================================== //
 
 // Project headers
-#include "alflib/core/common.hpp"
-#include "alflib/platform/detection.hpp"
+#include "alflib/math/simd.hpp"
 
 // ========================================================================== //
-// Endianness
+// Vector4F Declaration
 // ========================================================================== //
-
-/** Macro for little endian **/
-#define ALFLIB_LITTLE_ENDIAN 0x03020100ul
-/** Macro for big endian **/
-#define ALFLIB_BIG_ENDIAN 0x00010203ul
-/** Macro for PDP endian **/
-#define ALFLIB_PDP_ENDIAN 0x01000302ul
 
 namespace alflib {
 
-/** Union used to determine host endianness **/
-static const union
+/** \class Vector4F
+ * \author Filip Björklund
+ * \date 25 june 2019 - 14:46
+ * \brief 4D Vector.
+ * \details
+ * Class that represents a vector with 4 dimensions.
+ */
+class Vector4F
 {
-  u8 bytes[4];
-  u32 value;
-} sHostOrder = { { 0, 1, 2, 3 } };
+private:
+  /** Simd data **/
+  Float4x32 mData;
+
+public:
+  /** Construct from values **/
+  Vector4F(f32 x, f32 y, f32 z, f32 w = 0.0f);
+
+  /** Construct and fill with a single value **/
+  Vector4F(f32 value = 0.0f);
+
+  /** Addition **/
+  Vector4F operator+(const Vector4F& other);
+
+  /** Compound addition **/
+  void operator+=(const Vector4F& other);
+
+  /** Subtraction **/
+  Vector4F operator-(const Vector4F& other);
+
+  /** Compound subtraction **/
+  void operator-=(const Vector4F& other);
+
+  /** Multiplication **/
+  Vector4F operator*(const Vector4F& other);
+
+  /** Compound multiplication **/
+  void operator*=(const Vector4F& other);
+
+  /** Division **/
+  Vector4F operator/(const Vector4F& other);
+
+  /** Compound division **/
+  void operator/=(const Vector4F& other);
+
+  /** Equality **/
+  bool operator==(const Vector4F& other);
+
+  /** Inequality **/
+  bool operator!=(const Vector4F& other);
+
+  /** Returns value and index **/
+  f32& operator[](u32 index);
+
+  /** Returns value and index **/
+  const f32& operator[](u32 index) const;
+
+  /** Dot product **/
+  f32 Dot(const Vector4F& other) const;
+
+  /** Returns the simd data **/
+  Float4x32 GetData() const { return mData; };
+
+private:
+  /** Construct from data **/
+  Vector4F(const Float4x32& data);
+};
 
 }
-
-/** Macro for the endianness of the host **/
-#define ALFLIB_HOST_ENDIAN (alflib::sHostOrder.value)
-
-// ========================================================================== //
-// Windows Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_WINDOWS)
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <pathcch.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
-
-#endif // defined(ALFLIB_TARGET_WINDOWS)
-
-// ========================================================================== //
-// Linux Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_LINUX)
-
-#include <csignal>
-
-#include <dirent.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#endif
-
-// ========================================================================== //
-// x86 Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_ARCH_AMD64)
-
-#include <immintrin.h>
-
-#endif

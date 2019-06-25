@@ -29,9 +29,27 @@
 #if defined(_WIN32)
 /** Microsoft Windows target platform **/
 #define ALFLIB_TARGET_WINDOWS
+#if defined(_M_AMD64)
+/** 64-bit x86 target architecture **/
+#define ALFLIB_ARCH_AMD64
+#elif defined(_M_ARM64)
+/** 64-bit ARM target architecture **/
+#define ALFLIB_ARCH_ARM64
+#else
+#error Invalid Windows target architecture (Supported: x86_64, ARM64)
+#endif
 #elif defined(__linux__) && !defined(__ANDROID__)
 /** Linux target platform **/
 #define ALFLIB_TARGET_LINUX
+#if defined(__x86_64__)
+/** 64-bit x86 target architecture **/
+#define ALFLIB_ARCH_AMD64
+#elif defined(__aarch64__)
+/** 64-bit ARM target architecture **/
+#define ALFLIB_ARCH_ARM64
+#else
+#error Invalid Linux target architecture (Supported: x86_64, ARM64)
+#endif
 #elif defined(__APPLE__)
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR
@@ -40,9 +58,17 @@
 #elif TARGET_OS_IPHONE
 /** Apple iOS target platform **/
 #define ALFLIB_TARGET_IOS
+/** 64-bit ARM target architecture **/
+#define ALFLIB_ARCH_ARM64
 #elif TARGET_OS_MAC
 /** Apple MacOS target platform **/
 #define ALFLIB_TARGET_MACOS
+#if defined(__x86_64__)
+/** 64-bit x86 target architecture **/
+#define ALFLIB_ARCH_AMD64
+#else
+#error Invalid MacOS target architecture (Supported: x86_64)
+#endif
 #else
 #error "Unknown Apple OS"
 #endif
