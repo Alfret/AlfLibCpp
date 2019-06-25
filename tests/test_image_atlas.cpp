@@ -39,8 +39,6 @@ namespace tests {
 
 TEST_CASE("[ImageAtlas] - Construct")
 {
-  CHECK(true);
-
   // Create some images
   Image imageRed;
   imageRed.Create(8, 8);
