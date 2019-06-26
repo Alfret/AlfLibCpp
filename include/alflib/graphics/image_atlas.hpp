@@ -70,6 +70,15 @@ template<typename MapType = ArrayMap<String, ImageAtlasRegion>>
 class ImageAtlas
 {
 public:
+  /** Enumeration of results **/
+  enum class Result
+  {
+    /** Success **/
+    kSuccess,
+    /** Atlas cannot fit all images **/
+    kAtlasTooSmall
+  };
+
   /** Enumeration of packing strategies **/
   enum class PackingStrategy
   {
@@ -86,10 +95,16 @@ private:
   MapType mRegionMap;
 
 public:
-  /** Construct an image atlas from a set of images and their corresponding
-   * identifying names. Each image is packed onto a larger image (atlas) and
-   * their locations are recorded in a map with the names used for lookup.
-   * \brief Construct atlas from images.
+  /** Construct an image atlas without actually building the underlying atlas.
+   * The function 'ImageAtlas::Build' must be called to build the atlas.
+   * \brief Construct image atlas.
+   */
+  ImageAtlas() = default;
+
+  /** Build the atlas from a set of images and their corresponding identifying
+   * names. Each image is packed onto a larger image (atlas) and their locations
+   * are recorded in a map with the names used for lookup.
+   * \brief Build atlas from images.
    * \param images List of images to pack into atlas.
    * \param names Names of images.
    * \param width Width of the atlas. This, together with the height must be
@@ -98,11 +113,29 @@ public:
    * large enough to be able to hold the entire set of images.
    * \param packingStrategy Strategy used for packing the images.
    */
-  ImageAtlas(const ArrayList<Image*>& images,
-             const ArrayList<String>& names,
-             u32 width,
-             u32 height,
-             PackingStrategy packingStrategy = PackingStrategy::kLinear);
+  Result Build(const ArrayList<Image*>& images,
+               const ArrayList<String>& names,
+               u32 width,
+               u32 height,
+               PackingStrategy packingStrategy = PackingStrategy::kLinear);
+
+  /** Build the atlas from a set of images and their corresponding identifying
+   * names. Each image is packed onto a larger image (atlas) and their locations
+   * are recorded in a map with the names used for lookup.
+   * \brief Build atlas from images.
+   * \param images List of images to pack into atlas.
+   * \param names Names of images.
+   * \param width Width of the atlas. This, together with the height must be
+   * large enough to be able to hold the entire set of images.
+   * \param height Height of the atlas. This, together with the width must be
+   * large enough to be able to hold the entire set of images.
+   * \param packingStrategy Strategy used for packing the images.
+   */
+  Result Build(const ArrayList<Image>& images,
+               const ArrayList<String>& names,
+               u32 width,
+               u32 height,
+               PackingStrategy packingStrategy = PackingStrategy::kLinear);
 
   /** Returns the atlas image that is the image that all sub-images specified
    * during construction are placed upon.
@@ -142,11 +175,12 @@ public:
 // -------------------------------------------------------------------------- //
 
 template<typename MapType>
-ImageAtlas<MapType>::ImageAtlas(const ArrayList<Image*>& images,
-                                const ArrayList<String>& names,
-                                u32 width,
-                                u32 height,
-                                PackingStrategy packingStrategy)
+typename ImageAtlas<MapType>::Result
+ImageAtlas<MapType>::Build(const ArrayList<Image*>& images,
+                           const ArrayList<String>& names,
+                           u32 width,
+                           u32 height,
+                           PackingStrategy packingStrategy)
 {
   // Only linear packing supported
   AlfAssert(packingStrategy == PackingStrategy::kLinear,
@@ -168,6 +202,11 @@ ImageAtlas<MapType>::ImageAtlas(const ArrayList<Image*>& images,
       maxHeight = 0;
     }
 
+    // Does not fit?
+    if (y + image->GetHeight() > height) {
+      return Result::kAtlasTooSmall;
+    }
+
     // Blit image
     mAtlas.Blit(*image, x, y);
     x += image->GetWidth();
@@ -179,6 +218,58 @@ ImageAtlas<MapType>::ImageAtlas(const ArrayList<Image*>& images,
       maxHeight = image->GetHeight();
     }
   }
+
+  return Result::kSuccess;
+}
+
+// -------------------------------------------------------------------------- //
+
+template<typename MapType>
+typename ImageAtlas<MapType>::Result
+ImageAtlas<MapType>::Build(const ArrayList<Image>& images,
+                           const ArrayList<String>& names,
+                           u32 width,
+                           u32 height,
+                           PackingStrategy packingStrategy)
+{
+  // Only linear packing supported
+  AlfAssert(packingStrategy == PackingStrategy::kLinear,
+            "Only linear packing supported");
+
+  // Create atlas
+  mAtlas.Create(width, height);
+  mAtlas.Fill(Color::WHITE);
+
+  // Blit images
+  u32 x = 0, y = 0, maxHeight = 0;
+  for (u32 i = 0; i < images.GetSize(); i++) {
+    const Image& image = images[i];
+
+    // Begin another row?
+    if (x + image.GetWidth() > width) {
+      x = 0;
+      y += maxHeight;
+      maxHeight = 0;
+    }
+
+    // Does not fit?
+    if (y + image.GetHeight() > height) {
+      return Result::kAtlasTooSmall;
+    }
+
+    // Blit image
+    mAtlas.Blit(image, x, y);
+    x += image.GetWidth();
+    mRegionMap[names[i]] =
+      ImageAtlasRegion{ x, y, image.GetWidth(), image.GetHeight() };
+
+    // Increase max height of current row?
+    if (image.GetHeight() > maxHeight) {
+      maxHeight = image.GetHeight();
+    }
+  }
+
+  return Result::kSuccess;
 }
 
 }
