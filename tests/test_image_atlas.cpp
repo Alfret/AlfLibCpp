@@ -57,12 +57,13 @@ TEST_CASE("[ImageAtlas] - Construct")
   imageYellow.Fill(Color::YELLOW);
 
   // Create atlas
-  ImageAtlas atlas(
+  ImageAtlas atlas;
+  ImageAtlas<>::Result result = atlas.Build(
     { &imageRed, &imageGreen, &imageMagenta, &imageBlue, &imageYellow },
     { "red", "green", "magenta", "blue", "yellow" },
     32,
     32);
-
+  CHECK(result == ImageAtlas<>::Result::kSuccess);
   atlas.GetImage().Save(Path{ "res/out/image_atlas.tga" }, true);
 }
 
