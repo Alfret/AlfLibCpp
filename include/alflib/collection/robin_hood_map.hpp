@@ -33,6 +33,7 @@
 #include "alflib/memory/allocator.hpp"
 #include "alflib/core/assert.hpp"
 #include "alflib/math/math.hpp"
+#include "alflib/collection/map.hpp"
 
 // ========================================================================== //
 // RobinHoodMap Declaration
@@ -43,14 +44,14 @@ namespace alflib {
 /** \class RobinHoodMap
  * \author Filip Björklund
  * \date 22 june 2019 - 18:07
- * \brief Robin-hood hash-map
+ * \brief Hash map with Robin Hood probing
  * \details
- * Class that represent a robin-hood hash-map.
+ * Class that represent a probing hash map implemented with Robin Hood bucket
+ * swapping during probing.
  */
 template<typename K, typename V>
 class RobinHoodMap
 {
-
 private:
   /** Default bucket count **/
   static constexpr u32 DEFAULT_BUCKET_CAPACITY = 32;
@@ -60,17 +61,16 @@ private:
 public:
   /** Index type **/
   using IndexType = u32;
+  /** Entry type **/
+  using EntryType = MapEntry<K, V>;
 
   /** Single bucket in the map **/
   struct Bucket
   {
-    /** Key **/
-    K key;
     /** Hashed key **/
     u32 hash;
-
-    /** Value **/
-    V value;
+    /** Entry **/
+    EntryType entry;
   };
 
 private:
@@ -81,6 +81,9 @@ private:
   Bucket* mBuckets = nullptr;
   /** Bucket capacity **/
   IndexType mBucketCapacity = 0;
+  /** Number of occupied buckets. This differs from 'mSize' because it includes
+   * tombstones **/
+  IndexType mOccupiedBucketCount = 0;
   /** Current number of stored objects **/
   IndexType mSize = 0;
 
@@ -110,7 +113,14 @@ public:
    */
   IndexType GetSize() const { return mSize; }
 
-  f32 GetLoadFactor() const { return mSize / f32(mBucketCapacity); }
+  /** Returns the current load factor of the map.
+   * \brief Returns load factor.
+   * \return Load factor.
+   */
+  f32 GetLoadFactor() const
+  {
+    return mOccupiedBucketCount / f32(mBucketCapacity);
+  }
 
 private:
   bool IsTombstone(Bucket& entry);
@@ -133,7 +143,8 @@ RobinHoodMap<K, V>::RobinHoodMap(RobinHoodMap::IndexType bucketCount,
             bucketCount);
 
   // Allocate buckets
-  mBuckets = mAllocator.NewArray<Bucket>(mBucketCapacity);
+  mBuckets = static_cast<Bucket*>(
+    mAllocator.Alloc(sizeof(Bucket) * mBucketCapacity, alignof(Bucket)));
   memset(mBuckets, 0, sizeof(Bucket) * mBucketCapacity);
 }
 
@@ -144,8 +155,7 @@ RobinHoodMap<K, V>::~RobinHoodMap()
   for (IndexType i = 0; i < mBucketCapacity; i++) {
     Bucket& bucket = mBuckets[i];
     if (bucket.hash != 0 && !IsTombstone(bucket)) {
-      bucket.key.~K();
-      bucket.value.~V();
+      bucket.entry.~EntryType();
     }
   }
 
@@ -174,23 +184,22 @@ V& RobinHoodMap<K, V>::operator[](K&& key)
   // Find entry
   u32 hash = std::hash<K>{}(key);
   IndexType index = ModuloPowerOfTwo(hash, mBucketCapacity);
+  s64 insertIndex = -1;
   V value;
   u32 distance = 0;
   while (true) {
     Bucket& bucket = mBuckets[index];
 
     // Same hash:
-    if (bucket.hash == hash && bucket.key == key) {
-      return bucket.value;
+    if (bucket.hash == hash && bucket.entry.GetKey() == key) {
+      return bucket.entry.GetValue();
     }
 
     // Empty bucket:
     if (bucket.hash == 0) {
       bucket.hash = hash;
-      bucket.key = std::move(key);
-      bucket.value = std::move(value);
-      mSize++;
-      return bucket.value;
+      bucket.entry = EntryType{ std::move(key), std::move(value) };
+      break;
     }
 
     // Not empty
@@ -199,9 +208,8 @@ V& RobinHoodMap<K, V>::operator[](K&& key)
       // Tombstone bucket:
       if (IsTombstone(bucket)) {
         bucket.hash = hash;
-        bucket.key = std::move(key);
-        mSize++;
-        return bucket.value;
+        bucket.entry = EntryType{ std::move(key), std::move(value) };
+        break;
       }
 
       // Swap the bucket content for this content
@@ -210,6 +218,10 @@ V& RobinHoodMap<K, V>::operator[](K&& key)
         std::swap(value, bucket.value);
         std::swap(key, bucket.key);
         distance = currentDistance;
+
+        if (insertIndex == -1) {
+          insertIndex = index;
+        }
       }
     }
 
@@ -218,7 +230,9 @@ V& RobinHoodMap<K, V>::operator[](K&& key)
     distance++;
   }
 
-  AlfAssert(false, "Unreachable code");
+  // Return value at index
+  mSize++;
+  return mBuckets[insertIndex].entry.GetValue();
 }
 
 // -------------------------------------------------------------------------- //
