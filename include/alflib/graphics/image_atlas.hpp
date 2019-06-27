@@ -170,6 +170,18 @@ public:
   {
     return mRegionMap.At(name);
   }
+
+  /** Returns the width of the atlas in pixels.
+   * \brief Returns width.
+   * \return Width of the atlas.
+   */
+  u32 GetWidth() const { return mAtlas.GetWidth(); }
+
+  /** Returns the height of the atlas in pixels.
+   * \brief Returns height.
+   * \return Height of the atlas.
+   */
+  u32 GetHeight() const { return mAtlas.GetHeight(); }
 };
 
 // -------------------------------------------------------------------------- //
@@ -209,9 +221,9 @@ ImageAtlas<MapType>::Build(const ArrayList<Image*>& images,
 
     // Blit image
     mAtlas.Blit(*image, x, y);
-    x += image->GetWidth();
     mRegionMap[names[i]] =
       ImageAtlasRegion{ x, y, image->GetWidth(), image->GetHeight() };
+    x += image->GetWidth();
 
     // Increase max height of current row?
     if (image->GetHeight() > maxHeight) {
