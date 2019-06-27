@@ -271,9 +271,9 @@ ImageAtlas<MapType>::Build(const ArrayList<Image>& images,
 
     // Blit image
     mAtlas.Blit(image, x, y);
-    x += image.GetWidth();
     mRegionMap[names[i]] =
       ImageAtlasRegion{ x, y, image.GetWidth(), image.GetHeight() };
+    x += image.GetWidth();
 
     // Increase max height of current row?
     if (image.GetHeight() > maxHeight) {
