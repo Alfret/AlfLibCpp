@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/memory/memory_writer.hpp"
+#include "alflib/memory/raw_memory_reader.hpp"
 
 // ========================================================================== //
 // Headers
@@ -28,158 +28,172 @@
 
 // Project headers
 #include "alflib/memory/memory.hpp"
+#include "alflib/core/assert.hpp"
 
 // ========================================================================== //
-// MemoryWriter Implementation
+// MemoryReader Implementation
 // ========================================================================== //
 
 namespace alflib {
 
-MemoryWriter::MemoryWriter(Buffer& buffer, u64 initialOffset)
-  : mBuffer(buffer)
-  , mWriteOffset(initialOffset)
+RawMemoryReader::RawMemoryReader(u8* memory, u64 memorySize, u64 initialOffset)
+  : mMemory(memory)
+  , mMemorySize(memorySize)
+  , mReadOffset(initialOffset)
 {}
 
 // -------------------------------------------------------------------------- //
 
-void
-MemoryWriter::WriteBytes(const u8* data, u64 size)
+const u8*
+RawMemoryReader::ReadBytes(u64 size)
 {
-  // Resize buffer if neccessary
-  if (mBuffer.GetSize() < mWriteOffset + size) {
-    mBuffer.Resize(u64(mBuffer.GetSize() * BUFFER_RESIZE_FACTOR));
-  }
-
-  // Write bytes
-  mBuffer.Write(mWriteOffset, data, size);
-  mWriteOffset += size;
+  AlfAssert(mReadOffset + size <= mMemorySize, "Reading past buffer");
+  const u8* data = mMemory + mReadOffset;
+  mReadOffset += size;
+  return data;
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s8& object)
+s8
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u8&>(object));
+  const s8* bytes = reinterpret_cast<const s8*>(ReadBytes(sizeof(s8)));
+  return *bytes;
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u8& object)
+u8
+RawMemoryReader::Read()
 {
-  WriteBytes(&object, 1);
+  const u8* bytes = ReadBytes(sizeof(s8));
+  return *bytes;
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s16& object)
+s16
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u16&>(object));
-}
-
-// -------------------------------------------------------------------------- //
-
-template<>
-void
-MemoryWriter::Write(const u16& object)
-{
+  const s16* data = reinterpret_cast<const s16*>(ReadBytes(sizeof(s16)));
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u16));
+  return *data;
 #else
-  u16 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u16));
+  return SwapEndian(*data);
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s32& object)
+u16
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u32&>(object));
-}
-
-// -------------------------------------------------------------------------- //
-
-template<>
-void
-MemoryWriter::Write(const u32& object)
-{
+  const u16* data = reinterpret_cast<const u16*>(ReadBytes(sizeof(u16)));
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u32));
+  return *data;
 #else
-  u32 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u32));
+  return SwapEndian(*data);
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s64& object)
+s32
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u64&>(object));
-}
-
-// -------------------------------------------------------------------------- //
-
-template<>
-void
-MemoryWriter::Write(const u64& object)
-{
+  const s32* data = reinterpret_cast<const s32*>(ReadBytes(sizeof(s32)));
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u64));
+  return *data;
 #else
-  u64 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u64));
+  return SwapEndian(*data);
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f32& object)
+u32
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u32&>(object));
+  const u32* data = reinterpret_cast<const u32*>(ReadBytes(sizeof(u32)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f64& object)
+s64
+RawMemoryReader::Read()
 {
-  Write(reinterpret_cast<const u64&>(object));
+  const u64* data = reinterpret_cast<const u64*>(ReadBytes(sizeof(s64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const String& object)
+u64
+RawMemoryReader::Read()
 {
-  u32 size = object.GetSize();
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object.GetUTF8()), size);
+  const u64* data = reinterpret_cast<const u64*>(ReadBytes(sizeof(u64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const char8* object)
+f32
+RawMemoryReader::Read()
 {
-  u32 size = strlen(object);
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object), size);
+  const f32* data = reinterpret_cast<const f32*>(ReadBytes(sizeof(f32)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+f64
+RawMemoryReader::Read()
+{
+  const f64* data = reinterpret_cast<const f64*>(ReadBytes(sizeof(f64)));
+#if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
+  return *data;
+#else
+  return SwapEndian(*data);
+#endif
+}
+
+// -------------------------------------------------------------------------- //
+
+template<>
+String
+RawMemoryReader::Read()
+{
+  u32 size = Read<u32>();
+  const char8* data = reinterpret_cast<const char8*>(ReadBytes(size));
+  return String(data, size);
 }
 
 }
