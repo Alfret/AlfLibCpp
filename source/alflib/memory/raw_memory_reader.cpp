@@ -36,7 +36,7 @@
 
 namespace alflib {
 
-RawMemoryReader::RawMemoryReader(u8* memory, u64 memorySize, u64 initialOffset)
+RawMemoryReader::RawMemoryReader(const u8* memory, u64 memorySize, u64 initialOffset)
   : mMemory(memory)
   , mMemorySize(memorySize)
   , mReadOffset(initialOffset)
