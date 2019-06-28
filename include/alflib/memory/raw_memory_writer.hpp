@@ -39,10 +39,10 @@
 
 namespace alflib {
 
-/** \class MemoryWriter.
+/** \class RawMemoryWriter.
  * \author Filip Björklund
- * \date 01 januari 2019 - 00:00
- * \brief Memory writer.
+ * \date 28 june 2019 - 10:06
+ * \brief Raw memory writer.
  * \details
  * Class for writing binary data to a memory buffer.
  *
@@ -51,7 +51,7 @@ namespace alflib {
  * conversion.
  */
 
-class MemoryWriter
+class RawMemoryWriter
 {
 public:
   /** Buffer resize factor **/
@@ -60,25 +60,30 @@ public:
   static constexpr u64 DEFAULT_BUFFER_SIZE = 16;
 
 private:
-  /** Buffer that data is written to **/
-  Buffer& mBuffer;
+  /** Memory that is being written to **/
+  u8* mMemory;
+  /** Size of the memory allocation **/
+  u64 mMemorySize;
   /** Write offset **/
   u64 mWriteOffset = 0;
 
 public:
-  /** Construct a memory writer from a buffer and an initial offset.
+  /** Construct a memory writer from a memory pointer, size and an optional
+   * initial offset.
    * \brief Construct memory writer.
-   * \param buffer Buffer to write to.
-   * \param initialOffset Initial offset to write at in buffer.
+   * \param memory Memory to write to.
+   * \param memorySize Size of the memory allocation.
+   * \param initialOffset Initial offset to write at in memory.
    */
-  explicit MemoryWriter(Buffer& buffer, u64 initialOffset = 0);
+  explicit RawMemoryWriter(u8* memory, u64 memorySize, u64 initialOffset = 0);
 
   /** Write raw bytes to the memory buffer.
    * \brief Write bytes.
    * \param data Bytes to write.
    * \param size Size of data to write.
+   * \return True if the bytes could be written else false.
    */
-  void WriteBytes(const u8* data, u64 size);
+  bool WriteBytes(const u8* data, u64 size);
 
   /** Write an object of the type T to buffer.
    * \note This function requires the object to have a function
@@ -86,9 +91,10 @@ public:
    * \brief Write object.
    * \tparam T Type of object to write.
    * \param object Object to write.
+   * \return True if the bytes could be written else false.
    */
   template<typename T>
-  void Write(const T& object);
+  bool Write(const T& object);
 
   /** Write an object of the type T to buffer.
    * \note This function requires the object to have a function
@@ -96,46 +102,38 @@ public:
    * \brief Write object.
    * \tparam T Type of object to write.
    * \param object Object to write.
+   * \return True if the bytes could be written else false.
    */
   template<typename T>
-  void Write(const T* object);
+  bool Write(const T* object);
 
   /** Write a list of objects to the buffer.
    * \brief Write list.
    * \tparam T Type of objects in list.
    * \param list List to write.
+   * \return True if the bytes could be written else false.
    */
   template<typename T>
-  void Write(const ArrayList<T>& list);
+  bool Write(const ArrayList<T>& list);
 
   /** Write a std::vector to the buffer.
    * \brief Write vector.
    * \tparam T Object type.
    * \param vector Vector to write.
+   * \return True if the bytes could be written else false.
    */
   template<typename T>
-  void Write(const std::vector<T>& vector);
+  bool Write(const std::vector<T>& vector);
 
   /** Write a std::unordered_map to the buffer.
    * \brief Write map.
    * \tparam K Key type.
    * \tparam V Value type.
    * \param map Map to write.
+   * \return True if the bytes could be written else false.
    */
   template<typename K, typename V>
-  void Write(const std::unordered_map<K, V>& map);
-
-  /** Returns the buffer of the memory writer.
-   * \brief Returns buffer.
-   * \return Buffer.
-   */
-  Buffer& GetBuffer() { return mBuffer; }
-
-  /** Returns the buffer of the memory writer.
-   * \brief Returns buffer.
-   * \return Buffer.
-   */
-  const Buffer& GetBuffer() const { return mBuffer; }
+  bool Write(const std::unordered_map<K, V>& map);
 
   /** Returns the current write offset in the underlying buffer.
    * \brief Returns write offset.
@@ -153,128 +151,151 @@ public:
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-void
-MemoryWriter::Write(const T& object)
+bool
+RawMemoryWriter::Write(const T& object)
 {
-  object.ToBytes(*this);
+  return object.ToBytes(*this);
 }
 
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-void
-MemoryWriter::Write(const T* object)
+bool
+RawMemoryWriter::Write(const T* object)
 {
-  object->ToBytes(*this);
+  return object->ToBytes(*this);
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s8& object);
+bool
+RawMemoryWriter::Write(const s8& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u8& object);
+bool
+RawMemoryWriter::Write(const u8& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s16& object);
+bool
+RawMemoryWriter::Write(const s16& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u16& object);
+bool
+RawMemoryWriter::Write(const u16& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s32& object);
+bool
+RawMemoryWriter::Write(const s32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u32& object);
+bool
+RawMemoryWriter::Write(const u32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s64& object);
+bool
+RawMemoryWriter::Write(const s64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u64& object);
+bool
+RawMemoryWriter::Write(const u64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f32& object);
+bool
+RawMemoryWriter::Write(const f32& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f64& object);
+bool
+RawMemoryWriter::Write(const f64& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const String& object);
+bool
+RawMemoryWriter::Write(const String& object);
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const char8* object);
+bool
+RawMemoryWriter::Write(const char8* object);
 
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-void
-MemoryWriter::Write(const ArrayList<T>& list)
+bool
+RawMemoryWriter::Write(const ArrayList<T>& list)
 {
-  Write(static_cast<u64>(list.GetSize()));
+  bool success = Write(static_cast<u64>(list.GetSize()));
+  if (!success) {
+    return false;
+  }
   for (const T& object : list) {
-    Write(object);
+    success = Write(object);
+    if (!success) {
+      return false;
+    }
   }
 }
 
 // -------------------------------------------------------------------------- //
 
 template<typename T>
-void
-MemoryWriter::Write(const std::vector<T>& vector)
+bool
+RawMemoryWriter::Write(const std::vector<T>& vector)
 {
-  Write(static_cast<u64>(vector.size()));
-  for (const T& object : vector) {
-    Write(object);
+  bool success = Write(static_cast<u64>(vector.size()));
+  if (!success) {
+    return false;
   }
+  for (const T& object : vector) {
+    success = Write(object);
+    if (!success) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // -------------------------------------------------------------------------- //
 
 template<typename K, typename V>
-void
-MemoryWriter::Write(const std::unordered_map<K, V>& map)
+bool
+RawMemoryWriter::Write(const std::unordered_map<K, V>& map)
 {
-  Write(static_cast<u64>(map.size()));
-  for (const auto& entry : map) {
-    Write<K>(entry.first);
-    Write<V>(entry.second);
+  bool success = Write(static_cast<u64>(map.size()));
+  if (!success) {
+    return false;
   }
+  for (const auto& entry : map) {
+    success = Write<K>(entry.first);
+    if (!success) {
+      return false;
+    }
+    success = Write<V>(entry.second);
+    if (!success) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }

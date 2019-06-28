@@ -60,7 +60,8 @@ struct DataObject
 TEST_CASE("[] - Memory Writer")
 {
   // Write some data
-  MemoryWriter writer;
+  Buffer buffer(10);
+  MemoryWriter writer(buffer);
   writer.Write(32);
   writer.Write(3.14f);
   writer.Write("This is a test");

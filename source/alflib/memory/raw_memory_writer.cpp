@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "alflib/memory/memory_writer.hpp"
+#include "alflib/memory/raw_memory_writer.hpp"
 
 // ========================================================================== //
 // Headers
@@ -35,151 +35,159 @@
 
 namespace alflib {
 
-MemoryWriter::MemoryWriter(Buffer& buffer, u64 initialOffset)
-  : mBuffer(buffer)
+RawMemoryWriter::RawMemoryWriter(u8* memory, u64 memorySize, u64 initialOffset)
+  : mMemory(memory)
+  , mMemorySize(memorySize)
   , mWriteOffset(initialOffset)
 {}
 
 // -------------------------------------------------------------------------- //
 
-void
-MemoryWriter::WriteBytes(const u8* data, u64 size)
+bool
+RawMemoryWriter::WriteBytes(const u8* data, u64 size)
 {
   // Resize buffer if neccessary
-  if (mBuffer.GetSize() < mWriteOffset + size) {
-    mBuffer.Resize(u64(mBuffer.GetSize() * BUFFER_RESIZE_FACTOR));
+  if (mMemorySize < mWriteOffset + size) {
+    return false;
   }
 
   // Write bytes
-  mBuffer.Write(mWriteOffset, data, size);
+  memcpy(mMemory + mWriteOffset, data, size);
   mWriteOffset += size;
+  return true;
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s8& object)
+bool
+RawMemoryWriter::Write(const s8& object)
 {
-  Write(reinterpret_cast<const u8&>(object));
+  return Write(reinterpret_cast<const u8&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u8& object)
+bool
+RawMemoryWriter::Write(const u8& object)
 {
-  WriteBytes(&object, 1);
+  return WriteBytes(&object, 1);
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s16& object)
+bool
+RawMemoryWriter::Write(const s16& object)
 {
-  Write(reinterpret_cast<const u16&>(object));
+  return Write(reinterpret_cast<const u16&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u16& object)
+bool
+RawMemoryWriter::Write(const u16& object)
 {
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u16));
+  return WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u16));
 #else
   u16 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u16));
+  return WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u16));
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s32& object)
+bool
+RawMemoryWriter::Write(const s32& object)
 {
-  Write(reinterpret_cast<const u32&>(object));
+  return Write(reinterpret_cast<const u32&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u32& object)
+bool
+RawMemoryWriter::Write(const u32& object)
 {
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u32));
+  return WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u32));
 #else
   u32 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u32));
+  return WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u32));
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const s64& object)
+bool
+RawMemoryWriter::Write(const s64& object)
 {
-  Write(reinterpret_cast<const u64&>(object));
+  return Write(reinterpret_cast<const u64&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const u64& object)
+bool
+RawMemoryWriter::Write(const u64& object)
 {
 #if ALFLIB_HOST_ENDIAN == ALFLIB_LITTLE_ENDIAN
-  WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u64));
+  return WriteBytes(reinterpret_cast<const u8*>(&object), sizeof(u64));
 #else
   u64 _object = SwapEndian(object);
-  WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u64));
+  return WriteBytes(reinterpret_cast<const u8*>(&_object), sizeof(u64));
 #endif
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f32& object)
+bool
+RawMemoryWriter::Write(const f32& object)
 {
-  Write(reinterpret_cast<const u32&>(object));
+  return Write(reinterpret_cast<const u32&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const f64& object)
+bool
+RawMemoryWriter::Write(const f64& object)
 {
-  Write(reinterpret_cast<const u64&>(object));
+  return Write(reinterpret_cast<const u64&>(object));
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const String& object)
+bool
+RawMemoryWriter::Write(const String& object)
 {
   u32 size = object.GetSize();
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object.GetUTF8()), size);
+  bool success = Write(size);
+  if (!success) {
+    return false;
+  }
+  return WriteBytes(reinterpret_cast<const u8*>(object.GetUTF8()), size);
 }
 
 // -------------------------------------------------------------------------- //
 
 template<>
-void
-MemoryWriter::Write(const char8* object)
+bool
+RawMemoryWriter::Write(const char8* object)
 {
   u32 size = strlen(object);
-  Write(size);
-  WriteBytes(reinterpret_cast<const u8*>(object), size);
+  bool success = Write(size);
+  if (!success) {
+    return false;
+  }
+  return WriteBytes(reinterpret_cast<const u8*>(object), size);
 }
 
 }

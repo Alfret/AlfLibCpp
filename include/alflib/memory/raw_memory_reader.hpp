@@ -40,28 +40,35 @@
 
 namespace alflib {
 
-/** \class MemoryReader
+/** \class RawMemoryReader
  * \author Filip Björklund
  * \date 20 june 2019 - 23:41
  * \brief Memory reader.
  * \details
  * Class for reading data from a byte buffer.
  */
-class MemoryReader
+class RawMemoryReader
 {
 private:
-  /** Buffer that is being read **/
-  const Buffer& mBuffer;
+  /** Raw memory that is being read **/
+  u8* mMemory;
+  /** Size of the raw memory **/
+  u64 mMemorySize;
   /** Read offset **/
   u64 mReadOffset = 0;
 
 public:
-  /** Construct a memory reader from a buffer.
+  /** Construct a memory reader from a raw memory pointer.
    * \brief Construct memory reader.
-   * \param buffer Buffer for the reader to work on.
+   * \param memory Raw memory to read.
    * \param initialOffset Initial read offset.
+   * \param memorySize Size of the raw memory allocation. This is only used to
+   * verify before a read. However it can be left as default where these checks
+   * are not done.
    */
-  explicit MemoryReader(const Buffer& buffer, u64 initialOffset = 0);
+  explicit RawMemoryReader(u8* memory,
+                           u64 initialOffset = 0,
+                           u64 memorySize = U64_MAX);
 
   /** Read the specified number of bytes from the reader.
    * \brief Read bytes.
@@ -124,7 +131,7 @@ public:
 
 template<typename T>
 T
-MemoryReader::Read()
+RawMemoryReader::Read()
 {
   return T::FromBytes(*this);
 }
@@ -133,73 +140,73 @@ MemoryReader::Read()
 
 template<>
 s8
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 u8
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 s16
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 u16
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 s32
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 u32
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 s64
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 u64
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 f32
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 f64
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<>
 String
-MemoryReader::Read();
+RawMemoryReader::Read();
 
 // -------------------------------------------------------------------------- //
 
 template<typename T>
 ArrayList<T>
-MemoryReader::ReadArrayList()
+RawMemoryReader::ReadArrayList()
 {
   const u64 size = Read<u64>();
   ArrayList<T> list;
@@ -214,7 +221,7 @@ MemoryReader::ReadArrayList()
 
 template<typename T>
 std::vector<T>
-MemoryReader::ReadStdVector()
+RawMemoryReader::ReadStdVector()
 {
   const u64 size = Read<u64>();
   std::vector<T> list;
@@ -229,7 +236,7 @@ MemoryReader::ReadStdVector()
 
 template<typename K, typename V>
 std::unordered_map<K, V>
-MemoryReader::ReadStdUnorderedMap()
+RawMemoryReader::ReadStdUnorderedMap()
 {
   std::unordered_map<K, V> map;
   u64 size = Read<u64>();

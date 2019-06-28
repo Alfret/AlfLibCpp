@@ -28,6 +28,7 @@
 
 // Project headers
 #include "alflib/memory/memory.hpp"
+#include "alflib/core/assert.hpp"
 
 // ========================================================================== //
 // MemoryReader Implementation
@@ -35,8 +36,9 @@
 
 namespace alflib {
 
-MemoryReader::MemoryReader(Buffer buffer)
-  : mBuffer(std::move(buffer))
+MemoryReader::MemoryReader(const Buffer& buffer, u64 initialOffset)
+  : mBuffer(buffer)
+  , mReadOffset(initialOffset)
 {}
 
 // -------------------------------------------------------------------------- //
@@ -44,6 +46,7 @@ MemoryReader::MemoryReader(Buffer buffer)
 const u8*
 MemoryReader::ReadBytes(u64 size)
 {
+  AlfAssert(mReadOffset + size <= mBuffer.GetSize(), "Reading past buffer");
   const u8* data = mBuffer.GetData() + mReadOffset;
   mReadOffset += size;
   return data;
