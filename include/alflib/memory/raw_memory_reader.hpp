@@ -42,10 +42,10 @@ namespace alflib {
 
 /** \class RawMemoryReader
  * \author Filip Björklund
- * \date 20 june 2019 - 23:41
- * \brief Memory reader.
+ * \date 28 june 2019 - 10:05
+ * \brief Raw memory reader.
  * \details
- * Class for reading data from a byte buffer.
+ * Class for reading data from a memory pointer.
  */
 class RawMemoryReader
 {
@@ -61,14 +61,14 @@ public:
   /** Construct a memory reader from a raw memory pointer.
    * \brief Construct memory reader.
    * \param memory Raw memory to read.
-   * \param initialOffset Initial read offset.
    * \param memorySize Size of the raw memory allocation. This is only used to
    * verify before a read. However it can be left as default where these checks
+   * \param initialOffset Initial read offset.
    * are not done.
    */
   explicit RawMemoryReader(u8* memory,
-                           u64 initialOffset = 0,
-                           u64 memorySize = U64_MAX);
+                           u64 memorySize = U64_MAX,
+                           u64 initialOffset = 0);
 
   /** Read the specified number of bytes from the reader.
    * \brief Read bytes.

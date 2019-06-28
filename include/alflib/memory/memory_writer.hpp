@@ -41,7 +41,7 @@ namespace alflib {
 
 /** \class MemoryWriter.
  * \author Filip Björklund
- * \date 01 januari 2019 - 00:00
+ * \date 21 june 2019 - 09:27
  * \brief Memory writer.
  * \details
  * Class for writing binary data to a memory buffer.
