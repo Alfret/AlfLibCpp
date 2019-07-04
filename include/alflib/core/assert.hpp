@@ -48,7 +48,7 @@
 #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 /** Macro for asserting that a condition is true **/
 #define AlfAssert(condition, messageFormat, ...)                               \
-  alflib::Assert(condition, __FILE__, __LINE__, messageFormat, ##__VA_ARGS__)
+  alflib::Assert(!!(condition), __FILE__, __LINE__, messageFormat, ##__VA_ARGS__)
 #pragma GCC diagnostic pop
 #endif
 
