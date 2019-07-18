@@ -128,6 +128,10 @@ public:
    */
   explicit Color(u32 combined);
 
+  /** Default construct with all values being 0's.
+   */
+  Color();
+
   /** Convert the color from gamma (sRGB) color space to linear color space.
    * \brief Convert from gamma to linear.
    * \return Linear color
