@@ -56,7 +56,7 @@ private:
     Float4x32 simd[4] = { Float4x32{}, Float4x32{}, Float4x32{}, Float4x32{} };
     /** Array data **/
     f32 elements[16];
-  } mData;
+  } mData{};
 
 public:
   /** Construct matrix with specified value in diagonal cells **/

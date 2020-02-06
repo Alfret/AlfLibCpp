@@ -32,6 +32,12 @@
 // Project headers
 #include <alflib/platform/os.hpp>
 
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <pathcch.h>
+#include <shlobj.h>
+#include <shlwapi.h>
+
 // ========================================================================== //
 // Path Implementation
 // ========================================================================== //

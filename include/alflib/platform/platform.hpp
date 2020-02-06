@@ -56,21 +56,6 @@ static const union
 #define ALFLIB_HOST_ENDIAN (alflib::sHostOrder.value)
 
 // ========================================================================== //
-// Windows Headers
-// ========================================================================== //
-
-#if defined(ALFLIB_TARGET_WINDOWS)
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <pathcch.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
-
-#endif // defined(ALFLIB_TARGET_WINDOWS)
-
-// ========================================================================== //
 // Linux Headers
 // ========================================================================== //
 

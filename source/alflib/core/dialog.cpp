@@ -26,11 +26,13 @@
 // Headers
 // ========================================================================== //
 
-// Library headers
-#include <gtk/gtk.h>
-
 // Project headers
 #include "alflib/platform/platform.hpp"
+
+// Library headers
+#if defined(ALFLIB_TAREGT_LINUX)
+#include <gtk/gtk.h>
+#endif
 
 // ========================================================================== //
 // Functions
