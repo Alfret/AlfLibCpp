@@ -51,7 +51,7 @@ class RawMemoryReader
 {
 private:
   /** Raw memory that is being read **/
-  u8* mMemory;
+  const u8* mMemory;
   /** Size of the raw memory **/
   u64 mMemorySize;
   /** Read offset **/
@@ -66,7 +66,7 @@ public:
    * \param initialOffset Initial read offset.
    * are not done.
    */
-  explicit RawMemoryReader(u8* memory,
+  explicit RawMemoryReader(const u8* memory,
                            u64 memorySize = U64_MAX,
                            u64 initialOffset = 0);
 

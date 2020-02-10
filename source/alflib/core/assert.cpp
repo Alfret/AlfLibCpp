@@ -30,6 +30,7 @@
 #include "alflib/core/dialog.hpp"
 #include "alflib/core/console.hpp"
 #include "alflib/debug/debugger.hpp"
+#include <iostream>
 
 // ========================================================================== //
 // Functions
@@ -51,6 +52,7 @@ Assert(bool condition, const char8* file, u32 line, const String& message)
 
   // Print to stdout and show dialog
   Console::WriteLine(output);
+  std::cout << std::endl; // flushes the output
   ShowErrorDialog("Assertion", output);
 
   // Break debugger then abort execution
