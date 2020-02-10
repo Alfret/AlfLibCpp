@@ -39,7 +39,7 @@ void
 BreakDebugger()
 {
 #if defined(ALFLIB_TARGET_WINDOWS)
-  DebugeBreak();
+  __debugbreak();
 #elif defined(ALFLIB_TARGET_LINUX) || defined(ALFLIB_TARGET_MACOS)
   raise(SIGINT);
 #endif
