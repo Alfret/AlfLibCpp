@@ -30,6 +30,8 @@
 #include "alflib/core/common.hpp"
 #include "alflib/core/string.hpp"
 
+#include "alflib/platform/detection.hpp"
+
 // ========================================================================== //
 // Macros
 // ========================================================================== //
